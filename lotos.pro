@@ -12,10 +12,16 @@ VPATH += src \
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    pushbuttonfunc1.cpp \
+    src/pushbuttonfunc1.cpp \
+    src/pushbuttonfunc1.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    pushbuttonfunc1.h \
+    src/pushbuttonfunc1.h \
+    src/pushbuttonfunc1.h
 
 FORMS += \
     mainwindow.ui
