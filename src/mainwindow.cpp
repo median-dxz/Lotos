@@ -7,8 +7,9 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    qDebug() << QString("Loading: Load style file %1").arg(LoadQStyleSheet(":/res/styles/index.qss"));
+    LoadQStyleSheet(":/res/styles/index.qss");
 
+    qDebug() << QSslSocket::supportsSsl();
     QStackedWidget *stackedWidget = ui->centralwidget->findChild<QStackedWidget *>();
     for (int i = 1; i <= 4; i++) {
         QPushButton *PageButton = ui->centralwidget->findChild<QPushButton *>(QString("pageButton_") + QString::number(i));

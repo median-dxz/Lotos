@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "utils\HttpClient.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -21,4 +23,5 @@ class MainWindow : public QMainWindow {
    private:
     Ui::MainWindow *ui;
 };
+using namespace Lotos;
 #endif  // MAINWINDOW_H

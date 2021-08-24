@@ -80,10 +80,6 @@
          <property name="text">
           <string>上传</string>
          </property>
-         <property name="icon">
-          <iconset resource="../resources.qrc">
-           <normaloff>:/res/icons/page1.png</normaloff>:/res/icons/page1.png</iconset>
-         </property>
          <property name="checkable">
           <bool>false</bool>
          </property>
@@ -468,8 +464,6 @@
    </property>
   </widget>
  </widget>
- <resources>
-  <include location="../resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
