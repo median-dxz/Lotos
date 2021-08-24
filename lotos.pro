@@ -11,10 +11,12 @@ VPATH += src \
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    ImgButton.cpp \
     utils/HttpClient.cpp
 
 HEADERS += \
     mainwindow.h \
+    ImgButton.h \
     utils/HttpClient.h
 
 FORMS += \

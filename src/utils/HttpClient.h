@@ -5,19 +5,24 @@
 #include <QWidget>
 #include <QtNetwork>
 
-namespace Lotos {
-
 struct Response {
+    QTextCodec *codec;
     QByteArray data;
-    int status;
+    QVariant status;
     bool isSucceeded;
     QString ERROR_TYPE;
+    // setEncode(const char *code) codec->codecForName(code); codec = QTextCodec::codecForName("utf-8"); QString getText() {
+    // codec->toUnicode() void setEncode(const char *code);return QString().data }
 };
 
 struct Resquest {
     QUrl url;
     QString params;
     QList<QString> headers;
+    QString parseURLSearchParams();
+    QString parseFormData();
+    QString stringifyURLSearchParams();
+    QString stringifyFormData();
 };
 
 class HttpClient : public QObject {
@@ -25,37 +30,37 @@ class HttpClient : public QObject {
    public:
     explicit HttpClient(QObject *parent = nullptr);
 
-    void setEncode(const char *code);
-    void setHeaders(QMap<QString, QString> headers);
-    void setAgent(QString ip, int port);
-    void appendHeaders(QMap<QString, QString> headers);
+    void setHeaders(QMap<QString, QVariant> headers);
+    void appendHeaders(QMap<QString, QVariant> headers);
+
     void get();
     void get(QUrl url, QString params = "");
-    void get(QUrl url, QMap<QString, QString> params);
+    void get(QUrl url, QMap<QString, QVariant> params);
 
     void post();
     void post(QUrl url, QString params);
-    void post(QUrl url, QMap<QString, QString> params);
-    QString parseURLSearchParams();
-    QString parseFormData();
-    QString stringifyURLSearchParams();
-    QString stringifyFormData();
+    void post(QUrl url, QMap<QString, QVariant> params);
+
     void downloadFile();
     void uploadFile();
+
+    void setAgent(QString ip, int port);
+    void getAgent(QString &ip, int &port);
+
+    void useAgent();
+    void cancelAgent();
 
    signals:
     void responseFinished(Response *);
 
    private:
     QNetworkAccessManager *requestManager;
-    QTextCodec *codec;
+    bool isUsingAgent;
+    QString agentIp;
+    int agentPort;
 
    private slots:
     void onResponseFiniehed(QNetworkReply *);
 };
-
-}  // namespace Lotos
-
-using namespace Lotos;
 
 #endif  // HTTPCLIENT_H
