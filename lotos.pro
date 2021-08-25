@@ -11,13 +11,13 @@ VPATH += src \
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    pushbuttonfunc1.cpp
+    ImgButton.cpp \
     utils/HttpClient.cpp
 
 HEADERS += \
     mainwindow.h \
+    ImgButton.h \
     utils/HttpClient.h
-    pushbuttonfunc1.h
 
 FORMS += \
     mainwindow.ui

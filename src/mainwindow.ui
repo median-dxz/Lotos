@@ -114,12 +114,6 @@
          <property name="text">
           <string>图片集</string>
          </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
-         </property>
          <property name="flat">
           <bool>true</bool>
          </property>
@@ -334,7 +328,10 @@
            <cursorShape>ArrowCursor</cursorShape>
           </property>
           <property name="text">
-           <string>拖动图片到此处...</string>
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="../resources.qrc">:/res/icons/page1.png</pixmap>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -465,11 +462,13 @@
      <x>0</x>
      <y>0</y>
      <width>884</width>
-     <height>17</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

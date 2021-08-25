@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 
+#include "ImgButton.h"
 #include "utils\HttpClient.h"
 
 QT_BEGIN_NAMESPACE
