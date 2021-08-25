@@ -2,18 +2,35 @@
 
 HttpClient::HttpClient(QObject *parent) : QObject(parent) {
     requestManager = new QNetworkAccessManager(this);
-    codec = QTextCodec::codecForName("utf-8");
-    connect(requestManager, &QNetworkAccessManager::finished, this, &HttpClient::onResponseFiniehed);
-}
+    agentIp = "";
+    agentPort = 0;
+    isUsingAgent = false;
 
-void HttpClient::setEncode(const char *code) {
-    codec->codecForName(code);
+    connect(requestManager, &QNetworkAccessManager::finished, this, &HttpClient::onResponseFiniehed);
 }
 
 void HttpClient::onResponseFiniehed(QNetworkReply *reply) {
     Response *response = new Response();
     response->data = reply->readAll();
-    response->status = 200;
+    response->status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     emit responseFinished(response);
     reply->deleteLater();
+}
+
+void HttpClient::cancelAgent() {
+    isUsingAgent = false;
+}
+
+void HttpClient::useAgent() {
+    isUsingAgent = true;
+}
+
+void HttpClient::setAgent(QString ip, int port) {
+    agentIp = ip;
+    agentPort = port;
+}
+
+void HttpClient::getAgent(QString &ip, int &port) {
+    ip = agentIp;
+    port = agentPort;
 }

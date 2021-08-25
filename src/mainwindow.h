@@ -24,5 +24,5 @@ class MainWindow : public QMainWindow {
    private:
     Ui::MainWindow *ui;
 };
-using namespace Lotos;
+
 #endif  // MAINWINDOW_H
