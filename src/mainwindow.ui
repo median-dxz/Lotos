@@ -78,7 +78,7 @@
           <cursorShape>ArrowCursor</cursorShape>
          </property>
          <property name="text">
-          <string>上传</string>
+          <string>       上传</string>
          </property>
          <property name="checkable">
           <bool>false</bool>
@@ -112,7 +112,7 @@
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>图片集</string>
+          <string>       图片集</string>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -140,7 +140,7 @@
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>图床设置</string>
+          <string>       图床设置</string>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -174,7 +174,7 @@
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>设置</string>
+          <string>       设置</string>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -462,7 +462,7 @@
      <x>0</x>
      <y>0</y>
      <width>884</width>
-     <height>23</height>
+     <height>17</height>
     </rect>
    </property>
   </widget>
