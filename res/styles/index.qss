@@ -6,27 +6,25 @@
   color: #606266;
 }
 
-#pageSwitchWidget > .QPushButton:flat {
+#pageSwitchWidget > .PageButton {
   padding: 0px;
-  margin-top: 0px;
-  margin-bottom: 40px;
+  margin: 0px;
   border: none;
+  border-right: 4px solid rgba(0,0,0,0);
   background: transparent;
-  border-right: 4px solid #3993fe;
   color: #606266;
+
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
-#pageSwitchWidget > .QPushButton:flat:hover {
-  background: transparent;
+#pageSwitchWidget > .PageButton:hover {
   border-right: 4px solid #a7d2ff;
-  background: rgba(255, 255, 255, 25%);
-  color: rgba(0, 0, 0);
+  color: #000000;
 }
 
-#pageSwitchWidget > .QPushButton:flat:pressed {
-  border: none;
-  background: transparent;
-  border-right: 4px solid #3993fe;
+#pageSwitchWidget > .PageButton:checked, #pageSwitchWidget > .PageButton:checked:pressed{
+    border-right: 4px solid #3993fe;
 }
 
 #uploadPage QPushButton {

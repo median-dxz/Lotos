@@ -1,8 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDebug>
+#include <QFile>
 #include <QMainWindow>
 #include <QPushButton>
+
 #include "pagebutton.h"
 
 QT_BEGIN_NAMESPACE
@@ -14,21 +17,17 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
-public:
+   public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    bool LoadQStyleSheet(const QString &fileName);
-    //void ChangeChosen(QPushButton *Pagebutton,int index);
-    //Pagebutton  *PageB;
+    bool loadQStyleSheet(const QString &fileName);
 
-public slots:
-    void  dealSlot(int,bool);
+   public slots:
+   signals:
+    void widgetPageChanged(int);
 
-private:
-    //bool chosen[4];
-    Pagebutton PageB[4];
+   private:
     Ui::MainWindow *ui;
 };
-
 
 #endif  // MAINWINDOW_H

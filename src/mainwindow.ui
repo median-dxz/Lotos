@@ -55,7 +55,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="pageButton_1">
+        <widget class="PageButton" name="pageButton_1">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -80,15 +80,11 @@
          <property name="text">
           <string>上传</string>
          </property>
-         <property name="icon">
-          <iconset resource="../resources.qrc">
-           <normaloff>:/res/icons/page1.png</normaloff>:/res/icons/page1.png</iconset>
-         </property>
          <property name="checkable">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="checked">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -96,7 +92,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pageButton_3">
+        <widget class="PageButton" name="pageButton_2">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -118,13 +114,16 @@
          <property name="text">
           <string>图片集</string>
          </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
          <property name="flat">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pageButton_2">
+        <widget class="PageButton" name="pageButton_3">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -146,13 +145,16 @@
          <property name="text">
           <string>图床设置</string>
          </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
          <property name="flat">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pageButton_4">
+        <widget class="PageButton" name="pageButton_4">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -179,6 +181,9 @@
          </property>
          <property name="text">
           <string>设置</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -463,13 +468,18 @@
      <x>0</x>
      <y>0</y>
      <width>884</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
  </widget>
- <resources>
-  <include location="../resources.qrc"/>
- </resources>
+ <customwidgets>
+  <customwidget>
+   <class>PageButton</class>
+   <extends>QPushButton</extends>
+   <header>pagebutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
  <connections/>
 </ui>

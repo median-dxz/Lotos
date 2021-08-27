@@ -13,11 +13,13 @@ VPATH += src \
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    src/pagebutton.cpp
+    pagebutton.cpp
+
+INCLUDEPATH += src \
 
 HEADERS += \
     mainwindow.h \
-    src/pagebutton.h
+    pagebutton.h
 
 FORMS += \
     mainwindow.ui
