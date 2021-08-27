@@ -1,9 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDebug>
+#include <QFile>
+#include <QFileDialog>
 #include <QMainWindow>
+#include <QPushButton>
 
-#include "ImgButton.h"
+#include "imgbutton.h"
+#include "pagebutton.h"
 #include "utils\HttpClient.h"
 
 QT_BEGIN_NAMESPACE
@@ -19,10 +24,14 @@ class MainWindow : public QMainWindow {
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    bool LoadQStyleSheet(const QString &fileName);
+   public slots:
+   signals:
+    void widgetPageChanged(int);
 
    private:
     Ui::MainWindow *ui;
+
+    bool loadQStyleSheet(const QString &fileName);
     void test();
     void HttpAccessTest(MainWindow *p);
 };

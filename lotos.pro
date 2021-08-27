@@ -11,16 +11,20 @@ VPATH += src \
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    ImgButton.cpp \
+    imgbutton.cpp \
+    pagebutton.cpp \
     utils/HttpClient.cpp
 
 HEADERS += \
     mainwindow.h \
-    ImgButton.h \
+    imgbutton.h \
+    pagebutton.h \
     utils/HttpClient.h
 
 FORMS += \
     mainwindow.ui
+
+INCLUDEPATH += src \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
