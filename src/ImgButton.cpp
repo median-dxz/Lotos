@@ -8,50 +8,43 @@ ImgButton::ImgButton(QString normal, QString hover, QString press) {
     pressIconPath = press;
     hoverIconPath = hover;
 
-    QPixmap pix;
-    pix.load(normalIconPath);
-
     QSize iconSize = QSize(32, 32);
     setFixedSize(iconSize);
     setStyleSheet("QPushButton{border:none;}");
-    setIcon(pix);
+    DrawIcon(normalIconPath);
 
     setIconSize(iconSize);
 }
 
 void ImgButton::mouseReleaseEvent(QMouseEvent *e) {
-    QPixmap pix;
-    pix.load(hoverIconPath);
-    setIcon(pix);
+    DrawIcon(hoverIconPath);
 
     QPushButton::mouseReleaseEvent(e);
 }
 
 void ImgButton::mousePressEvent(QMouseEvent *e) {
-    QPixmap pix;
-    pix.load(pressIconPath);
-    setIcon(pix);
+    DrawIcon(pressIconPath);
 
     QPushButton::mousePressEvent(e);
 }
 
 void ImgButton::enterEvent(QEvent *) {
-    QPixmap pix;
-    pix.load(hoverIconPath);
-    setIcon(pix);
+    DrawIcon(hoverIconPath);
 }
 
 void ImgButton::leaveEvent(QEvent *) {
-    QPixmap pix;
-    pix.load(normalIconPath);
-    setIcon(pix);
+    DrawIcon(normalIconPath);
 }
 
 void ImgButton::SetIconPath(QString normal, QString hover, QString press) {
     normalIconPath = normal;
     pressIconPath = press;
     hoverIconPath = hover;
+    DrawIcon(normalIconPath);
+}
+
+void ImgButton::DrawIcon(QString iconPath) {
     QPixmap pix;
-    pix.load(normalIconPath);
+    pix.load(iconPath);
     setIcon(pix);
 }
