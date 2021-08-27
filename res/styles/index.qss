@@ -53,8 +53,8 @@
 }
 
 #dragBox {
-  border: 4px dashed #dcdfe6;
-  border-radius: 8px;
+  border: 2px dashed #dcdfe6;
+  border-radius: 2px;
 }
 
 #uploadProgress {
@@ -66,4 +66,6 @@
 
 #uploadProgress::chunk {
   background-color: #409eff;
+  border-radius: 5%;
+  border: none;
 }

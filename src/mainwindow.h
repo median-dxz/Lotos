@@ -3,10 +3,13 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QFileDialog>
 #include <QMainWindow>
 #include <QPushButton>
 
+#include "imgbutton.h"
 #include "pagebutton.h"
+#include "utils\HttpClient.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,7 +23,6 @@ class MainWindow : public QMainWindow {
    public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    bool loadQStyleSheet(const QString &fileName);
 
    public slots:
    signals:
@@ -28,6 +30,10 @@ class MainWindow : public QMainWindow {
 
    private:
     Ui::MainWindow *ui;
+
+    bool loadQStyleSheet(const QString &fileName);
+    void test();
+    void HttpAccessTest(MainWindow *p);
 };
 
 #endif  // MAINWINDOW_H

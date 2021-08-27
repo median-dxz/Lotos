@@ -1,6 +1,4 @@
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui network widgets
 
 CONFIG += c++11
 
@@ -13,16 +11,20 @@ VPATH += src \
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    pagebutton.cpp
-
-INCLUDEPATH += src \
+    imgbutton.cpp \
+    pagebutton.cpp \
+    utils/HttpClient.cpp
 
 HEADERS += \
     mainwindow.h \
-    pagebutton.h
+    imgbutton.h \
+    pagebutton.h \
+    utils/HttpClient.h
 
 FORMS += \
     mainwindow.ui
+
+INCLUDEPATH += src \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -31,3 +33,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resources.qrc
+
+CONFIG += BUILD_X86
+
+CONFIG(BUILD_X64, BUILD_X86|BUILD_X64) {
+    message("X64 Build")
+} else {
+    message("X86 Build")
+}
+
