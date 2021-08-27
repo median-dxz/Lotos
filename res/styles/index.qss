@@ -8,11 +8,14 @@
 
 #pageSwitchWidget > .PageButton {
   padding: 0px;
+  padding-left: 20px;
   margin: 0px;
   border: none;
   border-right: 4px solid rgba(0, 0, 0, 0);
   background: transparent;
   color: #606266;
+
+  text-align:left
 
   margin-top: 20px;
   margin-bottom: 20px;
@@ -20,12 +23,13 @@
 
 #pageSwitchWidget > .PageButton:hover {
   border-right: 4px solid #a7d2ff;
-  color: #000000;
+  color: #303133;
 }
 
 #pageSwitchWidget > .PageButton:checked,
 #pageSwitchWidget > .PageButton:checked:pressed {
   border-right: 4px solid #3993fe;
+  color: #303133;
 }
 
 #uploadPage QPushButton {
@@ -44,11 +48,9 @@
 #uploadPage QPushButton:hover {
   background: #66b1ff;
   border-color: #66b1ff;
-  color: #fff;
 }
 
 #uploadPage QPushButton:pressed {
-  color: #fff;
   background-color: #409eff;
   border-color: #409eff;
 }

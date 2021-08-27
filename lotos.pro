@@ -8,6 +8,8 @@ CONFIG += c++11
 
 VPATH += src \
 
+INCLUDEPATH += src \
+
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
@@ -23,8 +25,6 @@ HEADERS += \
 
 FORMS += \
     mainwindow.ui
-
-INCLUDEPATH += src \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

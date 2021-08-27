@@ -23,3 +23,16 @@ void PageButton::setCurrentChosen(int index) {
         setChecked(true);
     }
 }
+
+void PageButton::setIconPath(QString path, QString pathIgnited) {
+    normalIconPath = path;
+    ignitedIconPath = pathIgnited;
+}
+
+void PageButton::drawIcon(bool ignited) {
+    if (ignited) {
+        setIcon(QIcon(ignitedIconPath));
+    } else {
+        setIcon(QIcon(normalIconPath));
+    }
+}

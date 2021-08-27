@@ -2,13 +2,13 @@
     <qresource prefix="/">
         <file>res/styles/index.qss</file>
         <file>res/icons/page_4.png</file>
-        <file>res/icons/page1.png</file>
-        <file>res/icons/page1_ig.png</file>
-        <file>res/icons/page2.png</file>
-        <file>res/icons/page2_ig.png</file>
-        <file>res/icons/page3.png</file>
-        <file>res/icons/page3_ig.png</file>
-        <file>res/icons/page4_ig.png</file>
+        <file>res/icons/page_1.png</file>
+        <file>res/icons/page_1_ig.png</file>
+        <file>res/icons/page_2.png</file>
+        <file>res/icons/page_2_ig.png</file>
+        <file>res/icons/page_3.png</file>
+        <file>res/icons/page_3_ig.png</file>
+        <file>res/icons/page_4_ig.png</file>
         <file>res/icons/upload.png</file>
         <file>res/icons/upload_at.png</file>
     </qresource>

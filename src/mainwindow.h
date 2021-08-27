@@ -28,12 +28,16 @@ class MainWindow : public QMainWindow {
    signals:
     void widgetPageChanged(int);
 
+   protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
+
    private:
     Ui::MainWindow *ui;
 
     bool loadQStyleSheet(const QString &fileName);
+    void componentsLayoutManager();
     void test();
-    void HttpAccessTest(MainWindow *p);
+    void httpAccessTest(MainWindow *p);
 };
 
 #endif  // MAINWINDOW_H
