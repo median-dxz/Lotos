@@ -1,7 +1,6 @@
 #ifndef IMGBUTTON_H
 #define IMGBUTTON_H
 
-#include <QDebug>
 #include <QEvent>
 #include <QMouseEvent>
 #include <QPushButton>
@@ -27,6 +26,7 @@ class ImgButton : public QPushButton {
     QString normalIconPath;
     QString pressIconPath;
     QString hoverIconPath;
+    void DrawIcon(QString iconPath);
 };
 
 #endif  // IMGBUTTON_H

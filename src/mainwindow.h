@@ -23,6 +23,8 @@ class MainWindow : public QMainWindow {
 
    private:
     Ui::MainWindow *ui;
+    void test();
+    void HttpAccessTest(MainWindow *p);
 };
 
 #endif  // MAINWINDOW_H
