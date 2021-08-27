@@ -10,7 +10,7 @@
   padding: 0px;
   margin: 0px;
   border: none;
-  border-right: 4px solid rgba(0,0,0,0);
+  border-right: 4px solid rgba(0, 0, 0, 0);
   background: transparent;
   color: #606266;
 
@@ -23,8 +23,9 @@
   color: #000000;
 }
 
-#pageSwitchWidget > .PageButton:checked, #pageSwitchWidget > .PageButton:checked:pressed{
-    border-right: 4px solid #3993fe;
+#pageSwitchWidget > .PageButton:checked,
+#pageSwitchWidget > .PageButton:checked:pressed {
+  border-right: 4px solid #3993fe;
 }
 
 #uploadPage QPushButton {
@@ -37,7 +38,7 @@
   border-color: #409eff;
   font: 12pt "Microsoft JhengHei";
   font-weight: 800;
-  icon-size:16px;
+  icon-size: 16px;
 }
 
 #uploadPage QPushButton:hover {
