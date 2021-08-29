@@ -111,3 +111,21 @@ void MainWindow::httpAccessTest(MainWindow *p) {
     });
     c->uploadFile(&postData, "smfile", "09.jpg");
 }
+void MainWindow::mousePressEvent(QMouseEvent *event){
+    //只实现了左键移动
+    if(event->button() == Qt::LeftButton)
+        mouse_press = true;
+    move_point=event->globalPos() - this->pos();
+    qDebug()<<"pos()"<<this->pos().x()<<" "<<this->pos().y();
+    qDebug()<<"globalPos"<<event->globalPos().x()<<" "<<event->globalPos().y();
+}
+void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+    mouse_press = false;
+}
+void MainWindow::mouseMoveEvent(QMouseEvent *event){
+    //移动窗口
+    if(mouse_press){
+        QPoint move_pos = event->globalPos();
+        move(move_pos-move_point);
+    }
+}

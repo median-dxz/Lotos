@@ -7,6 +7,10 @@
 #include <QMainWindow>
 #include <QPushButton>
 
+/*
+ * 实现拖动窗口
+ */
+#include <QMoveEvent>
 #include "pagebutton.h"
 #include "utils\httpclient.h"
 
@@ -29,9 +33,14 @@ class MainWindow : public QMainWindow {
 
    protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
    private:
     Ui::MainWindow *ui;
+    bool mouse_press;
+    QPoint move_point;
 
     bool loadQStyleSheet(const QString &fileName);
     void componentsLayoutManager();
