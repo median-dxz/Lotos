@@ -13,14 +13,12 @@ INCLUDEPATH += src \
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    imgbutton.cpp \
     pagebutton.cpp \
     utils/imgehost.cpp \
     utils/httpclient.cpp
 
 HEADERS += \
     mainwindow.h \
-    imgbutton.h \
     pagebutton.h \
     utils/imgehost.h \
     utils/httpclient.h

@@ -7,7 +7,6 @@
 #include <QMainWindow>
 #include <QPushButton>
 
-#include "imgbutton.h"
 #include "pagebutton.h"
 #include "utils\httpclient.h"
 
