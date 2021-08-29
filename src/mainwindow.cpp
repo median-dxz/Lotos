@@ -82,10 +82,6 @@ void MainWindow::test() {
     qDebug() << QSslSocket::supportsSsl();
     connect(ui->uploadButton, &QPushButton::clicked, this, [=]() { QFileDialog::getOpenFileName(this, "选择图片"); });
 
-    ImgButton *btn = new ImgButton(":/res/icons/page_1.png", ":/res/icons/page_2.png", ":/res/icons/page_3.png");
-    btn->setParent(ui->stackedWidget->widget(2));
-    btn->move(300, 300);
-
     //    HttpAccessTest(this);
 }
 

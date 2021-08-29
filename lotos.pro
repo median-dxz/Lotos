@@ -14,6 +14,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
 <<<<<<< HEAD
+<<<<<<< HEAD
     ImgButton.cpp \
     utils/HttpClient.cpp
 
@@ -23,13 +24,14 @@ HEADERS += \
     utils/HttpClient.h
 =======
     imgbutton.cpp \
+=======
+>>>>>>> 2920bae (refactor: 删除ImgaeButton实现)
     pagebutton.cpp \
     utils/imgehost.cpp \
     utils/httpclient.cpp
 
 HEADERS += \
     mainwindow.h \
-    imgbutton.h \
     pagebutton.h \
     utils/imgehost.h \
     utils/httpclient.h
