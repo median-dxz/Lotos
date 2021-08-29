@@ -15,13 +15,15 @@ SOURCES += \
     mainwindow.cpp \
     imgbutton.cpp \
     pagebutton.cpp \
-    utils/HttpClient.cpp
+    utils/imgehost.cpp \
+    utils/httpclient.cpp
 
 HEADERS += \
     mainwindow.h \
     imgbutton.h \
     pagebutton.h \
-    utils/HttpClient.h
+    utils/imgehost.h \
+    utils/httpclient.h
 
 FORMS += \
     mainwindow.ui

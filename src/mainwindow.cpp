@@ -4,6 +4,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     loadQStyleSheet(":/res/styles/index.qss");
+    setWindowTitle(tr("Lotos"));
     componentsLayoutManager();
 
     test();
@@ -59,8 +60,9 @@ void MainWindow::componentsLayoutManager() {
             emit widgetPageChanged(current_index);
             ui->stackedWidget->setCurrentIndex(current_index - 1);
         });
+
         pageButton->setIconPath(iconPaths[index * 2 - 2], iconPaths[index * 2 - 1]);
-        pageButton->setIconSize(QSize(32, 32));
+        pageButton->setIconSize(QSize(28, 28));
         pageButton->setIcon(QIcon(iconPaths[index * 2 - 2]));
         pageButton->installEventFilter(this);
     }
