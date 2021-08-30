@@ -36,3 +36,26 @@ void PageButton::drawIcon(bool ignited) {
         setIcon(QIcon(normalIconPath));
     }
 }
+
+void PageButton::DrawPix(QString iconPath){
+
+
+    label->setPixmap(iconPath);
+    label->setScaledContents(true);
+    label->resize(QSize(35, 35));
+    label->move(5,27);
+
+
+
+}
+
+QString & PageButton::getnormalIconPath()
+{
+    return normalIconPath;
+}
+QString & PageButton::getignitedIconPath()
+{
+    return ignitedIconPath;
+}
+
+

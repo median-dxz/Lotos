@@ -28,28 +28,37 @@ bool MainWindow::loadQStyleSheet(const QString &fileName) {
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (obj->inherits("PageButton") && event->type() == QEvent::HoverEnter) {
         PageButton *page_btn = (PageButton *)obj;
-        page_btn->drawIcon(true);
+        page_btn->DrawPix(page_btn->getignitedIconPath());
+        return true;
     }
     if (obj->inherits("PageButton") && event->type() == QEvent::HoverLeave) {
         PageButton *page_btn = (PageButton *)obj;
-        page_btn->drawIcon(false);
+        page_btn->DrawPix(page_btn->getnormalIconPath());
+        return  true;
     }
     return QWidget::eventFilter(obj, event);
+
+
+
+
+
 }
+
 
 void MainWindow::componentsLayoutManager() {
     // set pagebutton toggle signal&icon
     QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
-    QList<QString> iconPaths;
+//    QList<QString> iconPaths;
 
-    iconPaths.append(":/res/icons/page_1.png");
-    iconPaths.append(":/res/icons/page_1_ig.png");
-    iconPaths.append(":/res/icons/page_2.png");
-    iconPaths.append(":/res/icons/page_2_ig.png");
-    iconPaths.append(":/res/icons/page_3.png");
-    iconPaths.append(":/res/icons/page_3_ig.png");
-    iconPaths.append(":/res/icons/page_4.png");
-    iconPaths.append(":/res/icons/page_4_ig.png");
+
+//    iconPaths.append(":/res/icons/page_1.png");
+//    iconPaths.append(":/res/icons/page_1_ig.png");
+//    iconPaths.append(":/res/icons/page_2.png");
+//    iconPaths.append(":/res/icons/page_2_ig.png");
+//    iconPaths.append(":/res/icons/page_3.png");
+//    iconPaths.append(":/res/icons/page_3_ig.png");
+//    iconPaths.append(":/res/icons/page_4.png");
+//    iconPaths.append(":/res/icons/page_4_ig.png");
 
     for (PageButton *pageButton : qAsConst(PageButtons)) {
         int index = pageButton->objectName().rightRef(1).toInt();
@@ -62,10 +71,24 @@ void MainWindow::componentsLayoutManager() {
         });
 
         pageButton->setIconPath(iconPaths[index * 2 - 2], iconPaths[index * 2 - 1]);
-        pageButton->setIconSize(QSize(28, 28));
-        pageButton->setIcon(QIcon(iconPaths[index * 2 - 2]));
+//        pageButton->setIconSize(QSize(32, 32));
+//        QIcon icon = QIcon(iconPaths[index * 2 - 2]);
+//        pageButton->setIcon(QIcon(iconPaths[index * 2 - 2]));
+        pageButton->DrawPix(iconPaths[index * 2 - 2]);
         pageButton->installEventFilter(this);
+        pageButton->setStyleSheet("text-align:left");
+
+//          QLabel *label = new QLabel(pageButton);
+//          label->installEventFilter(this);
+//          label->setPixmap(iconPaths[index*2-2]);
+//          label->setScaledContents(true);
+//          label->resize(QSize(35, 35));
+//          label->move(5,25);
+//          //label->setAttribute(Qt::WA_TransparentForMouseEvents);
+
+
     }
+
 }
 
 void MainWindow::test() {
@@ -111,3 +134,5 @@ void MainWindow::httpAccessTest(MainWindow *p) {
     });
     c->uploadFile(&postData, "smfile", "09.jpg");
 }
+
+
