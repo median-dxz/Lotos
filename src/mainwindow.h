@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QPainter>
 #include "pagebutton.h"
+#include <iconwidget.h>
 #include "utils\httpclient.h"
 
 QT_BEGIN_NAMESPACE
@@ -52,6 +53,7 @@ class MainWindow : public QMainWindow {
     bool loadQStyleSheet(const QString &fileName);
     void componentsLayoutManager();
     void test();
+    void test1();
     void httpAccessTest(MainWindow *p);
 };
 

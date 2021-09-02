@@ -233,7 +233,7 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <layout class="QGridLayout" name="gridLayout" rowstretch="1,5,1,1">
+       <layout class="QGridLayout" name="gridLayout" rowstretch="2,8,1,1">
         <property name="leftMargin">
          <number>40</number>
         </property>
@@ -252,6 +252,28 @@
         <property name="verticalSpacing">
          <number>20</number>
         </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <family>Microsoft YaHei UI</family>
+            <pointsize>24</pointsize>
+           </font>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>图片上传</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::PlainText</enum>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="spacing">
@@ -322,31 +344,6 @@
           </item>
          </layout>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="dragBox">
-          <property name="maximumSize">
-           <size>
-            <width>16777213</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Microsoft YaHei UI Light</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="cursor">
-           <cursorShape>ArrowCursor</cursorShape>
-          </property>
-          <property name="text">
-           <string>拖动图片到此处...</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="0">
          <widget class="QProgressBar" name="uploadProgress">
           <property name="sizePolicy">
@@ -372,27 +369,8 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
-          <property name="font">
-           <font>
-            <family>Microsoft YaHei UI</family>
-            <pointsize>24</pointsize>
-           </font>
-          </property>
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="text">
-           <string>图片上传</string>
-          </property>
-          <property name="textFormat">
-           <enum>Qt::PlainText</enum>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
+        <item row="1" column="0">
+         <widget class="QWidget" name="dragBox" native="true"/>
         </item>
        </layout>
       </widget>
