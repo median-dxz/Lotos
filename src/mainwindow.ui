@@ -77,11 +77,8 @@
          <property name="cursor">
           <cursorShape>ArrowCursor</cursorShape>
          </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
          <property name="text">
-          <string>上传</string>
+          <string>       上传</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -115,7 +112,7 @@
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>图片集</string>
+          <string>       图片集</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -146,7 +143,7 @@
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>图床设置</string>
+          <string>       图床设置</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -183,7 +180,7 @@
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>设置</string>
+          <string>       设置</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -464,6 +461,16 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>884</width>
+     <height>26</height>
+    </rect>
+   </property>
   </widget>
  </widget>
  <customwidgets>

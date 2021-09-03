@@ -7,12 +7,15 @@
 #include <QMainWindow>
 #include <QPushButton>
 
+
 /*
  * 实现拖动窗口
  */
 #include <QMoveEvent>
+
+#include "imgbutton.h"
 #include "pagebutton.h"
-#include "utils\httpclient.h"
+#include "utils\HttpClient.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,26 +29,25 @@ class MainWindow : public QMainWindow {
    public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void mousePressEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent * event);
+    void mouseMoveEvent(QMouseEvent * event);
+    void minwindow();
+    void closewindow();
+    void onmainwindowclosed();
 
    public slots:
    signals:
     void widgetPageChanged(int);
 
-   protected:
-    bool eventFilter(QObject *obj, QEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-
    private:
     Ui::MainWindow *ui;
-    bool mouse_press;
-    QPoint move_point;
 
+    QPoint move_point;//移动的距离
+    bool mouse_press;//按下鼠标左键
     bool loadQStyleSheet(const QString &fileName);
-    void componentsLayoutManager();
     void test();
-    void httpAccessTest(MainWindow *p);
+    void HttpAccessTest(MainWindow *p);
 };
 
 #endif  // MAINWINDOW_H
