@@ -32,7 +32,9 @@ class MainWindow : public QMainWindow {
 
    private:
     Ui::MainWindow *ui;
+    QNetworkProxy proxy;
 
+    void init();
     bool loadQStyleSheet(const QString &fileName);
     void componentsLayoutManager();
     void test();
