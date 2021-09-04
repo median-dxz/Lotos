@@ -13,7 +13,31 @@
   color: #303133;
 }
 
-#uploadPage QPushButton {
+#dragBox {
+    border: 2px dashed #dcdfe6;
+    border-radius: 2px;
+}
+
+#dragBox #dragBoxContents{
+    background-color: #ffffff;
+}
+
+#dragBox QPushButton[class_type="iconwidget.sub.del"] {
+    margin: 4px;
+    border-radius: 4px;
+    background-color: #F56C6C;
+    border: none;
+}
+
+#dragBox QPushButton:hover[class_type="iconwidget.sub.del"] {
+    background: #f78989;
+}
+
+#dragBox QPushButton:pressed[class_type="iconwidget.sub.del"] {
+    background: #dd6161;
+}
+
+#uploadButton {
   margin: 0px;
   height: 20px;
   border-radius: 20px;
@@ -21,27 +45,20 @@
   color: #fff;
   background-color: #409eff;
   border-color: #409eff;
-  font-weight: 800;
-  font: 14pt "Microsoft JhengHei UI";
-  icon-size: 16px;
+  font: 12pt "Microsoft JhengHei";
 }
 
-#uploadPage QPushButton:hover {
+#uploadButton:hover {
   background: #66b1ff;
   border-color: #66b1ff;
 }
 
-#uploadPage QPushButton:pressed {
+#uploadButton:pressed {
   background-color: #409eff;
   border-color: #409eff;
 }
 
-#dragBox {
-  border: 2px dashed #dcdfe6;
-  border-radius: 2px;
-}
-
-QProgressBar {
+#uploadProgress {
   height: 10px;
   border-radius: 5%;
   border: none;

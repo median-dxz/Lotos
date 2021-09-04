@@ -9,7 +9,6 @@
 class SMMS : public QObject {
     Q_OBJECT
    public:
-    explicit SMMS(QObject *parent = nullptr, QString api = "https://sm.ms/api/v2");
     static SMMS &getInstance();
 
     struct Response {
@@ -43,6 +42,8 @@ class SMMS : public QObject {
         QString url;
         QString delete_link;
         QString page_link;
+
+        QVariantMap toQVariantMap() const;
     };
 
     QString token();
@@ -62,8 +63,12 @@ class SMMS : public QObject {
     static void praseResponse(const QJsonDocument &data, Response &res);
     static void praseImageInfomation(const QJsonObject &data, ImageInfomation &res);
     static void praseUserProfile(const QJsonObject &data, UserProfile &res);
+    static bool isSupportFormat(QByteArray &data);
 
    private:
+    explicit SMMS(QObject *parent = nullptr, QString api = "https://sm.ms/api/v2");
+    SMMS(const SMMS &other);
+
     const QString name = "sm.ms";
     const QString basic_api;
     QString authorization;

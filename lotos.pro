@@ -9,24 +9,12 @@ CONFIG += c++11
 VPATH += src \
 
 INCLUDEPATH += src \
-
-SOURCES += \
-    main.cpp \
-    mainwindow.cpp \
-    pagebutton.cpp \
-    utils/imgehost.cpp \
-    utils/httpclient.cpp \
-    src/iconwidget.cpp
-
-HEADERS += \
-    mainwindow.h \
-    pagebutton.h \
-    utils/imgehost.h \
-    utils/httpclient.h \
-    src/iconwidget.h
+               src/ui \
 
 FORMS += \
     mainwindow.ui
+
+RC_ICONS = icon.ico
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -43,4 +31,25 @@ CONFIG(BUILD_X64, BUILD_X86|BUILD_X64) {
 } else {
     message("X86 Build")
 }
+
+HEADERS += \
+    src/imagehost.h \
+    src/mainwindow.h \
+    src/settingshelper.h \
+    src/ui/iconwidget.h \
+    src/ui/pagebutton.h \
+    src/ui/pictureviewwidget.h \
+    src/ui/titlebar.h \
+    src/utils/httpclient.h
+
+SOURCES += \
+    src/imagehost.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/settingshelper.cpp \
+    src/ui/iconwidget.cpp \
+    src/ui/pagebutton.cpp \
+    src/ui/pictureviewwidget.cpp \
+    src/ui/titlebar.cpp \
+    src/utils/httpclient.cpp
 

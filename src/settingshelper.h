@@ -8,6 +8,11 @@
 #include <QVariant>
 #include <QtNetwork>
 
+const struct {
+    const QString imghost_token = "token";
+    const QString imghost_isAuthorized = "isAuthorized";
+} KeyMap;
+
 class SettingsHelper {
    public:
     SettingsHelper();
