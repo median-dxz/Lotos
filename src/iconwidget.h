@@ -18,6 +18,7 @@ public:
 
     void paintEvent(QPaintEvent *);
     void setshadow();
+    void setdelbtn();
     QString pixpath,name;
     qint64 size;
 };

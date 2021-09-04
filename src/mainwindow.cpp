@@ -7,8 +7,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setWindowTitle(tr("Lotos"));
     componentsLayoutManager();
 
+    connect(ui->uploadButton, &QPushButton::clicked, this, [=]() {
+    test1();  });
+
     test();
-    test1();
+
 }
 
 MainWindow::~MainWindow() {
@@ -140,25 +143,22 @@ void MainWindow ::test1()
 {
 
     static int j=0;
-    for(int i=0 ; i==j ; i++){
     iconwidget * l = new iconwidget(ui->dragBox);
     //l->setshadow();
-    connect(ui->uploadButton, &QPushButton::clicked, this, [=]() {
-        l-> pixpath = QFileDialog::getOpenFileName(this, "选择图片");
-        if(l->pixpath!=nullptr)
-        {
-            l->setGeometry(j*210,0,210,230);
-            QFileInfo info(l-> pixpath);
-            l->name = info.fileName();
-            l->size = info.size();
-            j++;
-        }
-        update();
 
-    });}
+    l-> pixpath = QFileDialog::getOpenFileName(this, "选择图片");
+    if(l->pixpath!=nullptr)
+    {
+        l->setGeometry(j*213,0,210,240);
+        QFileInfo info(l-> pixpath);
+        l->name = info.fileName();
+        l->size = info.size();
+        j++;
+        l->show();
+        l->setdelbtn();
+    }
 
 
 
 }
-
 
