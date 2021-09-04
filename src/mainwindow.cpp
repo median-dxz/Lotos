@@ -3,9 +3,8 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    loadQStyleSheet(":/res/styles/index.qss");
     setWindowTitle(tr("Lotos"));
-    componentsLayoutManager();
+    init();
 
     test();
 }
@@ -25,16 +24,10 @@ bool MainWindow::loadQStyleSheet(const QString &fileName) {
     }
 }
 
-bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
-    if (obj->inherits("PageButton") && event->type() == QEvent::HoverEnter) {
-        PageButton *page_btn = (PageButton *)obj;
-        page_btn->drawIcon(true);
-    }
-    if (obj->inherits("PageButton") && event->type() == QEvent::HoverLeave) {
-        PageButton *page_btn = (PageButton *)obj;
-        page_btn->drawIcon(false);
-    }
-    return QWidget::eventFilter(obj, event);
+void MainWindow::init() {
+    loadQStyleSheet(":/res/styles/index.qss");
+    componentsLayoutManager();
+    proxy = (new HttpClient(this))->getNetworkProxyInstanse();
 }
 
 void MainWindow::componentsLayoutManager() {
@@ -110,4 +103,16 @@ void MainWindow::httpAccessTest(MainWindow *p) {
         delete r;
     });
     c->uploadFile(&postData, "smfile", "09.jpg");
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
+    if (obj->inherits("PageButton") && event->type() == QEvent::HoverEnter) {
+        PageButton *page_btn = (PageButton *)obj;
+        page_btn->drawIcon(true);
+    }
+    if (obj->inherits("PageButton") && event->type() == QEvent::HoverLeave) {
+        PageButton *page_btn = (PageButton *)obj;
+        page_btn->drawIcon(false);
+    }
+    return QWidget::eventFilter(obj, event);
 }
