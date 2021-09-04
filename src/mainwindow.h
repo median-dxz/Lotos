@@ -3,17 +3,10 @@
 
 #include <QMainWindow>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-#include "ImgButton.h"
-#include "utils\HttpClient.h"
-=======
-#include "imgbutton.h"
-=======
->>>>>>> 2920bae (refactor: 删除ImgaeButton实现)
+#include "imagehost.h"
 #include "pagebutton.h"
-#include "utils\httpclient.h"
->>>>>>> e2619e0 (sync: 修复与整理阶段性工作，修复之前阶段性工作提交的问题)
+#include "utils/httpclient.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -35,14 +28,16 @@ class MainWindow : public QMainWindow {
 
    private:
     Ui::MainWindow *ui;
-<<<<<<< HEAD
-=======
+    QNetworkProxy proxy;
+
+    SMMS *smms;
+
+    void init();
 
     bool loadQStyleSheet(const QString &fileName);
     void componentsLayoutManager();
->>>>>>> 614284c (pref: 优化图标绘制，整理主窗口代码)
+
     void test();
-    void httpAccessTest(MainWindow *p);
 };
 
 #endif  // MAINWINDOW_H

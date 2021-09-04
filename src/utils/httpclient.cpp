@@ -54,6 +54,10 @@ void HttpClient::uploadFile(QByteArray *data, QString name, QString fileName) {
     image_part.setBody(*data);
     multi_part->append(image_part);
 
+    for (auto i = Headers.begin(); i != Headers.end(); i++) {
+        request.setRawHeader(i.key().toLatin1(), i.value().toByteArray());
+    }
+
     QNetworkReply *reply = getNetworkAccessManagerInstanse().post(request, multi_part);
     connect(reply, &QNetworkReply::uploadProgress, this,
             [=](qint64 bytesSent, qint64 bytesTotal) { emit uplpodProgress(bytesSent, bytesTotal); });
