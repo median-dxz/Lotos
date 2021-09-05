@@ -47,12 +47,6 @@ void MainWindow::closewindow(){
 void MainWindow::onmainwindowclosed(){
    qDebug()<<"test";
 }
-void MainWindow::paintEvent(QPaintEvent *){
-     QPainter painter(this);
-     painter.setPen(Qt::blue);
-     QRectF rectangle(200,100,10,10);
-     painter.drawRect(rectangle);
-}
 MainWindow::~MainWindow() {
     delete ui;
 }

@@ -13,9 +13,8 @@
  */
 #include <QMoveEvent>
 
-#include "imgbutton.h"
 #include "pagebutton.h"
-#include "utils\HttpClient.h"
+#include "utils\httpclient.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
