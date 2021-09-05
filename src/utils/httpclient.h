@@ -3,20 +3,6 @@
 
 #include <QtNetwork>
 
-enum TYPE_REQUEST_FINISHED { DOWNLOAD, UPLOAD, FETCH };
-
-class Response {
-   public:
-    QTextCodec *codec = QTextCodec::codecForName("utf-8");
-    QByteArray data;
-    QVariant statusCode;
-    bool isSucceeded;
-    QVariant ERROR_INFO;
-    void setEncode(const char *code) { codec->codecForName(code); }
-    QString getText() { return codec->toUnicode(data); }
-    QJsonDocument getJson() { return QJsonDocument::fromBinaryData(data); }
-};
-
 class HttpClient : public QObject {
     Q_OBJECT
    public:
@@ -41,6 +27,19 @@ class HttpClient : public QObject {
     void setProxy();
     void setNoProxy();
     void setLocalProxy();
+
+    enum TYPE_REQUEST_FINISHED { DOWNLOAD, UPLOAD, FETCH };
+
+    struct Response {
+        QTextCodec *codec = QTextCodec::codecForName("utf-8");
+        QByteArray data;
+        QVariant statusCode;
+        bool isSucceeded;
+        QVariant ERROR_INFO;
+        void setEncode(const char *code) { codec->codecForName(code); }
+        QString getText() { return codec->toUnicode(data); }
+        QJsonDocument getJson() { return QJsonDocument::fromBinaryData(data); }
+    };
    signals:
     void responseFinished(Response *);
     void downloadProgress(qint64, qint64);
