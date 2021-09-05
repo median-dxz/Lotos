@@ -26,8 +26,11 @@ bool MainWindow::loadQStyleSheet(const QString &fileName) {
 
 void MainWindow::init() {
     loadQStyleSheet(":/res/styles/index.qss");
+
     componentsLayoutManager();
-    proxy = (new HttpClient(this))->getNetworkProxyInstanse();
+
+    proxy = HttpClient::getNetworkProxyInstanse();
+    smms = &SMMS::getInstance();
 }
 
 void MainWindow::componentsLayoutManager() {
@@ -63,46 +66,6 @@ void MainWindow::componentsLayoutManager() {
 
 void MainWindow::test() {
     qDebug() << QSslSocket::supportsSsl();
-    connect(ui->uploadButton, &QPushButton::clicked, this, [=]() { QFileDialog::getOpenFileName(this, "选择图片"); });
-
-    //    HttpAccessTest(this);
-}
-
-void MainWindow::httpAccessTest(MainWindow *p) {
-    // post
-    HttpClient *c = new HttpClient();
-    c->setUrl("https://sm.ms/api/v2/token");
-    connect(c, &HttpClient::responseFinished, p, [=](Response *r) {
-        qDebug() << r->getText();
-        delete r;
-    });
-    QByteArray postData("username=median-dxz&password=mDJ37!R74jW6Xez");
-    c->post(&postData);
-
-    // get
-    c = new HttpClient();
-    connect(c, &HttpClient::responseFinished, p, [=](Response *r) {
-        qDebug() << r->getText();
-        delete r;
-    });
-    c->get(QUrl("https://sm.ms/api/v2/history"));
-
-    c = new HttpClient();
-    QMap<QString, QVariant> auth;
-    auth["Authorization"] = QVariant("e4DKi2WtUWNJJlkFFHxH34BP7m3LV17Q");
-    c->setHeaders(auth);
-    c->setUrl("https://sm.ms/api/v2/upload");
-    QFile *file = new QFile("E:\\Resource\\Backgrounds\\09.jpg");
-
-    file->open(QIODevice::ReadOnly);
-    postData = file->readAll();
-
-    connect(c, &HttpClient::uplpodProgress, p, [=](qint64 a, qint64 b) { qDebug() << a << b; });
-    connect(c, &HttpClient::responseFinished, p, [=](Response *r) {
-        qDebug() << r->getText();
-        delete r;
-    });
-    c->uploadFile(&postData, "smfile", "09.jpg");
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {

@@ -21,8 +21,8 @@ class HttpClient : public QObject {
     void uploadFile(QByteArray *data, QString name, QString fileName);
 
     //全局单一实例
-    QNetworkAccessManager &getNetworkAccessManagerInstanse();
-    QNetworkProxy &getNetworkProxyInstanse();
+    static QNetworkAccessManager &getNetworkAccessManagerInstanse();
+    static QNetworkProxy &getNetworkProxyInstanse();
 
     void setProxy();
     void setNoProxy();
@@ -38,7 +38,7 @@ class HttpClient : public QObject {
         QVariant ERROR_INFO;
         void setEncode(const char *code) { codec->codecForName(code); }
         QString getText() { return codec->toUnicode(data); }
-        QJsonDocument getJson() { return QJsonDocument::fromBinaryData(data); }
+        QJsonDocument getJson() { return QJsonDocument::fromJson(data); }
     };
    signals:
     void responseFinished(Response *);

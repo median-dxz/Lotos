@@ -7,8 +7,9 @@
 #include <QMainWindow>
 #include <QPushButton>
 
+#include "imagehost.h"
 #include "pagebutton.h"
-#include "utils\httpclient.h"
+#include "utils/httpclient.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -33,12 +34,13 @@ class MainWindow : public QMainWindow {
    private:
     Ui::MainWindow *ui;
     QNetworkProxy proxy;
-
+    SMMS *smms;
     void init();
+
     bool loadQStyleSheet(const QString &fileName);
     void componentsLayoutManager();
+
     void test();
-    void httpAccessTest(MainWindow *p);
 };
 
 #endif  // MAINWINDOW_H

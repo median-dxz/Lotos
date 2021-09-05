@@ -14,13 +14,13 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     pagebutton.cpp \
-    utils/imagehost.cpp \
+    imagehost.cpp \
     utils/httpclient.cpp
 
 HEADERS += \
     mainwindow.h \
     pagebutton.h \
-    utils/imagehost.h \
+    imagehost.h \
     utils/httpclient.h
 
 FORMS += \
