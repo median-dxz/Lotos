@@ -13,14 +13,22 @@
 
 class iconwidget : public QWidget
 {
+
+    QByteArray pix;
 public:
     explicit iconwidget(QWidget *parent = nullptr);
-
-    void paintEvent(QPaintEvent *);
+    static int dele;
     void setshadow();
     void setdelbtn();
+    int panduan(qint64 size);
+
     QString pixpath,name;
     qint64 size;
+
+protected:
+    void paintEvent(QPaintEvent *)override;
+
+
 };
 
 #endif // ICONWIDGET_H

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -7,13 +8,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setWindowTitle(tr("Lotos"));
     componentsLayoutManager();
 
+
     connect(ui->uploadButton, &QPushButton::clicked, this, [=]() {
     test1();  });
 
+
     test();
 
-}
 
+    QTimer * time =new QTimer;
+    time->start(20);
+    connect(time,&QTimer::timeout,this,[=](){
+        if(iconwidget:: dele)
+        {
+            del();
+            iconwidget:: dele = 0;
+        }
+    });
+
+}
+int MainWindow::j=5;
 MainWindow::~MainWindow() {
     delete ui;
 }
@@ -96,7 +110,10 @@ void MainWindow::componentsLayoutManager() {
 }
 
 void MainWindow::test() {
+    qDebug()<< QSslSocket::sslLibraryBuildVersionString();
     qDebug() << QSslSocket::supportsSsl();
+
+
 //    connect(ui->uploadButton, &QPushButton::clicked, this, [=]() { QFileDialog::getOpenFileName(this, "选择图片"); });
 
     //    HttpAccessTest(this);
@@ -142,23 +159,40 @@ void MainWindow::httpAccessTest(MainWindow *p) {
 void MainWindow ::test1()
 {
 
-    static int j=0;
     iconwidget * l = new iconwidget(ui->dragBox);
     //l->setshadow();
-
-    l-> pixpath = QFileDialog::getOpenFileName(this, "选择图片");
+    l->pixpath = QFileDialog::getOpenFileName(this, "选择图片");
     if(l->pixpath!=nullptr)
     {
-        l->setGeometry(j*213,0,210,240);
+        QPixmap pix(l->pixpath);
+        l->setGeometry(j,6,200*pix.width()/pix.height() ,230);
+
         QFileInfo info(l-> pixpath);
         l->name = info.fileName();
         l->size = info.size();
-        j++;
-        l->show();
         l->setdelbtn();
+        l->show();
+        j+=(200*pix.width()/pix.height())+5;
+   }
+
+
+
+}
+
+void MainWindow ::del()
+{
+    j=5;
+    QList<iconwidget *> widgets = ui->dragBox->findChildren<iconwidget *>();
+    for(int i= 0;i<widgets.count(); i+=3    )
+    {
+    //int i = 0;
+      qDebug()<<widgets[i]->name;
+      QPixmap pix(widgets[i]->pixpath);
+      widgets[i]->setGeometry(j,6,200*pix.width()/pix.height() ,230);
+      j+=(200*pix.width()/pix.height() )+5;
     }
-
-
+    //qDebug()<<widgets.at(6)->name;
+    //qDebug()<<widgets.count();
 
 }
 

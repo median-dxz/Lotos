@@ -58,4 +58,3 @@ QString & PageButton::getignitedIconPath()
     return ignitedIconPath;
 }
 
-

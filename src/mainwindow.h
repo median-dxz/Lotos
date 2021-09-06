@@ -10,6 +10,7 @@
 #include "pagebutton.h"
 #include <iconwidget.h>
 #include "utils\httpclient.h"
+#include <QVector>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,6 +25,7 @@ class MainWindow : public QMainWindow {
    public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    static int j;
 
     const QList<QString> iconPaths = QList<QString>()
     <<(":/res/icons/page_1.png")
@@ -54,6 +56,7 @@ class MainWindow : public QMainWindow {
     void componentsLayoutManager();
     void test();
     void test1();
+    void del();
     void httpAccessTest(MainWindow *p);
 };
 
