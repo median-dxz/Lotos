@@ -6,6 +6,8 @@
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QPushButton>
+#include <QPainter>
+#include <QPen>
 
 
 /*
@@ -28,12 +30,13 @@ class MainWindow : public QMainWindow {
    public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void mousePressEvent(QMouseEvent * event);
-    void mouseReleaseEvent(QMouseEvent * event);
-    void mouseMoveEvent(QMouseEvent * event);
-    void minwindow();
+
     void closewindow();
     void onmainwindowclosed();
+    void drawminibutton();
+    void drawclosebutton();
+    void changeminibutton(int);
+    void changeclosebutton(int);
 
    public slots:
    signals:
@@ -44,9 +47,18 @@ class MainWindow : public QMainWindow {
 
     QPoint move_point;//移动的距离
     bool mouse_press;//按下鼠标左键
+    QPushButton *minibutton;
+    QPushButton *closebutton;
     bool loadQStyleSheet(const QString &fileName);
     void test();
     void HttpAccessTest(MainWindow *p);
+protected:
+    void mousePressEvent(QMouseEvent * event)  override;
+    void mouseReleaseEvent(QMouseEvent * event)override;
+    void mouseMoveEvent(QMouseEvent * event)   override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
+
 };
 
 #endif  // MAINWINDOW_H

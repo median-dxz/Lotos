@@ -3,10 +3,11 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    //隐藏自带标题栏
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    //qDebug()<<QSslSocket:: sslLibraryBuildVersionString();
     loadQStyleSheet(":/res/styles/index.qss");
-
     setAttribute(Qt::WA_QuitOnClose);
-
     QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
     for (PageButton *pageButton : qAsConst(PageButtons)) {
         int index = pageButton->objectName().rightRef(1).toInt();
@@ -20,25 +21,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     }
     int wide=this->width();
-    QPushButton *MinButton=new QPushButton(this);
-    QPushButton *CloseButton=new QPushButton(this);
-    MinButton->setText("1");
-    CloseButton->setText("2");
-    MinButton->setGeometry(wide-65,5,20,20);
-    CloseButton->setGeometry(wide-25,5,20,20);
-    //鼠标移动至按钮上提示信息
-    MinButton->setToolTip(tr("最小化"));
-    CloseButton->setToolTip(tr("关闭"));
-    connect(MinButton,&QPushButton::clicked,this,&MainWindow::minwindow);
-    connect(CloseButton,&QPushButton::clicked,this,&MainWindow::closewindow);
+    minibutton=new QPushButton(this);
+    closebutton=new QPushButton(this);
+    minibutton->setGeometry(wide-35,5,32,32);
+    closebutton->setGeometry(wide-67,5,32,32);
+    minibutton->installEventFilter(this);
+    closebutton->installEventFilter(this);
+    minibutton->setToolTip(tr("最小化"));
+    closebutton->setToolTip(tr("关闭"));
+    connect(minibutton,&QPushButton::clicked,this,&MainWindow::showMinimized);
+    connect(closebutton,&QPushButton::clicked,this,&MainWindow::close);
+    minibutton->setStyleSheet("background-color: rgba(64,158,255,0.1)");
+    closebutton->setStyleSheet("background-color: rgba(245,108,108,0.1)");
+
+
 
 
     test();
 }
 
-void MainWindow::minwindow(){
-    this->showMinimized();
-}
 void MainWindow::closewindow(){
     this->onmainwindowclosed();
     this->close();
@@ -161,7 +162,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
     qDebug()<<"pos()"<<this->pos().x()<<" "<<this->pos().y();
     qDebug()<<"globalPos"<<event->globalPos().x()<<" "<<event->globalPos().y();
 }
-void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+void MainWindow::mouseReleaseEvent(QMouseEvent *){
     mouse_press = false;
 }
 void MainWindow::mouseMoveEvent(QMouseEvent *event){
@@ -170,4 +171,50 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event){
         QPoint move_pos = event->globalPos();
         move(move_pos-move_point);
     }
+}
+bool MainWindow::eventFilter(QObject *watched, QEvent *event){
+    if( watched == minibutton &&event->type()==QEvent::Paint){
+        drawminibutton();
+    }
+    else if( watched == closebutton &&event->type()==QEvent::Paint){
+        drawclosebutton();
+    }
+    else if(watched == minibutton && event->type()==QEvent::Enter){
+        changeminibutton(1);
+    }
+    else if(watched == minibutton && event->type()==QEvent::Leave){
+        changeminibutton(2);
+    }
+    else if(watched == closebutton && event->type()==QEvent::Enter){
+       changeclosebutton(1);
+    }
+    else if(watched == closebutton && event->type()==QEvent::Leave){
+       changeclosebutton(2);
+    }
+    return QWidget::eventFilter(watched,event);
+}
+void MainWindow::drawminibutton(){
+    QPen pen;
+    pen.setColor("background-color: #909399");
+    pen.setWidth(1.5);
+    QPainter painter(minibutton);
+    painter.setPen(pen);
+    painter.drawLine(4,16,28,16); //画直线
+}
+void MainWindow::drawclosebutton(){
+    QPen pen;
+    pen.setColor("background-color: #909399");
+    pen.setWidth(1.5);
+    QPainter painter2(closebutton);
+    painter2.setPen(pen);
+    painter2.drawLine(4,4,28,28);//画关闭符号
+    painter2.drawLine(28,4,4,28);
+}
+void MainWindow::changeminibutton(int a){
+   if(a==1) minibutton->setStyleSheet("background-color: rgba(64,158,255,1)");
+   if(a==2) minibutton->setStyleSheet("background-color: rgba(64,158,255,0.1)");
+}
+void MainWindow::changeclosebutton(int a){
+    if(a==1)closebutton->setStyleSheet("background-color: rgba(245,108,108,1)");
+    if(a==2)closebutton->setStyleSheet("background-color: rgba(245,108,108,0.1)");
 }
