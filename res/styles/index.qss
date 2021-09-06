@@ -2,57 +2,13 @@
   background-color: #ffffff;
 }
 
-#centralwidget .QLabel {
+#centralwidget QLabel {
   color: #606266;
-}
-
-#pageSwitchWidget > .QPushButton:flat {
-  padding: 0px;
-<<<<<<< HEAD
-  margin-top: 0px;
-  margin-bottom: 40px;
-=======
-  padding-left: 20px;
-  margin: 0px;
->>>>>>> 614284c (pref: 优化图标绘制，整理主窗口代码)
-  border: none;
-<<<<<<< HEAD
-=======
-  border-right: 4px solid rgba(0, 0, 0, 0);
->>>>>>> a427394 (sync: 完成第一阶段工作，代码格式化汇总)
-  background: transparent;
-  border-right: 4px solid #3993fe;
-  color: #606266;
-<<<<<<< HEAD
-=======
-
-<<<<<<< HEAD
-  text-align:left
-
-  margin-top: 20px;
-  margin-bottom: 20px;
->>>>>>> 614284c (pref: 优化图标绘制，整理主窗口代码)
-=======
-  text-align: left;
-  margin-top: 21px;
-  margin-bottom: 17px;
->>>>>>> e2619e0 (sync: 修复与整理阶段性工作，修复之前阶段性工作提交的问题)
-}
-
-#pageSwitchWidget > .QPushButton:flat:hover {
-  background: transparent;
-  border-right: 4px solid #a7d2ff;
-<<<<<<< HEAD
-  background: rgba(255, 255, 255, 25%);
-  color: rgba(0, 0, 0);
-=======
-  color: #303133;
->>>>>>> 614284c (pref: 优化图标绘制，整理主窗口代码)
 }
 
 #pageSwitchWidget > .PageButton:checked,
 #pageSwitchWidget > .PageButton:checked:pressed {
-background: rgba(0,0,0,6%);
+  background: rgba(0, 0, 0, 6%);
   border-right: 4px solid #3993fe;
   color: #303133;
 }
@@ -65,8 +21,8 @@ background: rgba(0,0,0,6%);
   color: #fff;
   background-color: #409eff;
   border-color: #409eff;
-  font: 12pt "Microsoft JhengHei";
   font-weight: 800;
+  font: 14pt "Microsoft JhengHei UI";
   icon-size: 16px;
 }
 
@@ -85,15 +41,74 @@ background: rgba(0,0,0,6%);
   border-radius: 2px;
 }
 
-#uploadProgress {
+QProgressBar {
   height: 10px;
   border-radius: 5%;
   border: none;
   background-color: #ebeef5;
+  text-align: center;
+  font-size: 9px;
 }
 
-#uploadProgress::chunk {
+QProgressBar::chunk {
   background-color: #409eff;
   border-radius: 5%;
   border: none;
+}
+
+#hostInfoPage {
+  font-size: 18px;
+  color: #303133;
+}
+
+#hostInfoPage QLabel {
+  color: #303133;
+  font-size: 14px;
+}
+
+#hostInfoPage QPushButton {
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-color: #dcdfe6;
+  color: #606266;
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+  padding: 6px 20px;
+  border-radius: 4px;
+  font: 14px "Microsoft JhengHei";
+}
+
+#hostInfoPage QPushButton:hover {
+  color: #409eff;
+  border-color: #c6e2ff;
+  background-color: #ecf5ff;
+}
+
+#hostInfoPage QPushButton:pressed {
+  border-color: #409eff;
+}
+
+#hostInfoPage QLineEdit {
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #dcdfe6;
+  color: #606266;
+  font-size: 14px;
+  height: 18px;
+  padding: 2px 6px;
+}
+
+#hostInfoPage QLineEdit:hover {
+  border: 1px solid #c0c4cc;
+}
+
+#hostInfoPage #tokenLabel {
+  border: 1px solid #dcdfe6;
+  background-color: #909399;
+  color: #c0c4cc;
+  font-size: 14px;
+  height: 18px;
+  padding: 2px 6px;
+  border-radius: 4px;
 }

@@ -28,12 +28,14 @@ HEADERS += \
 >>>>>>> 2920bae (refactor: 删除ImgaeButton实现)
     pagebutton.cpp \
     imagehost.cpp \
+    settingshelper.cpp \
     utils/httpclient.cpp
 
 HEADERS += \
     mainwindow.h \
     pagebutton.h \
     imagehost.h \
+    settingshelper.h \
     utils/httpclient.h
 >>>>>>> e2619e0 (sync: 修复与整理阶段性工作，修复之前阶段性工作提交的问题)
 

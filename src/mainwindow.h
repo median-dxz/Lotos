@@ -5,6 +5,7 @@
 
 #include "imagehost.h"
 #include "pagebutton.h"
+#include "settingshelper.h"
 #include "utils/httpclient.h"
 
 
@@ -21,7 +22,12 @@ class MainWindow : public QMainWindow {
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    bool LoadQStyleSheet(const QString &fileName);
+   public slots:
+    void onHostLoginClicked();
+    void onHostResetClicked();
+
+   signals:
+    void widgetPageChanged(int);
 
    protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
@@ -31,6 +37,7 @@ class MainWindow : public QMainWindow {
     QNetworkProxy proxy;
 
     SMMS *smms;
+    SettingsHelper globalSettings;
 
     void init();
 
