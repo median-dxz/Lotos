@@ -1,21 +1,24 @@
 #ifndef SETTINGSHELPER_H
 #define SETTINGSHELPER_H
 
+#include <QDebug>
 #include <QFile>
 #include <QMap>
 #include <QObject>
 #include <QVariant>
+#include <QtNetwork>
 
 class SettingsHelper {
    public:
     SettingsHelper();
-    void load(const QString fileName);
-    void save(const QString fileName);
+    bool load(const QString fileName);
+    void save();
     void setDefaultValue();
 
    private:
-    QMap<QString, QVariant> imghost;
-    QMap<QString, QVariant> user;
+    QVariantMap imghost;
+    QVariantMap user;
+    QString configFileName;
 
     friend class MainWindow;
 };

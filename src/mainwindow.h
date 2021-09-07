@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QGraphicsDropShadowEffect>
 #include <QMainWindow>
 #include <QPushButton>
 
@@ -28,6 +29,7 @@ class MainWindow : public QMainWindow {
    public slots:
     void onHostLoginClicked();
     void onHostResetClicked();
+    void onMainProcessClosed();
 
    signals:
     void widgetPageChanged(int);
@@ -45,8 +47,14 @@ class MainWindow : public QMainWindow {
 
     bool loadQStyleSheet(const QString &fileName);
     void componentsLayoutManager();
+    void interfaceStyleManager();
 
     void test();
+
+    const QString PATH_CONFIG = "config.json";
+
+    enum PAGE { UploadPage, GalleryPage, HostDashBoardPage, SettingsPage };
+    void loadPage(PAGE index);
 };
 
 #endif  // MAINWINDOW_H

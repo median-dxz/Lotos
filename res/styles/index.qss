@@ -1,8 +1,9 @@
-#centralwidget {
+#viewport {
   background-color: #ffffff;
+  border: 1px solid #dcdfe6;
 }
 
-#centralwidget QLabel {
+#viewport QLabel {
   color: #606266;
 }
 
@@ -26,7 +27,6 @@
 
 #pageSwitchWidget > .PageButton:checked,
 #pageSwitchWidget > .PageButton:checked:pressed {
-  background: rgba(0, 0, 0, 6%);
   border-right: 4px solid #3993fe;
   color: #303133;
 }
@@ -74,17 +74,17 @@ QProgressBar::chunk {
   border: none;
 }
 
-#hostInfoPage {
+#hostDashBoardPage {
   font-size: 18px;
   color: #303133;
 }
 
-#hostInfoPage QLabel {
+#hostDashBoardPage QLabel {
   color: #303133;
   font-size: 14px;
 }
 
-#hostInfoPage QPushButton {
+#hostDashBoardPage QPushButton {
   background: #fff;
   border: 1px solid #dcdfe6;
   border-color: #dcdfe6;
@@ -97,36 +97,43 @@ QProgressBar::chunk {
   font: 14px "Microsoft JhengHei";
 }
 
-#hostInfoPage QPushButton:hover {
+#hostDashBoardPage QPushButton:hover {
   color: #409eff;
   border-color: #c6e2ff;
   background-color: #ecf5ff;
 }
 
-#hostInfoPage QPushButton:pressed {
+#hostDashBoardPage QPushButton:pressed {
   border-color: #409eff;
 }
 
-#hostInfoPage QLineEdit {
+#hostDashBoardPage QPushButton:disabled{
+  color: #C0C4CC;
+  border-color: #E4E7ED;
+}
+
+#hostDashBoardPage QLineEdit {
   background-color: #fff;
   border-radius: 4px;
   border: 1px solid #dcdfe6;
   color: #606266;
   font-size: 14px;
-  height: 18px;
+  height: 20px;
+  margin-bottom: 6px;
   padding: 2px 6px;
 }
 
-#hostInfoPage QLineEdit:hover {
+#hostDashBoardPage QLineEdit:hover {
   border: 1px solid #c0c4cc;
 }
 
-#hostInfoPage #tokenLabel {
+#hostDashBoardPage #tokenLabel {
   border: 1px solid #dcdfe6;
   background-color: #909399;
   color: #c0c4cc;
   font-size: 14px;
-  height: 18px;
+  height: 20px;
   padding: 2px 6px;
+  margin-bottom: 6px;
   border-radius: 4px;
 }
