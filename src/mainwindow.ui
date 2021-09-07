@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>884</width>
-    <height>551</height>
+    <width>934</width>
+    <height>598</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,27 +17,24 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2" columnstretch="2,8">
+   <layout class="QGridLayout" name="gridLayout_2">
     <property name="leftMargin">
-     <number>0</number>
+     <number>6</number>
     </property>
     <property name="topMargin">
-     <number>0</number>
+     <number>6</number>
     </property>
     <property name="rightMargin">
-     <number>0</number>
+     <number>6</number>
     </property>
     <property name="bottomMargin">
-     <number>0</number>
+     <number>6</number>
     </property>
     <property name="spacing">
      <number>0</number>
     </property>
-    <item row="0" column="1">
-     <widget class="QStackedWidget" name="stackedWidget">
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
+    <item row="0" column="0">
+     <widget class="QFrame" name="viewport">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
       </property>
@@ -47,59 +44,37 @@
       <property name="lineWidth">
        <number>0</number>
       </property>
-      <property name="currentIndex">
-       <number>2</number>
-      </property>
-      <widget class="QWidget" name="uploadPage">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+      <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0" columnstretch="2,8">
+       <property name="leftMargin">
+        <number>0</number>
        </property>
-       <layout class="QGridLayout" name="gridLayout" rowstretch="2,8,1,1">
-        <property name="leftMargin">
-         <number>40</number>
-        </property>
-        <property name="topMargin">
-         <number>40</number>
-        </property>
-        <property name="rightMargin">
-         <number>40</number>
-        </property>
-        <property name="bottomMargin">
-         <number>80</number>
-        </property>
-        <property name="horizontalSpacing">
-         <number>40</number>
-        </property>
-        <property name="verticalSpacing">
-         <number>20</number>
-        </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
-          <property name="font">
-           <font>
-            <family>Microsoft YaHei UI</family>
-            <pointsize>24</pointsize>
-           </font>
-          </property>
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="text">
-           <string>图片上传</string>
-          </property>
-          <property name="textFormat">
-           <enum>Qt::PlainText</enum>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item row="1" column="0">
+        <widget class="QWidget" name="pageSwitchWidget" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Microsoft YaHei UI</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <layout class="QVBoxLayout" name="layout">
           <property name="spacing">
            <number>0</number>
           </property>
@@ -107,43 +82,48 @@
            <number>0</number>
           </property>
           <property name="topMargin">
+           <number>40</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
+           <widget class="PageButton" name="pageButton_1">
+            <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>20</height>
+              <width>0</width>
+              <height>80</height>
              </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="uploadButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
             </property>
             <property name="maximumSize">
              <size>
-              <width>159</width>
+              <width>16777215</width>
               <height>16777215</height>
              </size>
             </property>
-            <property name="styleSheet">
-             <string notr="true"/>
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei UI</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>ArrowCursor</cursorShape>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
             </property>
             <property name="text">
              <string>上传</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
             <property name="flat">
              <bool>true</bool>
@@ -151,121 +131,257 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <widget class="PageButton" name="pageButton_2">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>80</height>
+             </size>
             </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>ArrowCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>图片集</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="PageButton" name="pageButton_3">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>ArrowCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>图床设置</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="PageButton" name="pageButton_4">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei UI</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>ArrowCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>设置</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
-              <height>20</height>
+              <width>20</width>
+              <height>40</height>
              </size>
             </property>
            </spacer>
           </item>
          </layout>
-        </item>
-        <item row="2" column="0">
-         <widget class="QProgressBar" name="uploadProgress">
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QStackedWidget" name="stackedWidget">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="lineWidth">
+          <number>0</number>
+         </property>
+         <property name="currentIndex">
+          <number>2</number>
+         </property>
+         <widget class="QWidget" name="uploadPage">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-          <property name="textVisible">
-           <bool>false</bool>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="textDirection">
-           <enum>QProgressBar::TopToBottom</enum>
-          </property>
-          <property name="format">
-           <string>%p%</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="dragBox">
-          <property name="maximumSize">
-           <size>
-            <width>16777213</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Microsoft YaHei UI Light</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="cursor">
-           <cursorShape>ArrowCursor</cursorShape>
-          </property>
-          <property name="text">
-           <string>拖动图片到此处...</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="page_5">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QPushButton" name="pushButton_7">
-          <property name="text">
-           <string>2</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="hostInfoPage">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <property name="topMargin">
-         <number>40</number>
-        </property>
-        <item>
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="title">
-           <string>用户信息</string>
-          </property>
-          <property name="flat">
-           <bool>false</bool>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <layout class="QGridLayout" name="gridLayout" rowstretch="2,8,1,1">
+           <property name="leftMargin">
+            <number>40</number>
+           </property>
            <property name="topMargin">
-            <number>18</number>
+            <number>40</number>
            </property>
            <property name="rightMargin">
-            <number>200</number>
+            <number>40</number>
            </property>
            <property name="bottomMargin">
-            <number>18</number>
+            <number>80</number>
            </property>
-           <item>
-            <widget class="QLabel" name="userInfoLabel">
+           <property name="horizontalSpacing">
+            <number>40</number>
+           </property>
+           <property name="verticalSpacing">
+            <number>20</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="font">
+              <font>
+               <family>Microsoft YaHei UI</family>
+               <pointsize>24</pointsize>
+              </font>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
              <property name="text">
-              <string>TextLabel</string>
+              <string>图片上传</string>
              </property>
              <property name="textFormat">
-              <enum>Qt::AutoText</enum>
+              <enum>Qt::PlainText</enum>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QProgressBar" name="hostUserDiskLimit">
+           <item row="3" column="0">
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Maximum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="uploadButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>159</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+               <property name="text">
+                <string>上传</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Maximum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item row="2" column="0">
+            <widget class="QProgressBar" name="uploadProgress">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -273,13 +389,13 @@
               </sizepolicy>
              </property>
              <property name="value">
-              <number>24</number>
+              <number>0</number>
              </property>
              <property name="textVisible">
-              <bool>true</bool>
-             </property>
-             <property name="invertedAppearance">
               <bool>false</bool>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
              <property name="textDirection">
               <enum>QProgressBar::TopToBottom</enum>
@@ -289,141 +405,25 @@
              </property>
             </widget>
            </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>授权管理</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-          <property name="flat">
-           <bool>false</bool>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_3">
-           <property name="leftMargin">
-            <number>9</number>
-           </property>
-           <property name="topMargin">
-            <number>18</number>
-           </property>
-           <property name="bottomMargin">
-            <number>18</number>
-           </property>
-           <property name="horizontalSpacing">
-            <number>16</number>
-           </property>
-           <property name="verticalSpacing">
-            <number>24</number>
-           </property>
-           <item row="2" column="1">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Secret Token:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>密码: </string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QLineEdit" name="hostUsername"/>
-           </item>
-           <item row="0" column="4">
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
+           <item row="1" column="0">
+            <widget class="QLabel" name="dragBox">
+             <property name="maximumSize">
               <size>
-               <width>40</width>
-               <height>20</height>
+               <width>16777213</width>
+               <height>16777215</height>
               </size>
              </property>
-            </spacer>
-           </item>
-           <item row="5" column="4">
-            <spacer name="horizontalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+             <property name="font">
+              <font>
+               <family>Microsoft YaHei UI Light</family>
+               <pointsize>14</pointsize>
+              </font>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
+             <property name="cursor">
+              <cursorShape>ArrowCursor</cursorShape>
              </property>
-            </spacer>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>用户名: </string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QLineEdit" name="hostPassword"/>
-           </item>
-           <item row="5" column="3">
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <widget class="QPushButton" name="hostLogin">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>登录</string>
-               </property>
-               <property name="flat">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="hostReset">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>重置</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="2" column="3">
-            <widget class="QLabel" name="tokenLabel">
-             <property name="text">
-              <string>TextLabel</string>
-             </property>
-             <property name="textFormat">
-              <enum>Qt::AutoText</enum>
+              <string>拖动图片到此处...</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -432,220 +432,281 @@
            </item>
           </layout>
          </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="page_3">
-       <widget class="QPushButton" name="pushButton_9">
-        <property name="geometry">
-         <rect>
-          <x>170</x>
-          <y>200</y>
-          <width>80</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>4</string>
-        </property>
-       </widget>
-      </widget>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QWidget" name="pageSwitchWidget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <family>Microsoft YaHei UI</family>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-      <layout class="QVBoxLayout" name="layout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>40</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="PageButton" name="pageButton_1">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>80</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Microsoft YaHei UI</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="cursor">
-          <cursorShape>ArrowCursor</cursorShape>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>上传</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
+         <widget class="QWidget" name="page_5">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPushButton" name="pushButton_7">
+             <property name="text">
+              <string>2</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="hostDashBoardPage">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>用户信息</string>
+             </property>
+             <property name="flat">
+              <bool>false</bool>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <property name="topMargin">
+               <number>18</number>
+              </property>
+              <property name="rightMargin">
+               <number>200</number>
+              </property>
+              <property name="bottomMargin">
+               <number>18</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="userInfoLabel">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+                <property name="textFormat">
+                 <enum>Qt::AutoText</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QProgressBar" name="hostUserDiskLimit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="value">
+                 <number>24</number>
+                </property>
+                <property name="textVisible">
+                 <bool>true</bool>
+                </property>
+                <property name="invertedAppearance">
+                 <bool>false</bool>
+                </property>
+                <property name="textDirection">
+                 <enum>QProgressBar::TopToBottom</enum>
+                </property>
+                <property name="format">
+                 <string>%p%</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>授权管理</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="flat">
+              <bool>false</bool>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <property name="leftMargin">
+               <number>9</number>
+              </property>
+              <property name="topMargin">
+               <number>18</number>
+              </property>
+              <property name="bottomMargin">
+               <number>18</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>16</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>24</number>
+              </property>
+              <item row="5" column="3">
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QPushButton" name="hostLogin">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>登录</string>
+                  </property>
+                  <property name="flat">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="hostReset">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>重置</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="3">
+               <widget class="QLineEdit" name="hostUsername"/>
+              </item>
+              <item row="5" column="4">
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>密码: </string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QLineEdit" name="hostPassword"/>
+              </item>
+              <item row="2" column="3">
+               <widget class="QLabel" name="tokenLabel">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+                <property name="textFormat">
+                 <enum>Qt::AutoText</enum>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="4">
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>Secret Token:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>用户名: </string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_3"/>
         </widget>
        </item>
-       <item>
-        <widget class="PageButton" name="pageButton_2">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>80</height>
-          </size>
+       <item row="0" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>40</number>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="cursor">
-          <cursorShape>ArrowCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>图片集</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="PageButton" name="pageButton_3">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>80</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="cursor">
-          <cursorShape>ArrowCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>图床设置</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="PageButton" name="pageButton_4">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>80</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Microsoft YaHei UI</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="cursor">
-          <cursorShape>ArrowCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>设置</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>PushButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_9">
+           <property name="text">
+            <string>4</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -653,8 +714,46 @@
    </layout>
   </widget>
  </widget>
- <resources>
-  <include location="../resources.qrc"/>
- </resources>
- <connections/>
+ <customwidgets>
+  <customwidget>
+   <class>PageButton</class>
+   <extends>QPushButton</extends>
+   <header>pagebutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton_9</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>965</x>
+     <y>28</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1007</x>
+     <y>16</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>showMaximized()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>847</x>
+     <y>30</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1002</x>
+     <y>5</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
