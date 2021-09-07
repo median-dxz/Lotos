@@ -23,8 +23,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     int wide=this->width();
     minibutton=new QPushButton(this);
     closebutton=new QPushButton(this);
-    minibutton->setGeometry(wide-35,5,32,32);
-    closebutton->setGeometry(wide-67,5,32,32);
+    minibutton->setGeometry(wide-32,0,32,32);
+    closebutton->setGeometry(wide-64,0,32,32);
     minibutton->installEventFilter(this);
     closebutton->installEventFilter(this);
     minibutton->setToolTip(tr("最小化"));
@@ -174,47 +174,46 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event){
 }
 bool MainWindow::eventFilter(QObject *watched, QEvent *event){
     if( watched == minibutton &&event->type()==QEvent::Paint){
-        drawminibutton();
+        QPainter painter(minibutton);
+        QPen pen;
+        pen.setColor("background-color: #909399");
+        pen.setWidth(1.5);
+        if(h_min == 1){
+            painter.fillRect(QRect(0,0,32,32),QBrush(QColor(64,158,255,255)));
+        }
+        painter.setPen(pen);
+        painter.drawLine(4,16,28,16); //画直线
+        return true;
+
     }
-    else if( watched == closebutton &&event->type()==QEvent::Paint){
-        drawclosebutton();
+    if( watched == closebutton &&event->type()==QEvent::Paint){
+        QPainter painter2(closebutton);
+        QPen pen;
+        pen.setColor("background-color: #909399");
+        pen.setWidth(1.5);
+        if(h_cls == 1){
+           painter2.fillRect(QRect(0,0,32,32),QBrush(QColor(245,108,108,255)));
+        }
+        painter2.setPen(pen);
+        painter2.drawLine(4,4,28,28);//画关闭符号
+        painter2.drawLine(28,4,4,28);
+        return true;
+
     }
-    else if(watched == minibutton && event->type()==QEvent::Enter){
-        changeminibutton(1);
-    }
-    else if(watched == minibutton && event->type()==QEvent::Leave){
-        changeminibutton(2);
-    }
-    else if(watched == closebutton && event->type()==QEvent::Enter){
-       changeclosebutton(1);
-    }
-    else if(watched == closebutton && event->type()==QEvent::Leave){
-       changeclosebutton(2);
-    }
+
+      if(watched == minibutton && event->type()==QEvent::Enter){
+        h_min = 1;
+      }
+      else if(watched == minibutton && event->type()==QEvent::Leave){
+        h_min = 0;
+      }
+      else if(watched == closebutton && event->type()==QEvent::Enter){
+        h_cls = 1;
+      }
+      else if(watched == closebutton && event->type()==QEvent::Leave){
+        h_cls = 0;
+      }
+
     return QWidget::eventFilter(watched,event);
 }
-void MainWindow::drawminibutton(){
-    QPen pen;
-    pen.setColor("background-color: #909399");
-    pen.setWidth(1.5);
-    QPainter painter(minibutton);
-    painter.setPen(pen);
-    painter.drawLine(4,16,28,16); //画直线
-}
-void MainWindow::drawclosebutton(){
-    QPen pen;
-    pen.setColor("background-color: #909399");
-    pen.setWidth(1.5);
-    QPainter painter2(closebutton);
-    painter2.setPen(pen);
-    painter2.drawLine(4,4,28,28);//画关闭符号
-    painter2.drawLine(28,4,4,28);
-}
-void MainWindow::changeminibutton(int a){
-   if(a==1) minibutton->setStyleSheet("background-color: rgba(64,158,255,1)");
-   if(a==2) minibutton->setStyleSheet("background-color: rgba(64,158,255,0.1)");
-}
-void MainWindow::changeclosebutton(int a){
-    if(a==1)closebutton->setStyleSheet("background-color: rgba(245,108,108,1)");
-    if(a==2)closebutton->setStyleSheet("background-color: rgba(245,108,108,0.1)");
-}
+

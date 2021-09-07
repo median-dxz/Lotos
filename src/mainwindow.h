@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QPainter>
 #include <QPen>
+#include <QBrush>
 
 
 /*
@@ -33,10 +34,6 @@ class MainWindow : public QMainWindow {
 
     void closewindow();
     void onmainwindowclosed();
-    void drawminibutton();
-    void drawclosebutton();
-    void changeminibutton(int);
-    void changeclosebutton(int);
 
    public slots:
    signals:
@@ -46,9 +43,11 @@ class MainWindow : public QMainWindow {
     Ui::MainWindow *ui;
 
     QPoint move_point;//移动的距离
-    bool mouse_press;//按下鼠标左键
+    bool mouse_press = false;//按下鼠标左键
     QPushButton *minibutton;
     QPushButton *closebutton;
+    int h_min=0;
+    int h_cls=0;
     bool loadQStyleSheet(const QString &fileName);
     void test();
     void HttpAccessTest(MainWindow *p);
