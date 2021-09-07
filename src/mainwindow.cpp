@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QTimer>
+#include <QHBoxLayout>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -8,11 +9,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setWindowTitle(tr("Lotos"));
     componentsLayoutManager();
 
-
     connect(ui->uploadButton, &QPushButton::clicked, this, [=]() {
     test1();  });
-
-
     test();
 
 
@@ -21,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(time,&QTimer::timeout,this,[=](){
         if(iconwidget:: dele)
         {
-            del();
+            delpix();
             iconwidget:: dele = 0;
         }
     });
@@ -162,7 +160,7 @@ void MainWindow ::test1()
     iconwidget * l = new iconwidget(ui->dragBox);
     //l->setshadow();
     l->pixpath = QFileDialog::getOpenFileName(this, "选择图片");
-    if(l->pixpath!=nullptr)
+    if(checkpix(l))
     {
         QPixmap pix(l->pixpath);
         l->setGeometry(j,6,200*pix.width()/pix.height() ,230);
@@ -179,7 +177,7 @@ void MainWindow ::test1()
 
 }
 
-void MainWindow ::del()
+void MainWindow ::delpix()
 {
     j=5;
     QList<iconwidget *> widgets = ui->dragBox->findChildren<iconwidget *>();
@@ -195,4 +193,25 @@ void MainWindow ::del()
     //qDebug()<<widgets.count();
 
 }
+
+int MainWindow ::checkpix(iconwidget *l)
+{
+    if(l->pixpath==nullptr)
+    {
+        delete  l;
+        return 0;
+    }
+    QPixmap pix;
+    int j = pix.load(l->pixpath);
+    if(j)
+        return j;
+    else
+    {
+        delete  l;
+        return 0;
+    }
+
+
+}
+
 

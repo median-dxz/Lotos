@@ -27,6 +27,7 @@ class MainWindow : public QMainWindow {
     ~MainWindow();
     static int j;
 
+
     const QList<QString> iconPaths = QList<QString>()
     <<(":/res/icons/page_1.png")
     <<(":/res/icons/page_1_ig.png")
@@ -46,6 +47,7 @@ class MainWindow : public QMainWindow {
 
 
 
+
    protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
@@ -56,8 +58,9 @@ class MainWindow : public QMainWindow {
     void componentsLayoutManager();
     void test();
     void test1();
-    void del();
+    void delpix();
     void httpAccessTest(MainWindow *p);
+    int checkpix(iconwidget *);
 };
 
 #endif  // MAINWINDOW_H
