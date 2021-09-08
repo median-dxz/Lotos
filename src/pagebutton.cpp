@@ -12,10 +12,6 @@ void PageButton::emitClicked() {
     }
 }
 
-void PageButton::setIndex(int index) {
-    PageButton::index = index;
-}
-
 void PageButton::setCurrentChosen(int index) {
     if (PageButton::index != index) {
         setChecked(false);
@@ -24,37 +20,42 @@ void PageButton::setCurrentChosen(int index) {
     }
 }
 
-void PageButton::setIconPath(QString path, QString pathIgnited) {
-    normalIconPath = path;
+void PageButton::enterEvent(QEvent *) {
+    drawPix(ignitedIconPath);
+}
+
+void PageButton::leaveEvent(QEvent *) {
+    drawPix(normalIconPath);
+}
+
+void PageButton::setIconPath(QString pathNormal, QString pathIgnited) {
+    normalIconPath = pathNormal;
     ignitedIconPath = pathIgnited;
 }
 
-void PageButton::drawIcon(bool ignited) {
-    if (ignited) {
-        setIcon(QIcon(ignitedIconPath));
-    } else {
-        setIcon(QIcon(normalIconPath));
-    }
+void PageButton::drawPix(const QString iconPath) {
+    iconLabel->setPixmap(iconPath);
+    iconLabel->setScaledContents(true);
+    iconLabel->resize(iconSize());
+    iconLabel->move(iconOffset);
 }
 
-void PageButton::DrawPix(QString iconPath){
-
-
-    label->setPixmap(iconPath);
-    label->setScaledContents(true);
-    label->resize(QSize(35, 35));
-    label->move(5,27);
-
-
-
-}
-
-QString & PageButton::getnormalIconPath()
-{
+QString PageButton::getNormalIconPath() const {
     return normalIconPath;
 }
-QString & PageButton::getignitedIconPath()
-{
+
+QString PageButton::getIgnitedIconPath() const {
     return ignitedIconPath;
 }
 
+void PageButton::setIndex(int index) {
+    this->index = index;
+}
+
+void PageButton::setIconOffset(int x, int y) {
+    iconOffset = QPoint(x, y);
+}
+
+int PageButton::Index() const {
+    return index;
+}

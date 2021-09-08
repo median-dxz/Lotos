@@ -1,108 +1,63 @@
 #include "iconwidget.h"
-#include "pagebutton.h"
-#include <QDebug>
-#include <QBuffer>
 
-iconwidget::iconwidget(QWidget *parent) : QWidget(parent)
-{
-    if(pixpath!=NULL)
-    {
-        QBuffer buffer;
-        buffer.open(QIODevice::ReadWrite);
-        QPixmap p(pixpath);
-        p.save(&buffer,"jpg");
-        pix.append(buffer.data());
+IconWidget::IconWidget(QWidget *parent) : QWidget(parent) {}
 
-    }
-
-
+bool IconWidget::setPic(QString fileName) {
+    bool res = pix.load(fileName);
+    setShadow();
+    setDeleteBtn();
+    update();
+    return res;
 }
 
-//int iconwidget::index= 0;
-int iconwidget::dele = 0;
+void IconWidget::paintEvent(QPaintEvent *) {
+    QPainter painter(this);
 
-void iconwidget::paintEvent(QPaintEvent *)
-{
+    painter.setPen(QColor("#fff"));
+    painter.fillRect(0, 0, width() - painter.pen().width(), height() - painter.pen().width(), QBrush(QColor("#fff")));
 
+    QRect rect;
+    rect.setRect(0, 0, width(), height() - 80);
+    painter.drawPixmap(rect, pix);
 
-        QPainter painter(this);
-        QPixmap pix;
-        pix.load(pixpath);
+    painter.setFont(QFont("Microsoft YaHei", 12, 400));
 
-        QRect rect ;
-        rect.setRect(5*pix.width()/pix.height(),5,190*pix.width()/pix.height(),190);
-        painter.drawPixmap(rect,pix);
-
-
-//        if(pixpath!=nullptr)
-//        {
-            painter.setFont(QFont("雅黑",6,25));
-            if(panduan(size)==1)
-            {
-             QString text = QString("%1  (%2%3) ").arg(name).arg(QString::number(float(size)/1024,'f',2)).arg("KB");
-             painter.drawText(QRect(52*pix.width()/pix.height(),205,200,60),text);}
-            if(panduan(size)==0)
-            {
-            QString text = QString("%1  (%2%3) ").arg(name).arg(QString::number(size)).arg("B");
-            painter.drawText(QRect(52*pix.width()/pix.height(),205,200,60),text);}
-
-            if(panduan(size)==2)
-            {
-            QString text = QString("%1  (%2%3) ").arg(name).arg(QString::number(float(size)/1024/1024,'f',2)).arg("MB");
-            painter.drawText(QRect(52*pix.width()/pix.height(),205,200,60),text);}
-
-            painter.setPen(QColor(139, 139, 139));
-            painter.drawLine(0, 0, this->width() - 1, 0);
-            painter.drawLine(0, 0, 0, this->height() - 1);
-            painter.drawLine(this->width() - 1, 0, this->width() - 1, this->height() - 1);
-            painter.drawLine(0, this->height() - 1, this->width() - 1, this->height() - 1   );
-
-
-//        }
-
+    QString text = QString("%1  (%2%3) ").arg("name").arg(1000).arg(sizeUnit(1000));
+    painter.setPen(QColor("#CCC"));
+    painter.drawText(QRect(0, height() - 80, width(), 40), text);
 }
 
-
-void iconwidget::setshadow()
-{
-    QGraphicsDropShadowEffect * shadow = new QGraphicsDropShadowEffect();
-    shadow->setOffset(5,5);
-    //shadow->setColor(QColor(43,43,43));
-    shadow->setBlurRadius(6);
+void IconWidget::setShadow() {
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
+    shadow->setOffset(0, 2);
+    shadow->setColor(QColor(0, 0, 0, 255 * 0.14));
+    shadow->setBlurRadius(8);
     this->setGraphicsEffect(shadow);
-
-
-
-
 }
 
-void iconwidget::setdelbtn()
-{
-     PageButton * btn = new PageButton(this);
-     btn->setFixedSize(QSize(25,25));
-     btn->setIcon(QIcon(":/res/icons/del.png"));
-     btn->setGeometry(this->width()-btn->width() , this->height()-btn->height(),25,25);
-     //btn->setText("删除");
-     btn->show();
-     connect(btn, &QPushButton::clicked, this, [=]() {
-             delete this;
-             dele = 1;
-             //qDebug()<<dele;
-         });
+void IconWidget::setDeleteBtn() {
+    QPushButton *btn = new QPushButton(this);
+    btn->setFixedSize(QSize(40, 40));
 
+    QIcon ico = QIcon();
+    ico.addFile(":/res/icons/del.png", QSize(24, 24), QIcon::Normal);
 
+    btn->setIcon(ico);
+    btn->setProperty("class_type", "iconwidget.sub.del");
+    btn->setGeometry(width() - btn->width(), height() - btn->height(), btn->width(), btn->height());
+    btn->show();
+    connect(btn, &QPushButton::clicked, this, [&] { this->deleteLater(); });
 }
 
-int iconwidget::panduan(qint64 size)
-{
-    if(size<1024)
-        return  0;
-
-    else if(size>=1024*1024)
-        return  2;
-
-    else return 1;
-
-
+QString IconWidget::sizeUnit(qint64 size) {
+    enum SIZE_TYPE { B, KB, MB } type;
+    type = SIZE_TYPE(int(log2(size) / 10));
+    switch (type) {
+        case B:
+            return "B";
+        case KB:
+            return "KB";
+        case MB:
+            return "MB";
+    }
 }
-
