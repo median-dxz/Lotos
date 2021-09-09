@@ -11,13 +11,145 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     test();
 }
 
+void MainWindow::test() {
+    qDebug() << QSslSocket::supportsSsl();
+}
+
 MainWindow::~MainWindow() {
     delete ui;
 }
 
+void MainWindow::onMainProcessClosed() {
+    globalSettings.save();
+}
+
+void MainWindow::interfaceStyleManager() {
+    loadQStyleSheet(":/res/styles/index.qss");
+
+    setWindowTitle(tr("Lotos"));
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_TransparentForMouseEvents);
+
+    qApp->setFont(QFont("Microsoft YaHei UI"));
+
+    QGraphicsDropShadowEffect *box_shadow = new QGraphicsDropShadowEffect(this);
+    box_shadow->setBlurRadius(12);
+    box_shadow->setOffset(0, 1);
+    box_shadow->setColor(QColor(0, 0, 0, 255 * 0.18));
+    ui->viewport->setGraphicsEffect(box_shadow);
+
+    ui->titleBar->setIcon(QPixmap(":/res/lotos_icon.png"));
+    ui->titleBar->setTitle(tr("Lotos"));
+}
+
+void MainWindow::init() {
+    proxy = HttpClient::getNetworkProxyInstanse();
+    smms = &SMMS::getInstance();
+    globalSettings.load(PATH_CONFIG);
+}
+
+void MainWindow::componentsLayoutManager() {
+    connect(ui->titleBar, &TitleBar::onMiniBtnClicked, this, &MainWindow::showMinimized);
+    connect(ui->titleBar, &TitleBar::onCloseBtnClicked, this, &MainWindow::close);
+    connect(this, &MainWindow::destroyed, this, &MainWindow::onMainProcessClosed);
+
+    // set imghost dashbroad page
+    ui->pageSwitchWidget->installEventFilter(this);
+    connect(ui->hostLogin, &QPushButton::clicked, this, &MainWindow::onHostLoginClicked);
+    connect(ui->hostReset, &QPushButton::clicked, this, &MainWindow::onHostResetClicked);
+
+    // set pagebutton toggle signal&icon
+    QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
+    QList<QString> iconPaths;
+
+    iconPaths.append(":/res/icons/page_1.png");
+    iconPaths.append(":/res/icons/page_1_ig.png");
+    iconPaths.append(":/res/icons/page_2.png");
+    iconPaths.append(":/res/icons/page_2_ig.png");
+    iconPaths.append(":/res/icons/page_3.png");
+    iconPaths.append(":/res/icons/page_3_ig.png");
+    iconPaths.append(":/res/icons/page_4.png");
+    iconPaths.append(":/res/icons/page_4_ig.png");
+
+    for (PageButton *pageButton : qAsConst(PageButtons)) {
+        int index = pageButton->objectName().rightRef(1).toInt();
+
+        pageButton->setIndex(index);
+        loadPage(PAGE(index - 1));
+        connect(this, &MainWindow::widgetPageChanged, pageButton, &PageButton::setCurrentChosen);
+        connect(pageButton, &PageButton::indexChanged, this, [=](int current_index) {
+            emit widgetPageChanged(current_index);
+            ui->stackedWidget->setCurrentIndex(current_index - 1);
+            loadPage(PAGE(current_index));
+        });
+
+        pageButton->setIconPath(iconPaths[index * 2 - 2], iconPaths[index * 2 - 1]);
+        pageButton->setIconSize(QSize(28, 28));
+        pageButton->setIcon(QIcon(iconPaths[index * 2 - 2]));
+        pageButton->installEventFilter(this);
+    }
+}
+
+void MainWindow::loadPage(MainWindow::PAGE index) {
+    switch (index) {
+        case HostDashBoardPage:
+            ui->hostUsername->clear();
+            ui->hostPassword->clear();
+            if (globalSettings.imghost["isAuthorized"].toBool()) {
+                ui->hostLogin->click();
+            } else {
+                ui->tokenLabel->setText(tr("未登录"));
+                ui->hostUserDiskLimit->hide();
+                ui->userInfoLabel->setText(QString(tr("<div><b>用户组:</b> 未登录用户</div>")));
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
+    if (obj->inherits("PageButton") && event->type() == QEvent::HoverEnter) {
+        PageButton *page_btn = (PageButton *)obj;
+        page_btn->drawIcon(true);
+    }
+    if (obj->inherits("PageButton") && event->type() == QEvent::HoverLeave) {
+        PageButton *page_btn = (PageButton *)obj;
+        page_btn->drawIcon(false);
+    }
+    if (obj->objectName() == "pageSwitchWidget" && event->type() == QEvent::Paint) {
+        QWidget *page_widget = (QWidget *)obj;
+        QPainter painter(page_widget);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setPen(QPen(QColor(220, 223, 230), 2));
+        painter.drawLine(page_widget->size().width(), page_widget->size().height() * 0.04, page_widget->size().width(),
+                         page_widget->size().height() * 0.96);
+    }
+    return QWidget::eventFilter(obj, event);
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        movingPoint = event->globalPos() - this->pos();
+        mousePressed = true;
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *) {
+    mousePressed = false;
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event) {
+    //移动窗口
+    if (mousePressed) {
+        QPoint move_pos = event->globalPos();
+        move(move_pos - movingPoint);
+    }
+}
+
 void MainWindow::onHostLoginClicked() {
     HttpClient *client = nullptr;
-
     if (!globalSettings.imghost["isAuthorized"].toBool()) {
         client = smms->getAPIToken(ui->hostUsername->text(), ui->hostPassword->text());
         this->setCursor(QCursor(Qt::WaitCursor));
@@ -97,10 +229,6 @@ void MainWindow::onHostResetClicked() {
     ui->userInfoLabel->setText(QString(tr("<div><b>用户组:</b> 未登录用户</div>")));
 }
 
-void MainWindow::onMainProcessClosed() {
-    globalSettings.save();
-}
-
 bool MainWindow::loadQStyleSheet(const QString &fileName) {
     QFile qssFile(fileName);
     if (qssFile.open(QFile::ReadOnly)) {
@@ -110,107 +238,4 @@ bool MainWindow::loadQStyleSheet(const QString &fileName) {
     } else {
         return false;
     }
-}
-
-void MainWindow::init() {
-    proxy = HttpClient::getNetworkProxyInstanse();
-    smms = &SMMS::getInstance();
-    globalSettings.load(PATH_CONFIG);
-}
-
-void MainWindow::componentsLayoutManager() {
-    // set imghost dashbroad page
-    ui->pageSwitchWidget->installEventFilter(this);
-    connect(ui->hostLogin, &QPushButton::clicked, this, &MainWindow::onHostLoginClicked);
-    connect(ui->hostReset, &QPushButton::clicked, this, &MainWindow::onHostResetClicked);
-
-    // set pagebutton toggle signal&icon
-    QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
-    QList<QString> iconPaths;
-
-    iconPaths.append(":/res/icons/page_1.png");
-    iconPaths.append(":/res/icons/page_1_ig.png");
-    iconPaths.append(":/res/icons/page_2.png");
-    iconPaths.append(":/res/icons/page_2_ig.png");
-    iconPaths.append(":/res/icons/page_3.png");
-    iconPaths.append(":/res/icons/page_3_ig.png");
-    iconPaths.append(":/res/icons/page_4.png");
-    iconPaths.append(":/res/icons/page_4_ig.png");
-
-    for (PageButton *pageButton : qAsConst(PageButtons)) {
-        int index = pageButton->objectName().rightRef(1).toInt();
-
-        pageButton->setIndex(index);
-        loadPage(PAGE(index - 1));
-        connect(this, &MainWindow::widgetPageChanged, pageButton, &PageButton::setCurrentChosen);
-        connect(pageButton, &PageButton::indexChanged, this, [=](int current_index) {
-            emit widgetPageChanged(current_index);
-            ui->stackedWidget->setCurrentIndex(current_index - 1);
-            loadPage(PAGE(current_index));
-        });
-
-        pageButton->setIconPath(iconPaths[index * 2 - 2], iconPaths[index * 2 - 1]);
-        pageButton->setIconSize(QSize(28, 28));
-        pageButton->setIcon(QIcon(iconPaths[index * 2 - 2]));
-        pageButton->installEventFilter(this);
-    }
-}
-
-void MainWindow::loadPage(MainWindow::PAGE index) {
-    switch (index) {
-        case HostDashBoardPage:
-            ui->hostUsername->clear();
-            ui->hostPassword->clear();
-            if (globalSettings.imghost["isAuthorized"].toBool()) {
-                ui->hostLogin->click();
-            } else {
-                ui->tokenLabel->setText(tr("未登录"));
-                ui->hostUserDiskLimit->hide();
-                ui->userInfoLabel->setText(QString(tr("<div><b>用户组:</b> 未登录用户</div>")));
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-void MainWindow::interfaceStyleManager() {
-    loadQStyleSheet(":/res/styles/index.qss");
-
-    setWindowTitle(tr("Lotos"));
-    setWindowFlags(Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground);
-    setAttribute(Qt::WA_TransparentForMouseEvents);
-
-    qApp->setFont(QFont("Microsoft YaHei UI"));
-
-    QGraphicsDropShadowEffect *box_shadow = new QGraphicsDropShadowEffect(this);
-    box_shadow->setBlurRadius(12);
-    box_shadow->setOffset(0, 1);
-    box_shadow->setColor(QColor(0, 0, 0, 255 * 0.18));
-    ui->viewport->setGraphicsEffect(box_shadow);
-}
-
-bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
-    if (obj->inherits("PageButton") && event->type() == QEvent::HoverEnter) {
-        PageButton *page_btn = (PageButton *)obj;
-        page_btn->drawIcon(true);
-    }
-    if (obj->inherits("PageButton") && event->type() == QEvent::HoverLeave) {
-        PageButton *page_btn = (PageButton *)obj;
-        page_btn->drawIcon(false);
-    }
-    if (obj->objectName() == "pageSwitchWidget" && event->type() == QEvent::Paint) {
-        QWidget *page_widget = (QWidget *)obj;
-        QPainter painter(page_widget);
-        painter.setRenderHint(QPainter::Antialiasing, true);
-        painter.setPen(QPen(QColor(220, 223, 230), 2));
-        painter.drawLine(page_widget->size().width(), page_widget->size().height() * 0.04, page_widget->size().width(),
-                         page_widget->size().height() * 0.96);
-    }
-    return QWidget::eventFilter(obj, event);
-}
-
-void MainWindow::test() {
-    qDebug() << QSslSocket::supportsSsl();
 }

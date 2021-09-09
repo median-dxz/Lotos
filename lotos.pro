@@ -16,6 +16,7 @@ SOURCES += \
     pagebutton.cpp \
     imagehost.cpp \
     settingshelper.cpp \
+    src/titlebar.cpp \
     utils/httpclient.cpp
 
 HEADERS += \
@@ -23,6 +24,7 @@ HEADERS += \
     pagebutton.h \
     imagehost.h \
     settingshelper.h \
+    src/titlebar.h \
     utils/httpclient.h
 
 FORMS += \

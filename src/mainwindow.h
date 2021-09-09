@@ -37,6 +37,10 @@ class MainWindow : public QMainWindow {
    protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
+    void mousePressEvent(QMouseEvent *event) override;
+
    private:
     Ui::MainWindow *ui;
     QNetworkProxy proxy;
@@ -52,6 +56,8 @@ class MainWindow : public QMainWindow {
     void test();
 
     const QString PATH_CONFIG = "config.json";
+    bool mousePressed = false;
+    QPoint movingPoint;
 
     enum PAGE { UploadPage, GalleryPage, HostDashBoardPage, SettingsPage };
     void loadPage(PAGE index);
