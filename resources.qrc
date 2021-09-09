@@ -11,5 +11,6 @@
         <file>res/icons/page_4_ig.png</file>
         <file>res/icons/upload.png</file>
         <file>res/icons/upload_at.png</file>
+        <file>res/lotos_icon.png</file>
     </qresource>
 </RCC>

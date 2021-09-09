@@ -13,31 +13,17 @@ INCLUDEPATH += src \
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-<<<<<<< HEAD
-<<<<<<< HEAD
-    ImgButton.cpp \
-    utils/HttpClient.cpp
-
-HEADERS += \
-    mainwindow.h \
-    ImgButton.h \
-    utils/HttpClient.h
-=======
-    imgbutton.cpp \
-=======
->>>>>>> 2920bae (refactor: 删除ImgaeButton实现)
     pagebutton.cpp \
-    imagehost.cpp \
-    settingshelper.cpp \
-    utils/httpclient.cpp
+    utils/imgehost.cpp \
+    utils/httpclient.cpp \
+    src/iconwidget.cpp
 
 HEADERS += \
     mainwindow.h \
     pagebutton.h \
-    imagehost.h \
-    settingshelper.h \
-    utils/httpclient.h
->>>>>>> e2619e0 (sync: 修复与整理阶段性工作，修复之前阶段性工作提交的问题)
+    utils/imgehost.h \
+    utils/httpclient.h \
+    src/iconwidget.h
 
 FORMS += \
     mainwindow.ui
