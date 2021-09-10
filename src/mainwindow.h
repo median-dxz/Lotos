@@ -4,20 +4,14 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QGraphicsDropShadowEffect>
 #include <QMainWindow>
 #include <QPushButton>
-#include <QPainter>
-#include <QPen>
-#include <QBrush>
 
-
-/*
- * 实现拖动窗口
- */
-#include <QMoveEvent>
-
+#include "imagehost.h"
 #include "pagebutton.h"
-#include "utils\httpclient.h"
+#include "settingshelper.h"
+#include "utils/httpclient.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -32,32 +26,41 @@ class MainWindow : public QMainWindow {
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void closewindow();
-    void onmainwindowclosed();
-
    public slots:
+    void onHostLoginClicked();
+    void onHostResetClicked();
+    void onMainProcessClosed();
+
    signals:
     void widgetPageChanged(int);
 
+   protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
+
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
+    void mousePressEvent(QMouseEvent *event) override;
+
    private:
     Ui::MainWindow *ui;
+    QNetworkProxy proxy;
+    SMMS *smms;
+    SettingsHelper globalSettings;
 
-    QPoint move_point;//移动的距离
-    bool mouse_press = false;//按下鼠标左键
-    QPushButton *minibutton;
-    QPushButton *closebutton;
-    int h_min=0;
-    int h_cls=0;
+    void init();
+
     bool loadQStyleSheet(const QString &fileName);
+    void componentsLayoutManager();
+    void interfaceStyleManager();
+
     void test();
-    void HttpAccessTest(MainWindow *p);
-protected:
-    void mousePressEvent(QMouseEvent * event)  override;
-    void mouseReleaseEvent(QMouseEvent * event)override;
-    void mouseMoveEvent(QMouseEvent * event)   override;
-    bool eventFilter(QObject *watched, QEvent *event) override;
 
+    const QString PATH_CONFIG = "config.json";
+    bool mousePressed = false;
+    QPoint movingPoint;
 
+    enum PAGE { UploadPage, GalleryPage, HostDashBoardPage, SettingsPage };
+    void loadPage(PAGE index);
 };
 
 #endif  // MAINWINDOW_H

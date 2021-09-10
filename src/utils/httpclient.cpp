@@ -1,4 +1,4 @@
-#include "HttpClient.h"
+#include "httpclient.h"
 
 HttpClient::HttpClient(QObject *parent) : QObject(parent) {}
 
@@ -53,6 +53,10 @@ void HttpClient::uploadFile(QByteArray *data, QString name, QString fileName) {
                          QVariant(QString("form-data; name=\"%1\";filename=\"%2\";").arg(name, fileName)));
     image_part.setBody(*data);
     multi_part->append(image_part);
+
+    for (auto i = Headers.begin(); i != Headers.end(); i++) {
+        request.setRawHeader(i.key().toLatin1(), i.value().toByteArray());
+    }
 
     QNetworkReply *reply = getNetworkAccessManagerInstanse().post(request, multi_part);
     connect(reply, &QNetworkReply::uploadProgress, this,

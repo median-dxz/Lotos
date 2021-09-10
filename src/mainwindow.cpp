@@ -3,53 +3,230 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    //隐藏自带标题栏
-    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
-    //qDebug()<<QSslSocket:: sslLibraryBuildVersionString();
-    loadQStyleSheet(":/res/styles/index.qss");
-    setAttribute(Qt::WA_QuitOnClose);
-    QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
-    for (PageButton *pageButton : qAsConst(PageButtons)) {
-        int index = pageButton->objectName().rightRef(1).toInt();
-        pageButton->setIndex(index);
-        connect(this, &MainWindow::widgetPageChanged, pageButton, &PageButton::setCurrentChosen);
 
-        connect(pageButton, &PageButton::indexChanged, this, [=](int current_index) {
-            emit widgetPageChanged(current_index);
-            ui->stackedWidget->setCurrentIndex(current_index - 1);
-        });
-
-    }
-    int wide=this->width();
-    minibutton=new QPushButton(this);
-    closebutton=new QPushButton(this);
-    minibutton->setGeometry(wide-32,0,32,32);
-    closebutton->setGeometry(wide-64,0,32,32);
-    minibutton->installEventFilter(this);
-    closebutton->installEventFilter(this);
-    minibutton->setToolTip(tr("最小化"));
-    closebutton->setToolTip(tr("关闭"));
-    connect(minibutton,&QPushButton::clicked,this,&MainWindow::showMinimized);
-    connect(closebutton,&QPushButton::clicked,this,&MainWindow::close);
-    minibutton->setStyleSheet("background-color: rgba(64,158,255,0.1)");
-    closebutton->setStyleSheet("background-color: rgba(245,108,108,0.1)");
-
-
-
+    init();
+    componentsLayoutManager();
+    interfaceStyleManager();
 
     test();
 }
 
-void MainWindow::closewindow(){
-    this->onmainwindowclosed();
-    this->close();
+void MainWindow::test() {
+    qDebug() << QSslSocket::supportsSsl();
+}
 
-}
-void MainWindow::onmainwindowclosed(){
-   qDebug()<<"test";
-}
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::onMainProcessClosed() {
+    globalSettings.save();
+}
+
+void MainWindow::interfaceStyleManager() {
+    loadQStyleSheet(":/res/styles/index.qss");
+
+    setWindowTitle(tr("Lotos"));
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_TransparentForMouseEvents);
+
+    qApp->setFont(QFont("Microsoft YaHei UI"));
+
+    QGraphicsDropShadowEffect *box_shadow = new QGraphicsDropShadowEffect(this);
+    box_shadow->setBlurRadius(12);
+    box_shadow->setOffset(0, 1);
+    box_shadow->setColor(QColor(0, 0, 0, 255 * 0.18));
+    ui->viewport->setGraphicsEffect(box_shadow);
+
+    ui->titleBar->setIcon(QPixmap(":/res/lotos_icon.png"));
+    ui->titleBar->setTitle(tr("Lotos"));
+}
+
+void MainWindow::init() {
+    proxy = HttpClient::getNetworkProxyInstanse();
+    smms = &SMMS::getInstance();
+    globalSettings.load(PATH_CONFIG);
+}
+
+void MainWindow::componentsLayoutManager() {
+    connect(ui->titleBar, &TitleBar::onMiniBtnClicked, this, &MainWindow::showMinimized);
+    connect(ui->titleBar, &TitleBar::onCloseBtnClicked, this, &MainWindow::close);
+    connect(this, &MainWindow::destroyed, this, &MainWindow::onMainProcessClosed);
+
+    // set imghost dashbroad page
+    ui->pageSwitchWidget->installEventFilter(this);
+    connect(ui->hostLogin, &QPushButton::clicked, this, &MainWindow::onHostLoginClicked);
+    connect(ui->hostReset, &QPushButton::clicked, this, &MainWindow::onHostResetClicked);
+
+    // set pagebutton toggle signal&icon
+    QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
+    QList<QString> iconPaths;
+
+    iconPaths.append(":/res/icons/page_1.png");
+    iconPaths.append(":/res/icons/page_1_ig.png");
+    iconPaths.append(":/res/icons/page_2.png");
+    iconPaths.append(":/res/icons/page_2_ig.png");
+    iconPaths.append(":/res/icons/page_3.png");
+    iconPaths.append(":/res/icons/page_3_ig.png");
+    iconPaths.append(":/res/icons/page_4.png");
+    iconPaths.append(":/res/icons/page_4_ig.png");
+
+    for (PageButton *pageButton : qAsConst(PageButtons)) {
+        int index = pageButton->objectName().rightRef(1).toInt();
+
+        pageButton->setIndex(index);
+        loadPage(PAGE(index - 1));
+        connect(this, &MainWindow::widgetPageChanged, pageButton, &PageButton::setCurrentChosen);
+        connect(pageButton, &PageButton::indexChanged, this, [=](int current_index) {
+            emit widgetPageChanged(current_index);
+            ui->stackedWidget->setCurrentIndex(current_index - 1);
+            loadPage(PAGE(current_index));
+        });
+
+        pageButton->setIconPath(iconPaths[index * 2 - 2], iconPaths[index * 2 - 1]);
+        pageButton->setIconSize(QSize(28, 28));
+        pageButton->setIcon(QIcon(iconPaths[index * 2 - 2]));
+        pageButton->installEventFilter(this);
+    }
+}
+
+void MainWindow::loadPage(MainWindow::PAGE index) {
+    switch (index) {
+        case HostDashBoardPage:
+            ui->hostUsername->clear();
+            ui->hostPassword->clear();
+            if (globalSettings.imghost["isAuthorized"].toBool()) {
+                ui->hostLogin->click();
+            } else {
+                ui->tokenLabel->setText(tr("未登录"));
+                ui->hostUserDiskLimit->hide();
+                ui->userInfoLabel->setText(QString(tr("<div><b>用户组:</b> 未登录用户</div>")));
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
+    if (obj->inherits("PageButton") && event->type() == QEvent::HoverEnter) {
+        PageButton *page_btn = (PageButton *)obj;
+        page_btn->drawIcon(true);
+    }
+    if (obj->inherits("PageButton") && event->type() == QEvent::HoverLeave) {
+        PageButton *page_btn = (PageButton *)obj;
+        page_btn->drawIcon(false);
+    }
+    if (obj->objectName() == "pageSwitchWidget" && event->type() == QEvent::Paint) {
+        QWidget *page_widget = (QWidget *)obj;
+        QPainter painter(page_widget);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setPen(QPen(QColor(220, 223, 230), 2));
+        painter.drawLine(page_widget->size().width(), page_widget->size().height() * 0.04, page_widget->size().width(),
+                         page_widget->size().height() * 0.96);
+    }
+    return QWidget::eventFilter(obj, event);
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        movingPoint = event->globalPos() - this->pos();
+        mousePressed = true;
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *) {
+    mousePressed = false;
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event) {
+    //移动窗口
+    if (mousePressed) {
+        QPoint move_pos = event->globalPos();
+        move(move_pos - movingPoint);
+    }
+}
+
+void MainWindow::onHostLoginClicked() {
+    HttpClient *client = nullptr;
+    if (!globalSettings.imghost["isAuthorized"].toBool()) {
+        client = smms->getAPIToken(ui->hostUsername->text(), ui->hostPassword->text());
+        this->setCursor(QCursor(Qt::WaitCursor));
+        QEventLoop *el = new QEventLoop(this);
+        connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
+            SMMS::Response data;
+            SMMS::praseResponse(res->getJson(), data);
+
+            if (res->statusCode.toUInt() != 200) {
+                ui->userInfoLabel->setText(tr("网络错误!"));
+            } else if (data.success == false) {
+                ui->userInfoLabel->setText(tr("<h4>登录失败 </h4>") + data.message);
+            } else {
+                QString token = data.data.at(0).toObject()["token"].toString();
+                globalSettings.imghost.insert("token", token);
+                globalSettings.imghost.insert("isAuthorized", true);
+                globalSettings.save();
+            }
+            el->quit();
+            this->setCursor(QCursor(Qt::ArrowCursor));
+            delete res;
+        });
+        el->exec();
+    }
+
+    if (globalSettings.imghost["isAuthorized"].toBool()) {
+        smms->setToken(globalSettings.imghost["token"].toString());
+
+        ui->hostLogin->setEnabled(false);
+        ui->hostLogin->setText(tr("已登录"));
+        ui->tokenLabel->setText(smms->token());
+        ui->userInfoLabel->setText(tr("正在获取用户信息..."));
+        ui->hostDashBoardPage->setCursor(QCursor(Qt::WaitCursor));
+
+        client = smms->getUserProfile();
+        connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
+            SMMS::Response data;
+            SMMS::UserProfile profile;
+            SMMS::praseResponse(res->getJson(), data);
+            SMMS::praseUserProfile(data.data.at(0).toObject(), profile);
+
+            if (res->statusCode.toUInt() != 200) {
+                ui->userInfoLabel->setText(tr("网络错误!"));
+            } else if (data.success == false) {
+                ui->userInfoLabel->setText(tr("<h4>获取用户信息失败 </h4>") + data.message);
+            } else {
+                ui->userInfoLabel->setText(QString(tr("<div><b>用户名:</b> %1</div>"
+                                                      "<div><b>用户组:</b> %2</div>"
+                                                      "<div><b>用户组剩余时间:</b> %3</div>"
+                                                      "<div><b>邮箱:</b> %4</div>"
+                                                      "<div><b>邮箱验证:</b> %5</div>"))
+                                               .arg(profile.username, profile.role, profile.group_expire, profile.email,
+                                                    profile.email_verified ? tr("已验证") : tr("未验证")));
+                ui->hostUserDiskLimit->show();
+                ui->hostUserDiskLimit->setValue(profile.disk_usage_raw / profile.disk_limit_raw * 100);
+                ui->hostUserDiskLimit->setFormat(profile.disk_usage + "/" + profile.disk_limit);
+            }
+            ui->hostDashBoardPage->setCursor(QCursor(Qt::ArrowCursor));
+            delete res;
+        });
+    }
+}
+
+void MainWindow::onHostResetClicked() {
+    globalSettings.imghost.insert("token", "");
+    globalSettings.imghost.insert("isAuthorized", false);
+    globalSettings.save();
+
+    ui->hostLogin->setEnabled(true);
+    ui->hostLogin->setText(tr("登录"));
+    ui->hostUsername->clear();
+    ui->hostPassword->clear();
+
+    ui->tokenLabel->setText(tr("未登录"));
+
+    ui->hostUserDiskLimit->hide();
+    ui->userInfoLabel->setText(QString(tr("<div><b>用户组:</b> 未登录用户</div>")));
 }
 
 bool MainWindow::loadQStyleSheet(const QString &fileName) {
@@ -62,158 +239,3 @@ bool MainWindow::loadQStyleSheet(const QString &fileName) {
         return false;
     }
 }
-
-void HttpAccessTest(MainWindow *p);
-
-void MainWindow::test() {
-    qDebug() << QSslSocket::supportsSsl();
-
-    QStackedWidget *stackedWidget = ui->centralwidget->findChild<QStackedWidget *>();
-    for (int i = 1; i <= 4; i++) {
-        QPushButton *PageButton =
-            ui->centralwidget->findChild<QPushButton *>(QString("pageButton_") + QString::number(i));
-        connect(PageButton, &QPushButton::clicked, stackedWidget, [=]() { stackedWidget->setCurrentIndex(i - 1); });
-    }
-    connect(ui->uploadButton, &QPushButton::clicked, this, [=]() { QFileDialog::getOpenFileName(this, "选择图片"); });
-
-    //    ImgButton *btn = new ImgButton(":/res/icons/page1.png", ":/res/icons/page2.png", ":/res/icons/page1_ig.png");
-    //    btn->setParent(this);
-    //    btn->move(0, 300);
-    QLabel *label1 = new QLabel;
-    label1->setParent(this);
-    label1->setPixmap(QPixmap(":/res/icons/page1.png"));
-    label1->setScaledContents(true);
-    label1->resize(QSize(30, 30));
-    label1->move(5, 48);
-    label1->setAttribute(Qt::WA_TransparentForMouseEvents);
-
-    QLabel *label2 = new QLabel;
-    label2->setParent(this);
-    label2->setPixmap(QPixmap(":/res/icons/page2.png"));
-    label2->setScaledContents(true);
-    label2->resize(QSize(30, 30));
-    label2->move(5, 127);
-    label2->setAttribute(Qt::WA_TransparentForMouseEvents);
-
-    QLabel *label3 = new QLabel;
-    label3->setParent(this);
-    label3->setPixmap(QPixmap(":/res/icons/page2.png"));
-    label3->setScaledContents(true);
-    label3->resize(QSize(30, 30));
-    label3->move(5, 207);
-    label3->setAttribute(Qt::WA_TransparentForMouseEvents);
-
-    QLabel *label4 = new QLabel;
-    label4->setParent(this);
-    label4->setPixmap(QPixmap(":/res/icons/page2.png"));
-    label4->setScaledContents(true);
-    label4->resize(QSize(30, 30));
-    label4->move(5, 287);
-    label4->setAttribute(Qt::WA_TransparentForMouseEvents);
-
-    ui->pageButton_1->setStyleSheet("text-align:left");
-    ui->pageButton_2->setStyleSheet("text-align:left");
-    ui->pageButton_3->setStyleSheet("text-align:left");
-    ui->pageButton_4->setStyleSheet("text-align:left");
-    //    HttpAccessTest(this);
-}
-
-void MainWindow::HttpAccessTest(MainWindow *p) {
-    // post
-    HttpClient *c = new HttpClient();
-    c->setUrl("https://sm.ms/api/v2/token");
-    connect(c, &HttpClient::responseFinished, p, [=](Response *r) {
-        qDebug() << r->getText();
-        delete r;
-    });
-    QByteArray postData("username=median-dxz&password=mDJ37!R74jW6Xez");
-    c->post(&postData);
-
-    // get
-    c = new HttpClient();
-    connect(c, &HttpClient::responseFinished, p, [=](Response *r) {
-        qDebug() << r->getText();
-        delete r;
-    });
-    c->get(QUrl("https://sm.ms/api/v2/history"));
-
-    c = new HttpClient();
-    QMap<QString, QVariant> auth;
-    auth["Authorization"] = QVariant("e4DKi2WtUWNJJlkFFHxH34BP7m3LV17Q");
-    c->setHeaders(auth);
-    c->setUrl("https://sm.ms/api/v2/upload");
-    QFile *file = new QFile("E:\\Resource\\Backgrounds\\09.jpg");
-
-    file->open(QIODevice::ReadOnly);
-    postData = file->readAll();
-
-    connect(c, &HttpClient::uplpodProgress, p, [=](qint64 a, qint64 b) { qDebug() << a << b; });
-    connect(c, &HttpClient::responseFinished, p, [=](Response *r) {
-        qDebug() << r->getText();
-        delete r;
-    });
-    c->uploadFile(&postData, "smfile", "09.jpg");
-}
-void MainWindow::mousePressEvent(QMouseEvent *event){
-    //只实现了左键移动
-    if(event->button() == Qt::LeftButton)
-        mouse_press = true;
-    move_point=event->globalPos() - this->pos();
-    qDebug()<<"pos()"<<this->pos().x()<<" "<<this->pos().y();
-    qDebug()<<"globalPos"<<event->globalPos().x()<<" "<<event->globalPos().y();
-}
-void MainWindow::mouseReleaseEvent(QMouseEvent *){
-    mouse_press = false;
-}
-void MainWindow::mouseMoveEvent(QMouseEvent *event){
-    //移动窗口
-    if(mouse_press){
-        QPoint move_pos = event->globalPos();
-        move(move_pos-move_point);
-    }
-}
-bool MainWindow::eventFilter(QObject *watched, QEvent *event){
-    if( watched == minibutton &&event->type()==QEvent::Paint){
-        QPainter painter(minibutton);
-        QPen pen;
-        pen.setColor("background-color: #909399");
-        pen.setWidth(1.5);
-        if(h_min == 1){
-            painter.fillRect(QRect(0,0,32,32),QBrush(QColor(64,158,255,255)));
-        }
-        painter.setPen(pen);
-        painter.drawLine(4,16,28,16); //画直线
-        return true;
-
-    }
-    if( watched == closebutton &&event->type()==QEvent::Paint){
-        QPainter painter2(closebutton);
-        QPen pen;
-        pen.setColor("background-color: #909399");
-        pen.setWidth(1.5);
-        if(h_cls == 1){
-           painter2.fillRect(QRect(0,0,32,32),QBrush(QColor(245,108,108,255)));
-        }
-        painter2.setPen(pen);
-        painter2.drawLine(4,4,28,28);//画关闭符号
-        painter2.drawLine(28,4,4,28);
-        return true;
-
-    }
-
-      if(watched == minibutton && event->type()==QEvent::Enter){
-        h_min = 1;
-      }
-      else if(watched == minibutton && event->type()==QEvent::Leave){
-        h_min = 0;
-      }
-      else if(watched == closebutton && event->type()==QEvent::Enter){
-        h_cls = 1;
-      }
-      else if(watched == closebutton && event->type()==QEvent::Leave){
-        h_cls = 0;
-      }
-
-    return QWidget::eventFilter(watched,event);
-}
-
