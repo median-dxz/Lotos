@@ -9,6 +9,7 @@ CONFIG += c++11
 VPATH += src \
 
 INCLUDEPATH += src \
+               src/ui \
 
 FORMS += \
     mainwindow.ui

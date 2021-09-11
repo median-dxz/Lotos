@@ -3,7 +3,7 @@
 #include <QDebug>
 
 TitleBar::TitleBar(QWidget *parent) : QWidget(parent) {
-    QHBoxLayout *title_bar_layout = new QHBoxLayout(this);
+    QHBoxLayout *title_bar_layout = new QHBoxLayout;
 
     title_bar_layout->addWidget(mainIcon);
     title_bar_layout->addSpacing(10);

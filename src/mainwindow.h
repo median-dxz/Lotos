@@ -12,9 +12,11 @@
 
 #include "imagehost.h"
 #include "settingshelper.h"
-#include "ui/iconwidget.h"
-#include "ui/pagebutton.h"
-#include "ui/titlebar.h"
+
+#include "iconwidget.h"
+#include "pagebutton.h"
+#include "titlebar.h"
+
 #include "utils/httpclient.h"
 
 QT_BEGIN_NAMESPACE
