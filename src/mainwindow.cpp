@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QDebug>
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
@@ -12,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 }
 
 void MainWindow::test() {
+    qDebug() << QSslSocket::sslLibraryBuildVersionString();
     qDebug() << QSslSocket::supportsSsl();
 }
 
@@ -21,10 +24,13 @@ MainWindow::~MainWindow() {
 
 void MainWindow::onMainProcessClosed() {
     globalSettings.save();
+    close();
 }
 
 void MainWindow::interfaceStyleManager() {
-    loadQStyleSheet(":/res/styles/index.qss");
+    loadQStyleSheet(":/res/styles/index.css");
+    loadQStyleSheet(":/res/styles/uploadpage.css");
+    loadQStyleSheet(":/res/styles/hostdashboard.css");
 
     setWindowTitle(tr("Lotos"));
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
@@ -51,8 +57,17 @@ void MainWindow::init() {
 
 void MainWindow::componentsLayoutManager() {
     connect(ui->titleBar, &TitleBar::onMiniBtnClicked, this, &MainWindow::showMinimized);
-    connect(ui->titleBar, &TitleBar::onCloseBtnClicked, this, &MainWindow::close);
-    connect(this, &MainWindow::destroyed, this, &MainWindow::onMainProcessClosed);
+    connect(ui->titleBar, &TitleBar::onCloseBtnClicked, this, &MainWindow::onMainProcessClosed);
+
+    // set imghost upload page
+    QGridLayout *gridlayout = new QGridLayout;
+    gridlayout->setMargin(8);
+    gridlayout->setHorizontalSpacing(8);
+    gridlayout->setVerticalSpacing(8);
+    gridlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    ui->dragBoxContents->setLayout(gridlayout);
+
+    connect(ui->uploadButton, &QPushButton::clicked, this, &MainWindow::onUploadButtonClicked);
 
     // set imghost dashbroad page
     ui->pageSwitchWidget->installEventFilter(this);
@@ -61,16 +76,6 @@ void MainWindow::componentsLayoutManager() {
 
     // set pagebutton toggle signal&icon
     QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
-    QList<QString> iconPaths;
-
-    iconPaths.append(":/res/icons/page_1.png");
-    iconPaths.append(":/res/icons/page_1_ig.png");
-    iconPaths.append(":/res/icons/page_2.png");
-    iconPaths.append(":/res/icons/page_2_ig.png");
-    iconPaths.append(":/res/icons/page_3.png");
-    iconPaths.append(":/res/icons/page_3_ig.png");
-    iconPaths.append(":/res/icons/page_4.png");
-    iconPaths.append(":/res/icons/page_4_ig.png");
 
     for (PageButton *pageButton : qAsConst(PageButtons)) {
         int index = pageButton->objectName().rightRef(1).toInt();
@@ -84,11 +89,13 @@ void MainWindow::componentsLayoutManager() {
             loadPage(PAGE(current_index));
         });
 
-        pageButton->setIconPath(iconPaths[index * 2 - 2], iconPaths[index * 2 - 1]);
+        pageButton->setIconPath(iconPaths.at(index * 2 - 2), iconPaths.at(index * 2 - 1));
         pageButton->setIconSize(QSize(28, 28));
-        pageButton->setIcon(QIcon(iconPaths[index * 2 - 2]));
-        pageButton->installEventFilter(this);
+        pageButton->setIconOffset(18, pageButton->height() / 2 - 10);
+        pageButton->drawPix(iconPaths[index * 2 - 2]);
     }
+
+    PageButtons.at(0)->setCurrentChosen(1);
 }
 
 void MainWindow::loadPage(MainWindow::PAGE index) {
@@ -110,14 +117,6 @@ void MainWindow::loadPage(MainWindow::PAGE index) {
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
-    if (obj->inherits("PageButton") && event->type() == QEvent::HoverEnter) {
-        PageButton *page_btn = (PageButton *)obj;
-        page_btn->drawIcon(true);
-    }
-    if (obj->inherits("PageButton") && event->type() == QEvent::HoverLeave) {
-        PageButton *page_btn = (PageButton *)obj;
-        page_btn->drawIcon(false);
-    }
     if (obj->objectName() == "pageSwitchWidget" && event->type() == QEvent::Paint) {
         QWidget *page_widget = (QWidget *)obj;
         QPainter painter(page_widget);
@@ -231,11 +230,56 @@ void MainWindow::onHostResetClicked() {
 
 bool MainWindow::loadQStyleSheet(const QString &fileName) {
     QFile qssFile(fileName);
+    QString stylesheet = qApp->styleSheet();
     if (qssFile.open(QFile::ReadOnly)) {
-        qApp->setStyleSheet(qssFile.readAll());
+        stylesheet += qssFile.readAll();
+        qApp->setStyleSheet(stylesheet);
         qssFile.close();
         return true;
     } else {
         return false;
+    }
+}
+
+void MainWindow::onUploadButtonClicked() {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("选择图片"));
+    QPixmap p;
+
+    if (p.load(fileName)) {
+        int cols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
+        int count = iconWidgets.count();
+        IconWidget *widget = new IconWidget(ui->dragBox);
+
+        QGridLayout *l = ((QGridLayout *)ui->dragBoxContents->layout());
+        l->addWidget(widget, count / cols, count % cols);
+        widget->setFixedSize(iconWidgetSize);
+        widget->setImage(QImage(fileName));
+
+        iconWidgets.append(widget);
+
+        connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
+            QList<IconWidget *>::iterator del_iter;
+            for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++) {
+                if (*iter == obj) {
+                    del_iter = iter;
+                }
+            }
+            iconWidgets.erase(del_iter);
+
+            while (!((QGridLayout *)ui->dragBoxContents->layout())->isEmpty()) {
+                delete ((QGridLayout *)ui->dragBoxContents->layout())->takeAt(0);
+            }
+
+            obj->deleteLater();
+
+            int c = 0;
+            int cols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
+            for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++) {
+                l->addWidget(*iter, c / cols, c % cols);
+                c++;
+            }
+        });
+    } else {
+        qDebug() << "ERR: 错误的图片选择";
     }
 }

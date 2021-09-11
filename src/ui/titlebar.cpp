@@ -1,5 +1,7 @@
 #include "titlebar.h"
 
+#include <QDebug>
+
 TitleBar::TitleBar(QWidget *parent) : QWidget(parent) {
     QHBoxLayout *title_bar_layout = new QHBoxLayout(this);
 

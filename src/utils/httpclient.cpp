@@ -21,6 +21,7 @@ void HttpClient::get(QUrl url) {
 void HttpClient::post(QByteArray *data) {
     QNetworkRequest request = QNetworkRequest(Url);
 
+
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");  // default type
     for (auto i = Headers.begin(); i != Headers.end(); i++) {
         request.setRawHeader(i.key().toLatin1(), i.value().toByteArray());

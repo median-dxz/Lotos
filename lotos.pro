@@ -10,23 +10,6 @@ VPATH += src \
 
 INCLUDEPATH += src \
 
-SOURCES += \
-    main.cpp \
-    mainwindow.cpp \
-    pagebutton.cpp \
-    imagehost.cpp \
-    settingshelper.cpp \
-    src/titlebar.cpp \
-    utils/httpclient.cpp
-
-HEADERS += \
-    mainwindow.h \
-    pagebutton.h \
-    imagehost.h \
-    settingshelper.h \
-    src/titlebar.h \
-    utils/httpclient.h
-
 FORMS += \
     mainwindow.ui
 
@@ -45,4 +28,23 @@ CONFIG(BUILD_X64, BUILD_X86|BUILD_X64) {
 } else {
     message("X86 Build")
 }
+
+HEADERS += \
+    src/imagehost.h \
+    src/mainwindow.h \
+    src/settingshelper.h \
+    src/ui/iconwidget.h \
+    src/ui/pagebutton.h \
+    src/ui/titlebar.h \
+    src/utils/httpclient.h
+
+SOURCES += \
+    src/imagehost.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/settingshelper.cpp \
+    src/ui/iconwidget.cpp \
+    src/ui/pagebutton.cpp \
+    src/ui/titlebar.cpp \
+    src/utils/httpclient.cpp
 

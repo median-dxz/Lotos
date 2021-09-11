@@ -1,16 +1,20 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QDebug>
 #include <QFile>
 #include <QFileDialog>
 #include <QGraphicsDropShadowEffect>
+#include <QHBoxLayout>
 #include <QMainWindow>
+#include <QPainter>
 #include <QPushButton>
+#include <QVector>
 
 #include "imagehost.h"
-#include "pagebutton.h"
 #include "settingshelper.h"
+#include "ui/iconwidget.h"
+#include "ui/pagebutton.h"
+#include "ui/titlebar.h"
 #include "utils/httpclient.h"
 
 QT_BEGIN_NAMESPACE
@@ -26,10 +30,11 @@ class MainWindow : public QMainWindow {
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-   public slots:
+   private slots:
     void onHostLoginClicked();
     void onHostResetClicked();
     void onMainProcessClosed();
+    void onUploadButtonClicked();
 
    signals:
     void widgetPageChanged(int);
@@ -42,6 +47,8 @@ class MainWindow : public QMainWindow {
     void mousePressEvent(QMouseEvent *event) override;
 
    private:
+    enum PAGE { UploadPage, GalleryPage, HostDashBoardPage, SettingsPage };
+
     Ui::MainWindow *ui;
     QNetworkProxy proxy;
     SMMS *smms;
@@ -52,15 +59,21 @@ class MainWindow : public QMainWindow {
     bool loadQStyleSheet(const QString &fileName);
     void componentsLayoutManager();
     void interfaceStyleManager();
+    void loadPage(PAGE index);
 
     void test();
 
-    const QString PATH_CONFIG = "config.json";
     bool mousePressed = false;
     QPoint movingPoint;
 
-    enum PAGE { UploadPage, GalleryPage, HostDashBoardPage, SettingsPage };
-    void loadPage(PAGE index);
+    QList<IconWidget *> iconWidgets;
+
+    const QString PATH_CONFIG = "config.json";
+    const QList<QString> iconPaths = QList<QString>() << (":/res/icons/page_1.png") << (":/res/icons/page_1_ig.png")
+                                                      << (":/res/icons/page_2.png") << (":/res/icons/page_2_ig.png")
+                                                      << (":/res/icons/page_3.png") << (":/res/icons/page_3_ig.png")
+                                                      << (":/res/icons/page_4.png") << (":/res/icons/page_4_ig.png");
+    const QSize iconWidgetSize = QSize(213, 247);
 };
 
 #endif  // MAINWINDOW_H

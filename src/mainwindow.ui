@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>934</width>
-    <height>598</height>
+    <width>972</width>
+    <height>632</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -79,13 +79,13 @@
          </property>
          <layout class="QVBoxLayout" name="layout">
           <property name="spacing">
-           <number>0</number>
+           <number>24</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
           <property name="topMargin">
-           <number>40</number>
+           <number>80</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
@@ -98,7 +98,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>80</height>
+              <height>40</height>
              </size>
             </property>
             <property name="maximumSize">
@@ -123,10 +123,10 @@
              <string>上传</string>
             </property>
             <property name="checkable">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="flat">
              <bool>true</bool>
@@ -138,7 +138,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>80</height>
+              <height>40</height>
              </size>
             </property>
             <property name="maximumSize">
@@ -157,7 +157,7 @@
              <string>图片集</string>
             </property>
             <property name="checkable">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="flat">
              <bool>true</bool>
@@ -169,7 +169,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>80</height>
+              <height>40</height>
              </size>
             </property>
             <property name="maximumSize">
@@ -188,7 +188,7 @@
              <string>图床设置</string>
             </property>
             <property name="checkable">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="flat">
              <bool>true</bool>
@@ -200,7 +200,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>80</height>
+              <height>40</height>
              </size>
             </property>
             <property name="maximumSize">
@@ -225,7 +225,7 @@
              <string>设置</string>
             </property>
             <property name="checkable">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="flat">
              <bool>true</bool>
@@ -263,7 +263,7 @@
           <number>0</number>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="uploadPage">
           <property name="sizePolicy">
@@ -291,28 +291,6 @@
            <property name="verticalSpacing">
             <number>20</number>
            </property>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="font">
-              <font>
-               <family>Microsoft YaHei UI</family>
-               <pointsize>24</pointsize>
-              </font>
-             </property>
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="text">
-              <string>图片上传</string>
-             </property>
-             <property name="textFormat">
-              <enum>Qt::PlainText</enum>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
            <item row="3" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <property name="spacing">
@@ -408,29 +386,49 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="dragBox">
-             <property name="maximumSize">
-              <size>
-               <width>16777213</width>
-               <height>16777215</height>
-              </size>
-             </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
              <property name="font">
               <font>
-               <family>Microsoft YaHei UI Light</family>
-               <pointsize>14</pointsize>
+               <family>Microsoft YaHei UI</family>
+               <pointsize>24</pointsize>
               </font>
              </property>
-             <property name="cursor">
-              <cursorShape>ArrowCursor</cursorShape>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
              </property>
              <property name="text">
-              <string>拖动图片到此处...</string>
+              <string>图片上传</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::PlainText</enum>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QScrollArea" name="dragBox">
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAsNeeded</enum>
+             </property>
+             <property name="horizontalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="dragBoxContents">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>686</width>
+                <height>280</height>
+               </rect>
+              </property>
+             </widget>
             </widget>
            </item>
           </layout>

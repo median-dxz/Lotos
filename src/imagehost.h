@@ -12,6 +12,8 @@ class SMMS : public QObject {
     explicit SMMS(QObject *parent = nullptr, QString api = "https://sm.ms/api/v2");
     static SMMS &getInstance();
 
+    enum HOST_SUPPORT_FORMAT { JPG, PNG, BMP, WEBP, GIF };
+
     struct Response {
         bool success;
         QString code;

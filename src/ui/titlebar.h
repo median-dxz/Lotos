@@ -1,7 +1,6 @@
 #ifndef TITLEBAR_H
 #define TITLEBAR_H
 
-#include <QDebug>
 #include <QLabel>
 #include <QLayout>
 #include <QObject>
