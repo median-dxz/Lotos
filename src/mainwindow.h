@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QHBoxLayout>
 #include <QMainWindow>
 #include <QPainter>
 #include <QPushButton>
@@ -25,10 +26,6 @@ class MainWindow : public QMainWindow {
    public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    const QList<QString> iconPaths = QList<QString>() << (":/res/icons/page_1.png") << (":/res/icons/page_1_ig.png")
-                                                      << (":/res/icons/page_2.png") << (":/res/icons/page_2_ig.png")
-                                                      << (":/res/icons/page_3.png") << (":/res/icons/page_3_ig.png")
-                                                      << (":/res/icons/page_4.png") << (":/res/icons/page_4_ig.png");
 
    public slots:
    signals:
@@ -45,7 +42,11 @@ class MainWindow : public QMainWindow {
     QList<IconWidget *> iconWidgets;
     void test();
 
-    void delpix();
+    const QList<QString> iconPaths = QList<QString>() << (":/res/icons/page_1.png") << (":/res/icons/page_1_ig.png")
+                                                      << (":/res/icons/page_2.png") << (":/res/icons/page_2_ig.png")
+                                                      << (":/res/icons/page_3.png") << (":/res/icons/page_3_ig.png")
+                                                      << (":/res/icons/page_4.png") << (":/res/icons/page_4_ig.png");
+    const QSize iconWidgetSize = QSize(213, 247);
 
    private:
     void onUploadButtonClicked();

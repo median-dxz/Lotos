@@ -1,6 +1,4 @@
 #include "mainwindow.h"
-#include <QHBoxLayout>
-#include <QTimer>
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -11,15 +9,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     test();
 
     connect(ui->uploadButton, &QPushButton::clicked, this, &MainWindow::onUploadButtonClicked);
-
-    //    QTimer *time = new QTimer;
-    //    time->start(20);
-    //    connect(time, &QTimer::timeout, this, [=]() {
-    //        if (IconWidget::dele) {
-    //            delpix();
-    //            IconWidget::dele = 0;
-    //        }
-    //    });
 }
 
 MainWindow::~MainWindow() {
@@ -42,6 +31,13 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
 }
 
 void MainWindow::componentsLayoutManager() {
+    QGridLayout *gridlayout = new QGridLayout;
+    gridlayout->setMargin(8);
+    gridlayout->setHorizontalSpacing(8);
+    gridlayout->setVerticalSpacing(8);
+    gridlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    ui->dragBoxContents->setLayout(gridlayout);
+
     // set pagebutton toggle signal&icon
     QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
 
@@ -68,25 +64,23 @@ void MainWindow::test() {
 }
 
 void MainWindow::onUploadButtonClicked() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("选择图片"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("选择图片"), "%USERDATA%\\Pictures");
+    //    QString fileName = "56008092_p0.jpg";
     QPixmap p;
 
     if (p.load(fileName)) {
+        int cols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
+        int count = iconWidgets.count();
         IconWidget *widget = new IconWidget(ui->dragBox);
 
-        widget->setGeometry(8, 8, p.width() / p.height() * (ui->dragBox->height() - 80), ui->dragBox->height() - 16);
-        widget->show();
-
-        widget->setPic(fileName);
+        QGridLayout *l = ((QGridLayout *)ui->dragBoxContents->layout());
+        l->addWidget(widget, count / cols, count % cols);
+        widget->setFixedSize(iconWidgetSize);
+        widget->setImage(QImage(fileName));
 
         iconWidgets.append(widget);
-        int left_pos = 0;
-        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++) {
-            (*iter)->move(left_pos + 8, 8);
-            left_pos += (*iter)->width();
-        }
 
-        connect(widget, &QWidget::destroyed, this, [=](QObject *obj) {
+        connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
             QList<IconWidget *>::iterator del_iter;
             for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++) {
                 if (*iter == obj) {
@@ -94,11 +88,21 @@ void MainWindow::onUploadButtonClicked() {
                 }
             }
             iconWidgets.erase(del_iter);
-            int left_pos = 0;
+
+            while (!((QGridLayout *)ui->dragBoxContents->layout())->isEmpty()) {
+                delete ((QGridLayout *)ui->dragBoxContents->layout())->takeAt(0);
+            }
+
+            obj->deleteLater();
+
+            int c = 0;
+            int cols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
             for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++) {
-                (*iter)->move(left_pos + 8, 8);
-                left_pos += (*iter)->width();
+                l->addWidget(*iter, c / cols, c % cols);
+                c++;
             }
         });
+    } else {
+        qDebug() << "?错误的图片选择?";
     }
 }

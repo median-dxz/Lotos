@@ -3,9 +3,9 @@
 
 #include <QDebug>
 #include <QFile>
-#include <QFileDialog>
 #include <QFont>
 #include <QGraphicsDropShadowEffect>
+#include <QHBoxLayout>
 #include <QPainter>
 #include <QPushButton>
 #include <QRect>
@@ -13,19 +13,20 @@
 #include <QWidget>
 #include <cmath>
 
-struct PicFileInfo {
-    QString format;
-    qint64 fileSize = 0;
-    QSize size;
-};
-
 class IconWidget : public QWidget {
+    Q_OBJECT
    public:
     explicit IconWidget(QWidget *parent = nullptr);
-    bool setPic(QString fileName);
-    const PicFileInfo &picInfo() const { return pic; }
+
+    enum HOST_SUPPORT_FORMAT { JPG, PNG, BMP, WEBP, GIF };
+
+    void setImage(QImage img);
+    QImage &Image() { return pix; }
 
     static QString sizeUnit(qint64 size);
+
+   signals:
+    void onDeleteBtnClicked(IconWidget *);
 
    protected:
     void paintEvent(QPaintEvent *) override;
@@ -33,8 +34,8 @@ class IconWidget : public QWidget {
    private:
     void setShadow();
     void setDeleteBtn();
-    PicFileInfo pic;
-    QPixmap pix;
+    QImage pix;
+    QImage thrumb;
 };
 
 #endif  // ICONWIDGET_H

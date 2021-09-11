@@ -37,6 +37,10 @@ background: rgba(0,0,0,6%);
     border-radius: 2px;
 }
 
+#dragBox #dragBoxContents{
+    background-color: #ffffff;
+}
+
 #dragBox QPushButton[class_type="iconwidget.sub.del"] {
     margin: 4px;
     border-radius: 4px;
