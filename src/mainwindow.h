@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDir>
 #include <QFile>
 #include <QFileDialog>
 #include <QGraphicsDropShadowEffect>
@@ -15,6 +16,7 @@
 
 #include "iconwidget.h"
 #include "pagebutton.h"
+#include "pictureviewwidget.h"
 #include "titlebar.h"
 
 #include "utils/httpclient.h"
@@ -36,6 +38,7 @@ class MainWindow : public QMainWindow {
     void onHostLoginClicked();
     void onHostResetClicked();
     void onMainProcessClosed();
+    void onSelectFilesButtonClicked();
     void onUploadButtonClicked();
 
    signals:
@@ -56,6 +59,8 @@ class MainWindow : public QMainWindow {
     SMMS *smms;
     SettingsHelper globalSettings;
 
+    int uploadBoxCols = 0;
+
     void init();
 
     bool loadQStyleSheet(const QString &fileName);
@@ -70,12 +75,13 @@ class MainWindow : public QMainWindow {
 
     QList<IconWidget *> iconWidgets;
 
+    const int UPLOAD_FILE_LIMIT = 20;
     const QString PATH_CONFIG = "config.json";
     const QList<QString> iconPaths = QList<QString>() << (":/res/icons/page_1.png") << (":/res/icons/page_1_ig.png")
                                                       << (":/res/icons/page_2.png") << (":/res/icons/page_2_ig.png")
                                                       << (":/res/icons/page_3.png") << (":/res/icons/page_3_ig.png")
                                                       << (":/res/icons/page_4.png") << (":/res/icons/page_4_ig.png");
-    const QSize iconWidgetSize = QSize(213, 247);
+    const QSize iconWidgetSize = QSize(270, 313);
 };
 
 #endif  // MAINWINDOW_H

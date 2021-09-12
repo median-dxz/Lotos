@@ -16,15 +16,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 void MainWindow::test() {
     qDebug() << QSslSocket::sslLibraryBuildVersionString();
     qDebug() << QSslSocket::supportsSsl();
+
+    connect(ui->tb1, &QPushButton::clicked, [=] {
+        if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
+            HttpClient *client = nullptr;
+            client = smms->getUploadHistory(1);
+            connect(client, &HttpClient::responseFinished, [=](HttpClient::Response *res) {
+                qDebug() << res->getText();
+                SMMS::Response data;
+                SMMS::praseResponse(res->getJson(), data);
+                for (auto obj : qAsConst(data.data)) {
+                    SMMS::ImageInfomation info;
+                    SMMS::praseImageInfomation(obj.toObject(), info);
+                    qDebug() << info.filename;
+                }
+
+                delete res;
+            });
+        }
+    });
 }
 
 MainWindow::~MainWindow() {
     delete ui;
-}
-
-void MainWindow::onMainProcessClosed() {
-    globalSettings.save();
-    close();
 }
 
 void MainWindow::interfaceStyleManager() {
@@ -67,8 +81,8 @@ void MainWindow::componentsLayoutManager() {
     gridlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     ui->dragBoxContents->setLayout(gridlayout);
 
+    connect(ui->selectFilesButton, &QPushButton::clicked, this, &MainWindow::onSelectFilesButtonClicked);
     connect(ui->uploadButton, &QPushButton::clicked, this, &MainWindow::onUploadButtonClicked);
-
     // set imghost dashbroad page
     ui->pageSwitchWidget->installEventFilter(this);
     connect(ui->hostLogin, &QPushButton::clicked, this, &MainWindow::onHostLoginClicked);
@@ -91,11 +105,11 @@ void MainWindow::componentsLayoutManager() {
 
         pageButton->setIconPath(iconPaths.at(index * 2 - 2), iconPaths.at(index * 2 - 1));
         pageButton->setIconSize(QSize(28, 28));
-        pageButton->setIconOffset(18, pageButton->height() / 2 - 10);
+        pageButton->setIconOffset(18, pageButton->height() / 2 - 12);
         pageButton->drawPix(iconPaths[index * 2 - 2]);
     }
 
-    PageButtons.at(0)->setCurrentChosen(1);
+    ui->stackedWidget->setCurrentIndex(UploadPage);
 }
 
 void MainWindow::loadPage(MainWindow::PAGE index) {
@@ -145,6 +159,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event) {
         QPoint move_pos = event->globalPos();
         move(move_pos - movingPoint);
     }
+}
+
+void MainWindow::onMainProcessClosed() {
+    globalSettings.save();
+    close();
 }
 
 void MainWindow::onHostLoginClicked() {
@@ -228,6 +247,91 @@ void MainWindow::onHostResetClicked() {
     ui->userInfoLabel->setText(QString(tr("<div><b>用户组:</b> 未登录用户</div>")));
 }
 
+void MainWindow::onSelectFilesButtonClicked() {
+    QDir dir = QDir::home();
+    dir.cd("Pictures");
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("选择图片"), dir.absolutePath(),
+                                                          tr("Support Images(*.png *.jpg *.jpeg *.bmp *webp *.gif);;"
+                                                             "任意文件 (*.*)"));
+
+    for (const QString &fileName : qAsConst(fileNames)) {
+        QFile file(fileName);
+        file.open(QFile::ReadOnly);
+        QByteArray data = file.readAll();
+
+        if (QImage().loadFromData(data)) {
+            if (SMMS::isSupportFormat(data)) {
+                if (iconWidgets.count() < UPLOAD_FILE_LIMIT) {
+                    uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
+
+                    IconWidget *widget = new IconWidget(ui->dragBox);
+                    widget->hide();  //减少闪烁
+
+                    QGridLayout *gridLayout = ((QGridLayout *)ui->dragBoxContents->layout());
+                    gridLayout->addWidget(widget, iconWidgets.count() / uploadBoxCols,
+                                          iconWidgets.count() % uploadBoxCols);
+                    widget->setFixedSize(iconWidgetSize);
+                    widget->addImageFromFile(fileName);
+
+                    widget->show();
+
+                    iconWidgets.append(widget);
+
+                    connect(widget, &IconWidget::onViewBtnClicked, this, [=](IconWidget *obj) {
+                        PictureViewWidget &x = PictureViewWidget::Instance();
+                        x.setMainWidget(ui->viewport);
+                        x.show();
+                    });
+
+                    connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
+                        QList<IconWidget *>::iterator del_iter;
+                        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
+                             iter++) {
+                            if (*iter == obj) {
+                                del_iter = iter;
+                                break;
+                            }
+                        }
+                        iconWidgets.erase(del_iter);
+
+                        while (!gridLayout->isEmpty()) {
+                            delete gridLayout->takeAt(0);
+                        }
+
+                        obj->deleteLater();
+
+                        uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
+                        int i = 0;
+                        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
+                             iter++, i++) {
+                            gridLayout->addWidget(*iter, i / uploadBoxCols, i % uploadBoxCols);
+                        }
+                    });
+                } else {
+                    qDebug() << "ERR: 待传区图片数量已达上限";
+                }
+            } else {
+                qDebug() << "ERR: 不是受支持的格式";
+            }
+        } else {
+            qDebug() << "ERR: 不是有效的图片文件";
+        }
+    }
+}
+
+void MainWindow::onUploadButtonClicked() {
+    if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
+        for (auto i : qAsConst(iconWidgets)) {
+            qDebug() << i->imageInfo().fileName();
+            HttpClient *client = smms->upload(i->imageData(), i->imageInfo().fileName(), true);
+            connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
+                qDebug() << r->getText();
+                delete r;
+            });
+        }
+    }
+}
+
 bool MainWindow::loadQStyleSheet(const QString &fileName) {
     QFile qssFile(fileName);
     QString stylesheet = qApp->styleSheet();
@@ -238,48 +342,5 @@ bool MainWindow::loadQStyleSheet(const QString &fileName) {
         return true;
     } else {
         return false;
-    }
-}
-
-void MainWindow::onUploadButtonClicked() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("选择图片"));
-    QPixmap p;
-
-    if (p.load(fileName)) {
-        int cols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
-        int count = iconWidgets.count();
-        IconWidget *widget = new IconWidget(ui->dragBox);
-
-        QGridLayout *l = ((QGridLayout *)ui->dragBoxContents->layout());
-        l->addWidget(widget, count / cols, count % cols);
-        widget->setFixedSize(iconWidgetSize);
-        widget->setImage(QImage(fileName));
-
-        iconWidgets.append(widget);
-
-        connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
-            QList<IconWidget *>::iterator del_iter;
-            for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++) {
-                if (*iter == obj) {
-                    del_iter = iter;
-                }
-            }
-            iconWidgets.erase(del_iter);
-
-            while (!((QGridLayout *)ui->dragBoxContents->layout())->isEmpty()) {
-                delete ((QGridLayout *)ui->dragBoxContents->layout())->takeAt(0);
-            }
-
-            obj->deleteLater();
-
-            int c = 0;
-            int cols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
-            for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++) {
-                l->addWidget(*iter, c / cols, c % cols);
-                c++;
-            }
-        });
-    } else {
-        qDebug() << "ERR: 错误的图片选择";
     }
 }

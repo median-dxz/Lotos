@@ -1,47 +1,74 @@
 #dragBox {
-    border: 2px dashed #dcdfe6;
-    border-radius: 2px;
+  border: 2px dashed #dcdfe6;
+  border-radius: 2px;
 }
 
-#dragBox #dragBoxContents{
-    background-color: #ffffff;
+#dragBox #dragBoxContents {
+  background-color: #ffffff;
 }
 
-#dragBox QPushButton[class_type="iconwidget.sub.del"] {
-    margin: 4px;
-    border-radius: 4px;
-    background-color: #F56C6C;
-    border: none;
+#dragBox .QPushButton[class_type="iconwidget.sub.del"] {
+  margin: 4px;
+  border-radius: 4px;
+  background-color: #f56c6c;
+  border: none;
 }
 
-#dragBox QPushButton:hover[class_type="iconwidget.sub.del"] {
-    background: #f78989;
+#dragBox .QPushButton:hover[class_type="iconwidget.sub.del"] {
+  background-color: #f78989;
 }
 
-#dragBox QPushButton:pressed[class_type="iconwidget.sub.del"] {
-    background: #dd6161;
+#dragBox .QPushButton:pressed[class_type="iconwidget.sub.del"] {
+  background-color: #dd6161;
+}
+
+#dragBox .QPushButton[class_type="iconwidget.sub.view"] {
+  margin: 4px;
+  border-radius: 4px;
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
+}
+
+#dragBox .QPushButton:hover[class_type="iconwidget.sub.view"] {
+  border-color: #c6e2ff;
+  background-color: #ecf5ff;
+}
+
+#dragBox .QPushButton:pressed[class_type="iconwidget.sub.view"] {
+  border-color: #3a8ee6;
 }
 
 
-#uploadButton {
-  margin: 0px;
+
+#uploadPage .QPushButton {
   height: 20px;
-  border-radius: 20px;
-  padding: 12px 23px;
+  width: 102px;
+  padding: 12px 24px;
   color: #fff;
   background-color: #409eff;
-  border-color: #409eff;
-  font: 12pt "Microsoft JhengHei";
+  border-color: none;
+  border-radius: 4px;
 }
 
-#uploadButton:hover {
+#uploadPage .QPushButton:hover {
   background: #66b1ff;
   border-color: #66b1ff;
 }
 
-#uploadButton:pressed {
+#uploadPage .QPushButton:pressed {
   background-color: #409eff;
   border-color: #409eff;
+}
+
+#uploadPage .QPushButton#selectFilesButton {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: 1px;
+}
+
+#uploadPage .QPushButton#uploadButton {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 #uploadProgress {

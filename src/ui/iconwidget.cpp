@@ -4,20 +4,23 @@
 
 IconWidget::IconWidget(QWidget *parent) : QWidget(parent) {
     QHBoxLayout *box = new QHBoxLayout(this);
-    box->setMargin(0);
+    box->setMargin(4);
     box->setSpacing(0);
     box->setAlignment(Qt::AlignBottom);
     this->setLayout(box);
 }
 
-void IconWidget::setImage(QImage img) {
+void IconWidget::addImageFromFile(const QString &fileName) {
+    setImage(QImage(fileName));
+    setImageInfo(QFileInfo(fileName));
+    QFile file(fileName);
+    file.open(QFile::ReadOnly);
+    setImageData(QByteArray(file.readAll()));
+
     QHBoxLayout *box = ((QHBoxLayout *)layout());
-    pix = img;
-
-    thrumb = pix.scaled(width(), height() - 80, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
     setShadow();
     box->addStretch();
+    setViewBtn();
     setDeleteBtn();
     update();
 }
@@ -32,22 +35,66 @@ void IconWidget::paintEvent(QPaintEvent *) {
 
     QRect rect;
 
-    rect.setRect(0, 0, thrumb.width(), thrumb.height());
-    painter.drawImage(rect, thrumb);
+    rect.setRect((width() - thumb.width()) / 2, 0, thumb.width(), thumb.height());
+    painter.drawImage(rect, thumb);
 
-    painter.setFont(QFont("Microsoft YaHei", 12, 400));
+    painter.setFont(QFont("Microsoft YaHei", 12));
+    painter.setPen(QColor("#606266"));
 
-    QString text = QString("%1  (%2%3) ").arg("name").arg(1000).arg(sizeUnit(1000));
-    painter.setPen(QColor("#CCC"));
-    painter.drawText(QRect(0, height() - 80, width(), 40), text);
+    QString text;
+    text = (info.baseName().size() > 16 ? info.baseName().left(16) + "..." : info.baseName());
+
+    painter.drawText(QRect((width() - painter.fontMetrics().width(text)) / 2, height() - INFO_SPACE, width(), 40),
+                     text);
+
+    text =
+        "\n" + QString::number(info.size() / pow(2, int(log2(info.size())) / 10 * 10), 'f', 2) + sizeUnit(info.size());
+    painter.drawText(QRect((width() - painter.fontMetrics().width(text)) / 2, height() - INFO_SPACE, width(), 40),
+                     text);
+
+    painter.setPen(QColor("#ebeef5"));
+    painter.drawRect(0, 0, width() - painter.pen().width(), height() - painter.pen().width());
+}
+
+void IconWidget::enterEvent(QEvent *) {
+    hover = true;
+    QPropertyAnimation *EnterAnimation = new QPropertyAnimation(shadow, "color", this);
+
+    EnterAnimation->setDuration(200);
+    EnterAnimation->setStartValue(QColor(0, 0, 0, 255 * 0));
+    EnterAnimation->setEndValue(QColor(0, 0, 0, 255 * 0.14));
+    EnterAnimation->start();
+}
+
+void IconWidget::leaveEvent(QEvent *) {
+    hover = false;
+    QPropertyAnimation *EnterAnimation = new QPropertyAnimation(shadow, "color", this);
+
+    EnterAnimation->setDuration(200);
+    EnterAnimation->setStartValue(QColor(0, 0, 0, 255 * 0.14));
+    EnterAnimation->setEndValue(QColor(0, 0, 0, 255 * 0));
+    EnterAnimation->start();
 }
 
 void IconWidget::setShadow() {
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
+    shadow = new QGraphicsDropShadowEffect();
     shadow->setOffset(0, 2);
-    shadow->setColor(QColor(0, 0, 0, 255 * 0.14));
+    shadow->setColor(QColor(0, 0, 0, 255 * 0));
     shadow->setBlurRadius(20);
     this->setGraphicsEffect(shadow);
+}
+
+void IconWidget::setViewBtn() {
+    QPushButton *btn = new QPushButton(this);
+    layout()->addWidget(btn);
+    btn->setFixedSize(QSize(40, 40));
+
+    QIcon ico = QIcon();
+    ico.addFile(":/res/icons/view.png", QSize(24, 24));
+
+    btn->setIcon(ico);
+    btn->setProperty("class_type", "iconwidget.sub.view");
+    connect(btn, &QPushButton::clicked, this, [&] { emit onViewBtnClicked(this); });
 }
 
 void IconWidget::setDeleteBtn() {
@@ -77,4 +124,29 @@ QString IconWidget::sizeUnit(qint64 size) {
             break;
     }
     return "";
+}
+
+void IconWidget::setImage(QImage img) {
+    pix = img;
+    thumb = pix.scaled(width(), height() - INFO_SPACE, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
+
+QImage IconWidget::image() const {
+    return pix;
+}
+
+void IconWidget::setImageData(QByteArray ba) {
+    data = ba;
+}
+
+QByteArray &IconWidget::imageData() {
+    return data;
+}
+
+void IconWidget::setImageInfo(QFileInfo fi) {
+    info = fi;
+}
+
+QFileInfo IconWidget::imageInfo() const {
+    return info;
 }

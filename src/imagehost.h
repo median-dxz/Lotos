@@ -9,10 +9,7 @@
 class SMMS : public QObject {
     Q_OBJECT
    public:
-    explicit SMMS(QObject *parent = nullptr, QString api = "https://sm.ms/api/v2");
     static SMMS &getInstance();
-
-    enum HOST_SUPPORT_FORMAT { JPG, PNG, BMP, WEBP, GIF };
 
     struct Response {
         bool success;
@@ -64,8 +61,12 @@ class SMMS : public QObject {
     static void praseResponse(const QJsonDocument &data, Response &res);
     static void praseImageInfomation(const QJsonObject &data, ImageInfomation &res);
     static void praseUserProfile(const QJsonObject &data, UserProfile &res);
+    static bool isSupportFormat(QByteArray &data);
 
    private:
+    explicit SMMS(QObject *parent = nullptr, QString api = "https://sm.ms/api/v2");
+    SMMS(const SMMS &other);
+
     const QString name = "sm.ms";
     const QString basic_api;
     QString authorization;

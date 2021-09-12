@@ -3,18 +3,18 @@
 #include <QDebug>
 
 TitleBar::TitleBar(QWidget *parent) : QWidget(parent) {
-    QHBoxLayout *title_bar_layout = new QHBoxLayout;
+    QHBoxLayout *titleBarLayout = new QHBoxLayout;
 
-    title_bar_layout->addWidget(mainIcon);
-    title_bar_layout->addSpacing(10);
-    title_bar_layout->addWidget(title);
-    title_bar_layout->addStretch();
-    title_bar_layout->addWidget(miniBtn);
-    title_bar_layout->addWidget(closeBtn);
+    titleBarLayout->addWidget(mainIcon);
+    titleBarLayout->addSpacing(10);
+    titleBarLayout->addWidget(title);
+    titleBarLayout->addStretch();
+    titleBarLayout->addWidget(miniBtn);
+    titleBarLayout->addWidget(closeBtn);
 
-    title_bar_layout->setMargin(0);
-    title_bar_layout->setSpacing(0);
-    setLayout(title_bar_layout);
+    titleBarLayout->setMargin(0);
+    titleBarLayout->setSpacing(0);
+    setLayout(titleBarLayout);
 
     miniBtn->setFixedSize(QSize(32, 32));
     closeBtn->setFixedSize(QSize(32, 32));
