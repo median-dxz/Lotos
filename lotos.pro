@@ -17,7 +17,8 @@ SOURCES += \
     imagehost.cpp \
     settingshelper.cpp \
     src/titlebar.cpp \
-    utils/httpclient.cpp
+    utils/httpclient.cpp \
+    src/notification.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -25,7 +26,8 @@ HEADERS += \
     imagehost.h \
     settingshelper.h \
     src/titlebar.h \
-    utils/httpclient.h
+    utils/httpclient.h \
+    src/notification.h
 
 FORMS += \
     mainwindow.ui

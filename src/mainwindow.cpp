@@ -9,6 +9,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     interfaceStyleManager();
 
     test();
+
+    promptTimer = new QTimer(this);
+    promptTimer->setSingleShot(true);
+    QPushButton *button = new QPushButton(this);
+    button->move(this->width()-250,0);
+    button->setText("start");
+    connect(button,&QPushButton::clicked,this,[=](){startTimer();});
+    connect(promptTimer,&QTimer::timeout,this,[=](){hidewidget();});
+
 }
 
 void MainWindow::test() {
@@ -239,3 +248,23 @@ bool MainWindow::loadQStyleSheet(const QString &fileName) {
         return false;
     }
 }
+void MainWindow::startTimer( ){
+
+    promptWindow = new Notification(this);
+    promptWindow->move(this->x()+this->width()-promptWindow->width(),this->y());
+    QString T="begin";
+    QString C="begin";
+    QString color = "#409EFF";
+    promptWindow->set(T,C,color);
+    promptTimer->start(3000);
+
+    //fade in
+    promptWindow->fadeindown();
+
+}
+void MainWindow::hidewidget(){
+
+    //fade out
+   promptWindow->fadeoutdown();
+}
+

@@ -7,11 +7,13 @@
 #include <QGraphicsDropShadowEffect>
 #include <QMainWindow>
 #include <QPushButton>
+#include <QTimer>
 
 #include "imagehost.h"
 #include "pagebutton.h"
 #include "settingshelper.h"
 #include "utils/httpclient.h"
+#include "notification.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -46,7 +48,11 @@ class MainWindow : public QMainWindow {
     QNetworkProxy proxy;
     SMMS *smms;
     SettingsHelper globalSettings;
+    Notification *promptWindow;
+    QTimer *promptTimer;
 
+    void startTimer();
+    void hidewidget();
     void init();
 
     bool loadQStyleSheet(const QString &fileName);

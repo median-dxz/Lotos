@@ -18,8 +18,8 @@ bool SettingsHelper::load(const QString fileName) {
             qDebug() << prase_err->errorString();
             return false;
         }
-        imghost = settings["host"].toVariant().toMap();
-        user = settings["user"].toVariant().toMap();
+        imghost = settings.object()["host"].toVariant().toMap();
+        user = settings.object()["user"].toVariant().toMap();
     } else {
         if (!configFile.open(QIODevice::WriteOnly)) {
             qDebug() << QStringLiteral("Couldn't open save file.");
