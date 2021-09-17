@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QJsonDocument>
 
 #include "utils/httpclient.h"
 

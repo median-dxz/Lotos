@@ -37,7 +37,9 @@ HEADERS += \
     src/ui/iconwidget.h \
     src/ui/pagebutton.h \
     src/ui/titlebar.h \
-    src/utils/httpclient.h
+    src/utils/httpclient.h \
+    thread.h \
+    src/ui/paintwindow.h
 
 SOURCES += \
     src/imagehost.cpp \
@@ -47,5 +49,7 @@ SOURCES += \
     src/ui/iconwidget.cpp \
     src/ui/pagebutton.cpp \
     src/ui/titlebar.cpp \
-    src/utils/httpclient.cpp
+    src/utils/httpclient.cpp \
+    thread.cpp \
+    src/ui/paintwindow.cpp
 

@@ -12,6 +12,8 @@
 
 #include "imagehost.h"
 #include "settingshelper.h"
+#include "thread.h"
+#include "paintwindow.h"
 
 #include "iconwidget.h"
 #include "pagebutton.h"
@@ -37,6 +39,7 @@ class MainWindow : public QMainWindow {
     void onHostResetClicked();
     void onMainProcessClosed();
     void onUploadButtonClicked();
+    void displayResult(int);
 
    signals:
     void widgetPageChanged(int);
@@ -55,6 +58,11 @@ class MainWindow : public QMainWindow {
     QNetworkProxy proxy;
     SMMS *smms;
     SettingsHelper globalSettings;
+
+    Thread *thread;
+    PaintWindow * M = nullptr;
+    void Painting(int i);
+    static int thing();//阻断事件！
 
     void init();
 

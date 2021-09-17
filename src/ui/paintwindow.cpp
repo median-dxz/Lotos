@@ -1,0 +1,187 @@
+#include "paintwindow.h"
+
+PaintWindow::PaintWindow(QMainWindow * )
+{
+
+    connect(pTimer, &QTimer::timeout, this, &PaintWindow::updatePaintArc);
+    connect(pTimer, &QTimer::timeout, this, &PaintWindow::updatePaintErr);
+    connect(pTimer, &QTimer::timeout, this, &PaintWindow::updatePaint);
+
+}
+
+void PaintWindow::paintEvent(QPaintEvent *)
+{
+    QPainter painter(this);
+    painter.translate(width() >> 1, height() >> 1);
+    painting(k , &painter);
+    update();
+
+}
+
+
+void PaintWindow::paintArc(QPainter *painter)
+{
+
+    painter->rotate(second3);
+    gradientArc(painter, 40, 0,  90, 8, qRgb(39,120,196));
+    gradientArc(painter, 40, 180,  90, 8, qRgb(39,120,196));
+
+
+}
+
+void PaintWindow:: paintTuo(QPainter *painter)
+{
+    QPen pen(QColor(242, 116, 116),8);
+    pen.setCapStyle(Qt::RoundCap);
+    painter->setPen(pen);
+    if(second1<d)
+    painter->drawEllipse(QRect(-d/2,-(second1/2.0),d, second1));
+    else {
+        painter->drawEllipse(QRect(-d/2,-d/2,d, d));
+    }
+
+    if(second1>d&&second1<d+30)
+    {
+
+        painter ->drawLine(0,d-second1,d/4,d/4+d-second1);
+        painter ->drawLine(0,d-second1,-d/4,-d/4+d-second1);
+        painter ->drawLine(0,d-second1,-d/4,d/4+d-second1);
+        painter ->drawLine(0,d-second1,d/4,-d/4+d-second1);
+
+
+    }
+    if(second1>d+30)
+    {
+
+        painter ->drawLine(0,-d-60+second1,d/4,d/4-d-60+second1);
+        painter ->drawLine(0,-d-60+second1,-d/4,-d/4-d-60+second1);
+        painter ->drawLine(0,-d-60+second1,-d/4,d/4-d-60+second1);
+        painter ->drawLine(0,-d-60+second1,d/4,-d/4-d-60+second1);
+
+    }
+
+
+
+}
+
+void PaintWindow::paintSuc(QPainter * painter)
+{
+
+     QPen pen(QColor(165, 220, 134),8);
+     pen.setCapStyle(Qt::RoundCap);
+     painter->setPen(pen);
+
+     if(second2>220)
+     {
+         if(i<55)
+           painter->drawLine(-70,-25,-70+i,i-25);
+         if(i>=55)
+         {
+             if(i>=95)
+             {
+                 int j =95;
+                 painter->drawLine(-45-25+i-j,0-25+i-j,-45,0);
+             }
+
+             else
+                 painter->drawLine(-70,-25,-45,0);
+
+             painter->drawLine(-45,0,-15,30);
+             painter->drawLine(-15,30,-15+i-55,30-i+55);
+         }
+
+     }
+
+
+     gradientArc(painter, 80, 0,  360, 5, QColor(228,244,218));//这个是画圆环的
+     gradientArc(painter, 80, 270,  second2, 5, QColor(165, 220, 134));
+
+     if(second2>=220)
+     {
+         gradientArc(painter, 80, 270,  i*220.0/95, 5, QColor(228,244,218));
+         gradientArc(painter, 80, 160, 110, 5, QColor(228,244,218));
+     }
+
+
+
+
+}
+
+void PaintWindow::gradientArc(QPainter *painter, int radius, int startAngle, int angleLength, int arcHeight, QColor color)
+{
+
+    painter->setBrush(QColor(color) );
+    QRectF rect(-radius, -radius, radius << 1, radius << 1);
+    QPainterPath path;
+    path.arcTo(rect, startAngle, angleLength);
+    QPainterPath subPath;
+    subPath.addEllipse(rect.adjusted(arcHeight, arcHeight, -arcHeight, -arcHeight));
+
+    // path为扇形 subPath为椭圆
+    path -= subPath;
+
+    painter->setPen(Qt::NoPen);
+    painter->drawPath(path);
+}
+
+
+
+// 改变角度，进行旋转
+void PaintWindow::updatePaintArc()
+{
+    second2++;
+    if(second2>220)
+    {
+        i++;
+        if (i > 120)
+            i = 120;
+    }
+
+    if (second2 > 360)
+        second2 = 360;
+
+
+    update();
+}
+
+
+
+void PaintWindow::updatePaintErr()
+{
+    second1++;
+    if (second1 > d+60)
+        second1 = d+60;
+    update();
+}
+
+
+void PaintWindow::updatePaint()
+{
+    second3++;
+    if (second3 > 360)
+        second3 = 0;
+    update();
+
+}
+
+void PaintWindow::painting(int k ,QPainter * painter)
+{
+
+    switch (k) {
+    case 1:paintSuc(painter);
+           break;
+    case 2:paintTuo(painter);
+           break;
+    case 3:paintArc(painter);
+           break;
+    }
+
+}
+
+void PaintWindow::reSetTime()
+{
+    second1 = 0;
+    second2= 0;
+    second3= 0;
+    i=0;
+}

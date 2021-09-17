@@ -6,6 +6,14 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
+    thread = new Thread();
+    connect(thread, SIGNAL(returnResult(int)), this, SLOT(displayResult(int)));
+    connect(thread, &Thread::deleLoading , this, [=](){
+        M->hide();
+        this->show();
+        thread->wait();
+    });
+
     init();
     componentsLayoutManager();
     interfaceStyleManager();
@@ -20,6 +28,11 @@ void MainWindow::test() {
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::displayResult(int)
+{
+    qDebug()<<"事件返回值";
 }
 
 void MainWindow::onMainProcessClosed() {
@@ -95,7 +108,8 @@ void MainWindow::componentsLayoutManager() {
         pageButton->drawPix(iconPaths[index * 2 - 2]);
     }
 
-    PageButtons.at(0)->setCurrentChosen(1);
+   // PageButtons.at(0)->setCurrentChosen(1);
+    ui->stackedWidget->setCurrentIndex(UploadPage);
 }
 
 void MainWindow::loadPage(MainWindow::PAGE index) {
@@ -281,5 +295,25 @@ void MainWindow::onUploadButtonClicked() {
         });
     } else {
         qDebug() << "ERR: 错误的图片选择";
+    }
+}
+
+void MainWindow::Painting(int i)
+{
+    M->reSetTime();
+    M->pTimer->setInterval(100);
+    switch (i) {
+    case 1:
+        M->k=1;
+        M->pTimer->start(1);
+        break;
+     case 2:
+        M->k=2;
+        M->pTimer->start(2);
+        break;
+      case 3:
+        M->k=3;
+        M->pTimer->start(3);
+        break;
     }
 }
