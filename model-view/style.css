@@ -1,0 +1,60 @@
+#nt {
+  border: 1px solid black;
+}
+
+QCheckBox{
+    padding-left: 12px;
+    padding-right: 12px;
+
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/checkbox_o.png);
+}
+
+QCheckBox::indicator:unchecked:hover {
+    image: url(:/checkbox_o_hover.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/checkbox.png);
+}
+
+QPushButton[class_type="link"] {
+    border:none;
+    background:none;
+    color: green;
+}
+
+QPushButton:hover[class_type="link"] {
+    border:none;
+    background:none;
+    color: blue;
+}
+
+QPushButton:pressed[class_type="link"] {
+    border:none;
+    background:none;
+    color: gray;
+}
+
+QComboBox{
+    border:none;
+    background:none;
+    height: 0;
+}
+
+QComboBox QAbstractItemView {
+    border: 2px solid darkgray;
+    selection-background-color: lightgray;
+}
+
+QComboBox QAbstractItemView::item{
+   border: none;
+   background: blue;
+}

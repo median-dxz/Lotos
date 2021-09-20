@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>style.css</file>
+        <file>checkbox.png</file>
+        <file>checkbox_o_hover.png</file>
+        <file>checkbox_o.png</file>
+    </qresource>
+</RCC>
