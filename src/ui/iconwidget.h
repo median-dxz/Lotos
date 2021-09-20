@@ -1,12 +1,14 @@
 #ifndef ICONWIDGET_H
 #define ICONWIDGET_H
 
+#include <QBoxLayout>
 #include <QFile>
 #include <QFileInfo>
 #include <QFont>
 #include <QGraphicsDropShadowEffect>
-#include <QHBoxLayout>
+#include <QLabel>
 #include <QPainter>
+#include <QProgressBar>
 #include <QPropertyAnimation>
 #include <QPushButton>
 #include <QRect>
@@ -46,6 +48,7 @@ class IconWidget : public QWidget {
     void setShadow();
     void setDeleteBtn();
     void setViewBtn();
+    void setInfo();
 
     QImage pix;
     QFileInfo info;
@@ -54,8 +57,10 @@ class IconWidget : public QWidget {
 
     bool hover = false;
     QGraphicsDropShadowEffect *shadow;
+    QVBoxLayout *infoBox;
+    QHBoxLayout *bottomLine;
 
-    const int INFO_SPACE = 140;
+    const int INFO_SPACE = 164;
 };
 
 #endif  // ICONWIDGET_H

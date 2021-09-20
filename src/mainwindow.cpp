@@ -17,6 +17,7 @@ void MainWindow::test() {
     qDebug() << QSslSocket::sslLibraryBuildVersionString();
     qDebug() << QSslSocket::supportsSsl();
 
+    setWindowIcon(QIcon(":/res/lotos_icon.png"));
     connect(ui->tb1, &QPushButton::clicked, [=] {
         if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
             HttpClient *client = nullptr;
@@ -35,6 +36,8 @@ void MainWindow::test() {
             });
         }
     });
+    installEventFilter(this);
+    ui->imageList->setStyleSheet("border: 1px solid #dcdfe6;");
 }
 
 MainWindow::~MainWindow() {
@@ -59,8 +62,26 @@ void MainWindow::interfaceStyleManager() {
     box_shadow->setColor(QColor(0, 0, 0, 255 * 0.18));
     ui->viewport->setGraphicsEffect(box_shadow);
 
-    ui->titleBar->setIcon(QPixmap(":/res/lotos_icon.png"));
-    ui->titleBar->setTitle(tr("Lotos"));
+    QGraphicsDropShadowEffect *sider_bar_shadow = new QGraphicsDropShadowEffect(this);
+    sider_bar_shadow->setBlurRadius(12);
+    sider_bar_shadow->setOffset(2, 0);
+    sider_bar_shadow->setColor(QColor(0, 0, 0, 255 * 0.18));
+    ui->pageSwitchWidget->setGraphicsEffect(sider_bar_shadow);
+
+    QLabel *mainIcon = new QLabel(this);
+    QLabel *mainTitle = new QLabel(this);
+    mainIcon->setScaledContents(true);
+    mainIcon->setFixedSize(QSize(72, 72));
+    mainIcon->setPixmap(QPixmap(":/res/lotos_icon.png"));
+
+    mainTitle->setText(tr("Lotos"));
+    mainTitle->setFont(QFont("Agency FB", 32));
+
+    QVBoxLayout *sider_layout = dynamic_cast<QVBoxLayout *>(ui->pageSwitchWidget->layout());
+    sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
+    sider_layout->insertWidget(1, mainTitle, 0, Qt::AlignHCenter);
+    //    ui->titleBar->setIcon(QPixmap(":/res/lotos_icon.png"));
+    //    ui->titleBar->setTitle(tr("Lotos"));
 }
 
 void MainWindow::init() {
@@ -108,7 +129,7 @@ void MainWindow::componentsLayoutManager() {
         pageButton->setIconOffset(18, pageButton->height() / 2 - 12);
         pageButton->drawPix(iconPaths[index * 2 - 2]);
     }
-
+    ui->pageButton_1->setChecked(true);
     ui->stackedWidget->setCurrentIndex(UploadPage);
 }
 
@@ -131,13 +152,17 @@ void MainWindow::loadPage(MainWindow::PAGE index) {
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
+    if (obj == this && event->type() == QEvent::Close) {
+        onMainProcessClosed();
+    }
     if (obj->objectName() == "pageSwitchWidget" && event->type() == QEvent::Paint) {
-        QWidget *page_widget = (QWidget *)obj;
-        QPainter painter(page_widget);
-        painter.setRenderHint(QPainter::Antialiasing, true);
-        painter.setPen(QPen(QColor(220, 223, 230), 2));
-        painter.drawLine(page_widget->size().width(), page_widget->size().height() * 0.04, page_widget->size().width(),
-                         page_widget->size().height() * 0.96);
+        //        QWidget *page_widget = (QWidget *)obj;
+        //        QPainter painter(page_widget);
+        //        painter.setRenderHint(QPainter::Antialiasing, true);
+        //        painter.setPen(QPen(QColor(220, 223, 230), 2));
+        //        painter.drawLine(page_widget->size().width(), page_widget->size().height() * 0.04,
+        //        page_widget->size().width(),
+        //                         page_widget->size().height() * 0.96);
     }
     return QWidget::eventFilter(obj, event);
 }
@@ -163,7 +188,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event) {
 
 void MainWindow::onMainProcessClosed() {
     globalSettings.save();
-    close();
+    qApp->closeAllWindows();
+    qApp->quit();
 }
 
 void MainWindow::onHostLoginClicked() {
@@ -279,8 +305,9 @@ void MainWindow::onSelectFilesButtonClicked() {
 
                     connect(widget, &IconWidget::onViewBtnClicked, this, [=](IconWidget *obj) {
                         PictureViewWidget &x = PictureViewWidget::Instance();
-                        x.setMainWidget(ui->viewport);
+                        x.setMainWidget(ui->stackedWidget);
                         x.show();
+                        x.showInfo(obj->imageData(), obj->imageInfo());
                     });
 
                     connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {

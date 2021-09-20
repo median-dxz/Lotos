@@ -7,6 +7,10 @@
   color: #606266;
 }
 
+#pageSwitchWidget {
+  background-color: #ffffff;
+}
+
 #pageSwitchWidget PageButton {
   padding: 0px;
   padding-left: 54px;

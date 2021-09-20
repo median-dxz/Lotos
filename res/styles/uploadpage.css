@@ -8,7 +8,6 @@
 }
 
 #dragBox .QPushButton[class_type="iconwidget.sub.del"] {
-  margin: 4px;
   border-radius: 4px;
   background-color: #f56c6c;
   border: none;
@@ -23,7 +22,6 @@
 }
 
 #dragBox .QPushButton[class_type="iconwidget.sub.view"] {
-  margin: 4px;
   border-radius: 4px;
   background-color: #ffffff;
   border: 1px solid #dcdfe6;

@@ -40,6 +40,21 @@ void SMMS::praseImageInfomation(const QJsonObject &data, SMMS::ImageInfomation &
     res.url = data["url"].toString();
 }
 
+QVariantMap SMMS::ImageInfomation::toQVariantMap() const {
+    QVariantMap data;
+    data["delete"] = delete_link;
+    data["page"] = page_link;
+    data["filename"] = filename;
+    data["storename"] = storename;
+    data["hash"] = hash;
+    data["height"] = height;
+    data["width"] = width;
+    data["path"] = path;
+    data["size"] = size;
+    data["url"] = url;
+    return data;
+}
+
 void SMMS::praseUserProfile(const QJsonObject &data, UserProfile &res) {
     res.disk_limit = data["disk_limit"].toString();
     res.disk_limit_raw = data["disk_limit_raw"].toDouble();
