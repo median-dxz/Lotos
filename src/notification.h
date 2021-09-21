@@ -41,7 +41,6 @@ class Notification : public QFrame {
     QLabel *message;
 
     EffectGroup *effect;
-    QPropertyAnimation *a_geo_up;
     int index;
     void animation();
 

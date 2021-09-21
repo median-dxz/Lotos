@@ -62,10 +62,6 @@ void Notification::animation() {
     QPropertyAnimation *a_opa_in = new QPropertyAnimation(effect, "opacity");
     QPropertyAnimation *a_opa_out = new QPropertyAnimation(effect, "opacity");
 
-    a_geo_up = new QPropertyAnimation(this, "pos");
-    a_geo_up->setDuration(100);
-    a_geo_up->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
-
     QTimeLine *a_geo_left_in = new QTimeLine(400, this);
     a_geo_left_in->setFrameRange(x(), x() - FIXED_WIDTH - GAP_SPACE);
     a_geo_left_in->setUpdateInterval(10);
@@ -107,11 +103,7 @@ NotificationManager::NotificationManager(QObject *parent) : QObject(parent) {
         int top = Notification::GAP_SPACE;
         for (auto notification : qAsConst(notifications)) {
             if (notification->y() > top) {
-                //                notification->a_geo_up->stop();
-                //                notification->a_geo_up->setStartValue(geo);
                 notification->move(notification->x(), notification->y() - 8);
-                //                notification->a_geo_up->setStartValue(geo);
-                //                notification->a_geo_up->start();
             }
             top += Notification::GAP_SPACE + notification->height();
         }
