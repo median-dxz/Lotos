@@ -1,4 +1,5 @@
 #include "picturetable.h"
+#include <QDebug>
 
 PictureTable::PictureTable(QWidget *parent) : QFrame(parent) {
     header = new PictureTableHeader(this);
@@ -9,16 +10,24 @@ PictureTable::PictureTable(QWidget *parent) : QFrame(parent) {
 }
 
 void PictureTable::addData(QVariantMap d) {
-    PictureTableLine *line = new PictureTableLine(this, d);
 
+    PictureTableLine *line = new PictureTableLine(this, d);
     line->setFixedHeight(lineHeight);
     layout()->addWidget(line);
-
     datas.append(d);
     Lines.append(line);
+    connect( line , &PictureTableLine::onStateChanged, this,[=](){
+        for(int i=0 ; i<Lines.size(); i++)
+       {
+            if(i<list.size())
+                list[i]=Lines[i]->getCheckStatus();
+            else
+                list.append(Lines[i]->getCheckStatus());
+            qDebug()<<list[i]; }});
 }
 
 PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {}
+
 
 PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget(parent), data(data) {
     setLayout(new QHBoxLayout(this));
@@ -28,7 +37,7 @@ PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget
     layout()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     cb = new QCheckBox(this);
     cb->setFixedWidth(40);
-
+    connect(cb, &QCheckBox::stateChanged, this, &PictureTableLine::onStateChanged);
     lab_filename = new QLabel(this);
     lab_filename->setText(data[DataKey.filename].toString());
     lab_link = new QLabel(this);
@@ -78,3 +87,6 @@ void PictureTableLine::paintEvent(QPaintEvent *) {
     painter.setPen(QColor("#ebeef5"));
     painter.drawLine(0, 0, width(), 0);
 }
+
+
+int PictureTableLine::getCheckStatus(){return  cb->checkState();}

@@ -1,9 +1,11 @@
 #ifndef PICTURETABLE_H
 #define PICTURETABLE_H
 
+class MainWindow;
 #include <mainwindow.h>
 #include <QObject>
 #include <QWidget>
+#include <QList>
 
 class PictureTableHeader;
 class PictureTableLine;
@@ -36,13 +38,19 @@ class PictureTable : public QFrame {
     int getLineHeight() const { return lineHeight; };
     void setLineHeight(int h) { lineHeight = h; };
 
+
+
+
    public slots:
     void addData(QVariantMap d);
+
 
    private:
     PictureTableHeader *header;
     QList<PictureTableLine *> Lines;
     QList<QVariantMap> datas;
+    QList <int> list;
+
 
     int lineHeight = DefaultLineHeight;
 };
@@ -62,6 +70,7 @@ class PictureTableLine : public QWidget {
     Q_OBJECT
    public:
     PictureTableLine(QWidget *parent, QVariantMap &data);
+    int getCheckStatus();
 
    private:
     QVariantMap &data;
@@ -69,8 +78,13 @@ class PictureTableLine : public QWidget {
     QLabel *lab_filename, *lab_link, *lab_width, *lab_size;
     QPushButton *opt_del;
 
+
+signals: void onStateChanged(int );
+
    protected:
     void paintEvent(QPaintEvent *) override;
+
+
 };
 
 #endif  // PICTURETABLE_H

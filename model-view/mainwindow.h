@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+class  PictureTableLine;
 #include <QApplication>
 #include <QBoxLayout>
 #include <QCheckBox>
@@ -25,6 +26,7 @@ class MainWindow : public QWidget {
    public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QString getElidedText(QFont font, QString str, int MaxWidth);
 
    public slots:
     void insertData();

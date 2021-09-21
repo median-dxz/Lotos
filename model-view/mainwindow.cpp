@@ -79,3 +79,13 @@ QVariantMap ImageInfomation::toQVariantMap() const {
     data["thumb"] = thumb;
     return data;
 }
+
+QString MainWindow::getElidedText(QFont font, QString str, int MaxWidth)
+{
+    QStringList list = str.split('\n', QString::SkipEmptyParts);
+    QFontMetrics fontWidth(font);
+    for(int i= 0 ;i<list.size();i++)
+    list[i] = fontWidth.elidedText(list[i],Qt::ElideRight,MaxWidth);
+    str = list.join('\n');
+    return str;
+}
