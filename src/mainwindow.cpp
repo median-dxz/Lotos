@@ -28,7 +28,7 @@ void MainWindow::test() {
                 for (auto obj : qAsConst(data.data)) {
                     SMMS::ImageInfomation info;
                     SMMS::praseImageInfomation(obj.toObject(), info);
-                    qDebug() << info.filename;
+                    qDebug() << timestamp2str(info.timestamp, "yyyy/MM/dd hh:mm:ss");
                 }
 
                 delete res;

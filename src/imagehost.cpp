@@ -38,6 +38,9 @@ void SMMS::praseImageInfomation(const QJsonObject &data, SMMS::ImageInfomation &
     res.path = data["path"].toString();
     res.size = data["size"].toDouble();
     res.url = data["url"].toString();
+    if (!data["created_at"].isNull()) {
+        res.timestamp = data["created_at"].toDouble();
+    }
 }
 
 QVariantMap SMMS::ImageInfomation::toQVariantMap() const {
@@ -52,6 +55,8 @@ QVariantMap SMMS::ImageInfomation::toQVariantMap() const {
     data["path"] = path;
     data["size"] = size;
     data["url"] = url;
+    data["thumb"] = thumb;
+    data["timestamp"] = timestamp;
     return data;
 }
 

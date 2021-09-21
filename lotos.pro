@@ -41,7 +41,8 @@ HEADERS += \
     src/ui/pagebutton.h \
     src/ui/pictureviewwidget.h \
     src/ui/titlebar.h \
-    src/utils/httpclient.h
+    src/utils/httpclient.h \
+    src/utils/lotoshelper.h
 
 SOURCES += \
     src/imagehost.cpp \
@@ -53,5 +54,6 @@ SOURCES += \
     src/ui/pagebutton.cpp \
     src/ui/pictureviewwidget.cpp \
     src/ui/titlebar.cpp \
-    src/utils/httpclient.cpp
+    src/utils/httpclient.cpp \
+    src/utils/lotoshelper.cpp
 

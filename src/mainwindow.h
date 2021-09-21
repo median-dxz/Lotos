@@ -22,6 +22,7 @@
 #include "titlebar.h"
 
 #include "utils/httpclient.h"
+#include "utils/lotoshelper.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

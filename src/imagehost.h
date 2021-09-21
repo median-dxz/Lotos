@@ -42,6 +42,8 @@ class SMMS : public QObject {
         QString url;
         QString delete_link;
         QString page_link;
+        QByteArray thumb;
+        qint64 timestamp;
 
         QVariantMap toQVariantMap() const;
     };
