@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QCryptographicHash>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -41,6 +42,8 @@ class MainWindow : public QMainWindow {
     void onMainProcessClosed();
     void onSelectFilesButtonClicked();
     void onUploadButtonClicked();
+
+    void uploadFromIconWidget(IconWidget *iconwidget);
 
    signals:
     void widgetPageChanged(int);

@@ -16,5 +16,6 @@
         <file>res/styles/uploadpage.css</file>
         <file>res/icons/addimg.png</file>
         <file>res/icons/view.png</file>
+        <file>res/icons/upload_light.png</file>
     </qresource>
 </RCC>

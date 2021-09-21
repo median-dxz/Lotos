@@ -30,6 +30,7 @@ PictureViewWidget &PictureViewWidget::Instance() {
 void PictureViewWidget::setMainWidget(QWidget *mainWidget) {
     this->mainWidget = mainWidget;
     move(0, 0);
+    setFixedSize(qApp->primaryScreen()->availableSize());
 }
 
 void PictureViewWidget::setOpacity(double opacity) {
@@ -43,6 +44,7 @@ void PictureViewWidget::showInfo(QByteArray &ba, QFileInfo i) {
 
     QPixmap p = QPixmap();
     p.loadFromData(ba);
+
     info->setText(QString(tr("<h3>文件名</h3>\n%1\n"
                              "<h3>文件路径</h3>\n%2\n"
                              "<h3>文件大小</h3>\n%3\n"
@@ -53,14 +55,18 @@ void PictureViewWidget::showInfo(QByteArray &ba, QFileInfo i) {
                            IconWidget::sizeUnit(i.size()))
                       .arg(p.width())
                       .arg(p.height()));
-
-    if (p.width() > width() * 0.8 - 6)
-        p = p.scaledToWidth(width() * 0.8 - 6, Qt::SmoothTransformation);
-    if (p.height() > height())
-        p = p.scaledToWidth(height(), Qt::SmoothTransformation);
+    info->adjustSize();
+    if (p.height() > height() - 20 - info->height())
+        p = p.scaledToHeight(height() - 20 - info->height(), Qt::SmoothTransformation);
+    if (p.width() > width())
+        p = p.scaledToWidth(width(), Qt::SmoothTransformation);
     imgBox->setPixmap(p);
 
-    info->setMinimumWidth(0.2 * width());
+    QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
+    effect->setOffset(QPoint(0, 0));
+    effect->setBlurRadius(14);
+    effect->setColor(QColor(0, 0, 0, 255 * 0.6));
+    info->setGraphicsEffect(effect);
 }
 
 void PictureViewWidget::setBgColor(const QColor &bgColor) {
@@ -71,7 +77,6 @@ void PictureViewWidget::setBgColor(const QColor &bgColor) {
 
 void PictureViewWidget::showEvent(QShowEvent *) {
     if (mainWidget != nullptr) {
-        setFixedSize(qApp->primaryScreen()->availableSize());
     }
 }
 

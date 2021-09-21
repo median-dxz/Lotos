@@ -275,60 +275,76 @@ void MainWindow::onSelectFilesButtonClicked() {
         QByteArray data = file.readAll();
 
         if (QImage().loadFromData(data)) {
-            if (SMMS::isSupportFormat(data)) {
-                if (iconWidgets.count() < UPLOAD_FILE_LIMIT) {
-                    uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
-
-                    IconWidget *widget = new IconWidget(ui->dragBox);
-                    widget->hide();  //减少闪烁
-
-                    QGridLayout *gridLayout = ((QGridLayout *)ui->dragBoxContents->layout());
-                    gridLayout->addWidget(widget, iconWidgets.count() / uploadBoxCols,
-                                          iconWidgets.count() % uploadBoxCols);
-                    widget->setFixedSize(iconWidgetSize);
-                    widget->addImageFromFile(fileName);
-
-                    widget->show();
-
-                    iconWidgets.append(widget);
-
-                    connect(widget, &IconWidget::onViewBtnClicked, this, [=](IconWidget *obj) {
-                        PictureViewWidget &view = PictureViewWidget::Instance();
-                        view.setMainWidget(ui->stackedWidget);
-                        view.show();
-                        view.showInfo(obj->imageData(), obj->imageInfo());
-                    });
-
-                    connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
-                        QList<IconWidget *>::iterator del_iter;
-                        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
-                             iter++) {
-                            if (*iter == obj) {
-                                del_iter = iter;
-                                break;
-                            }
-                        }
-                        iconWidgets.erase(del_iter);
-
-                        while (!gridLayout->isEmpty()) {
-                            delete gridLayout->takeAt(0);
-                        }
-
-                        obj->deleteLater();
-
+            QString repeat = "";
+            QString tmpHash = QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
+            for (IconWidget *iconwidget : qAsConst(iconWidgets)) {
+                if (iconwidget->Hash() == tmpHash) {
+                    repeat =
+                        iconwidget->imageInfo().completeBaseName() + "." + iconwidget->imageInfo().completeSuffix();
+                    break;
+                }
+            }
+            if (repeat == QString("")) {
+                if (SMMS::isSupportFormat(data)) {
+                    if (iconWidgets.count() < UPLOAD_FILE_LIMIT) {
                         uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
-                        int i = 0;
-                        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
-                             iter++, i++) {
-                            gridLayout->addWidget(*iter, i / uploadBoxCols, i % uploadBoxCols);
-                        }
-                    });
+
+                        IconWidget *widget = new IconWidget(ui->dragBox);
+                        widget->hide();  //减少闪烁
+
+                        QGridLayout *gridLayout = ((QGridLayout *)ui->dragBoxContents->layout());
+                        gridLayout->addWidget(widget, iconWidgets.count() / uploadBoxCols,
+                                              iconWidgets.count() % uploadBoxCols);
+                        widget->setFixedSize(iconWidgetSize);
+                        widget->addImageFromFile(fileName);
+
+                        widget->show();
+
+                        iconWidgets.append(widget);
+
+                        connect(widget, &IconWidget::onUploadBtnClicked, this, &MainWindow::uploadFromIconWidget);
+
+                        connect(widget, &IconWidget::onViewBtnClicked, this, [=](IconWidget *obj) {
+                            PictureViewWidget &view = PictureViewWidget::Instance();
+                            view.setMainWidget(ui->stackedWidget);
+                            view.showInfo(obj->imageData(), obj->imageInfo());
+                            view.show();
+                        });
+
+                        connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
+                            QList<IconWidget *>::iterator del_iter;
+                            for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
+                                 iter++) {
+                                if (*iter == obj) {
+                                    del_iter = iter;
+                                    break;
+                                }
+                            }
+                            iconWidgets.erase(del_iter);
+
+                            while (!gridLayout->isEmpty()) {
+                                delete gridLayout->takeAt(0);
+                            }
+
+                            obj->deleteLater();
+
+                            uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
+                            int i = 0;
+                            for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
+                                 iter++, i++) {
+                                gridLayout->addWidget(*iter, i / uploadBoxCols, i % uploadBoxCols);
+                            }
+                        });
+                    } else {
+                        notify->newNotify(this, tr("错误"),
+                                          tr("待传区图片数量已达上限(limit: %1)").arg(UPLOAD_FILE_LIMIT), "#F56C6C",
+                                          "#fff");
+                    }
                 } else {
-                    notify->newNotify(this, tr("错误"), tr("待传区图片数量已达上限(limit: %1)").arg(UPLOAD_FILE_LIMIT),
-                                      "#F56C6C", "#fff");
+                    notify->newNotify(this, tr("警告"), tr("不是受支持的格式"), "#E6A23C", "#fff");
                 }
             } else {
-                notify->newNotify(this, tr("警告"), tr("不是受支持的格式"), "#E6A23C", "#fff");
+                notify->newNotify(this, tr("提示"), tr("重复的文件\n%1").arg(repeat), "#FFFFFF", "#303133");
             }
         } else {
             notify->newNotify(this, tr("错误"), tr("不是有效的图片文件\n文件名: %1").arg(fileName), "#F56C6C", "#fff");
@@ -337,21 +353,58 @@ void MainWindow::onSelectFilesButtonClicked() {
 }
 
 void MainWindow::onUploadButtonClicked() {
+    bool noPending = true;
     for (auto i : qAsConst(iconWidgets)) {
         qDebug() << i->imageInfo().fileName();
-        HttpClient *client = nullptr;
+        if (i->status() == IconWidget::PENDING || i->status() == IconWidget::FAILED) {
+            uploadFromIconWidget(i);
+            noPending = false;
+        }
+    }
+    if (noPending) {
+        notify->newNotify(this, tr("信息"), tr("没有文件可以上传"));
+    }
+}
 
-        if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
-            client = smms->upload(i->imageData(), i->imageInfo().fileName(), true);
+void MainWindow::uploadFromIconWidget(IconWidget *iconwidget) {
+    if (iconwidget->status() == IconWidget::UPLOADING) {
+        notify->newNotify(this, tr("信息"), tr("正在上传中"));
+        return;
+    }
+    if (iconwidget->status() == IconWidget::UPLOADED) {
+        notify->newNotify(this, tr("信息"), tr("已上传"));
+        return;
+    }
+    HttpClient *client = nullptr;
+
+    if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
+        client = smms->upload(iconwidget->imageData(), iconwidget->imageInfo().fileName(), true);
+    } else {
+        client = smms->upload(iconwidget->imageData(), iconwidget->imageInfo().fileName(), false);
+    }
+    iconwidget->setStatus(IconWidget::UPLOADING);
+    connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
+        SMMS::Response data;
+        SMMS::praseResponse(r->getJson(), data);
+
+        if (data.success) {
+            iconwidget->setStatus(IconWidget::UPLOADED);
+            notify->newNotify(
+                this, tr("上传成功"),
+                iconwidget->imageInfo().completeBaseName() + "." + iconwidget->imageInfo().completeSuffix());
         } else {
-            client = smms->upload(i->imageData(), i->imageInfo().fileName(), false);
+            iconwidget->setStatus(IconWidget::FAILED);
+            notify->newNotify(this, tr("上传失败"),
+                              iconwidget->imageInfo().completeBaseName() + "." +
+                                  iconwidget->imageInfo().completeSuffix() + "\n" + "message: " + data.message,
+                              "#E6A23C", "#FFF");
         }
 
-        connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
-            qDebug() << r->getText();
-            delete r;
-        });
-    }
+        qDebug() << r->getText();
+        delete r;
+    });
+
+    connect(client, &HttpClient::uplpodProgress, iconwidget, &IconWidget::updateUploadProgress);
 }
 
 bool MainWindow::loadQStyleSheet(const QString &fileName) {
