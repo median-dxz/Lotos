@@ -38,13 +38,14 @@ void PictureViewWidget::setOpacity(double opacity) {
 }
 
 void PictureViewWidget::showInfo(QByteArray &ba, QFileInfo i) {
-    layout()->setContentsMargins(20, 20, 20, 20);
+    layout()->setContentsMargins(20, 20, 20, 10);
     layout()->setAlignment(imgBox, Qt::AlignHCenter | Qt::AlignVCenter);
     layout()->setAlignment(info, Qt::AlignHCenter | Qt::AlignBottom);
 
     QPixmap p = QPixmap();
     p.loadFromData(ba);
 
+    info->setMargin(20);
     info->setText(QString(tr("<h3>文件名</h3>\n%1\n"
                              "<h3>文件路径</h3>\n%2\n"
                              "<h3>文件大小</h3>\n%3\n"
@@ -55,6 +56,7 @@ void PictureViewWidget::showInfo(QByteArray &ba, QFileInfo i) {
                            IconWidget::sizeUnit(i.size()))
                       .arg(p.width())
                       .arg(p.height()));
+    info->setTextInteractionFlags(Qt::TextSelectableByMouse);
     info->adjustSize();
     if (p.height() > height() - 20 - info->height())
         p = p.scaledToHeight(height() - 20 - info->height(), Qt::SmoothTransformation);
@@ -88,6 +90,7 @@ void PictureViewWidget::hideEvent(QHideEvent *) {
 void PictureViewWidget::paintEvent(QPaintEvent *event) {
     QPainter p(this);
     p.fillRect(rect(), QColor(0, 0, 0, 255 * 0.4));
+    QWidget::paintEvent(event);
 }
 
 void PictureViewWidget::mousePressEvent(QMouseEvent *event) {

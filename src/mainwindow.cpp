@@ -169,7 +169,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *) {
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
     //移动窗口
-    if (mousePressed) {
+    if (mousePressed &&
+        (ui->titleBar->geometry().contains(event->pos()) || ui->pageSwitchWidget->geometry().contains(event->pos()))) {
         QPoint move_pos = event->globalPos();
         move(move_pos - movingPoint);
     }
