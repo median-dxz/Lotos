@@ -1,6 +1,7 @@
 #ifndef HTTPCLIENT_H
 #define HTTPCLIENT_H
 
+#include <QObject>
 #include <QtNetwork>
 
 class HttpClient : public QObject {

@@ -2,7 +2,7 @@
 
 SMMS::SMMS(QObject *parent, QString api) : QObject(parent), basic_api(api) {}
 
-SMMS &SMMS::getInstance() {
+SMMS &SMMS::Instance() {
     static SMMS instance;
     return instance;
 }
@@ -38,6 +38,9 @@ void SMMS::praseImageInfomation(const QJsonObject &data, SMMS::ImageInfomation &
     res.path = data["path"].toString();
     res.size = data["size"].toDouble();
     res.url = data["url"].toString();
+    if (!data["created_at"].isNull()) {
+        res.timestamp = data["created_at"].toDouble();
+    }
 }
 
 QVariantMap SMMS::ImageInfomation::toQVariantMap() const {
@@ -52,6 +55,8 @@ QVariantMap SMMS::ImageInfomation::toQVariantMap() const {
     data["path"] = path;
     data["size"] = size;
     data["url"] = url;
+    data["thumb"] = thumb;
+    data["timestamp"] = timestamp;
     return data;
 }
 
@@ -67,15 +72,15 @@ void SMMS::praseUserProfile(const QJsonObject &data, UserProfile &res) {
     res.username = data["username"].toString();
 }
 
-bool SMMS::isSupportFormat(QByteArray &data) {
+QString SMMS::supportFormat(QByteArray &data) {
     QMimeType mime = QMimeDatabase().mimeTypeForData(data);
     const static QStringList supportFormat = {"image/bmp", "image/gif", "image/jpeg", "image/webp", "image/png"};
     for (const QString &type : supportFormat) {
         if (mime.inherits(type)) {
-            return true;
+            return type;
         }
     }
-    return false;
+    return "";
 }
 
 HttpClient *SMMS::getAPIToken(QString username, QString password) {

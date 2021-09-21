@@ -1,21 +1,16 @@
 #ifndef ICONWIDGET_H
 #define ICONWIDGET_H
 
-#include <QBoxLayout>
-#include <QFile>
+#include <QCryptographicHash>
 #include <QFileInfo>
-#include <QFont>
-#include <QGraphicsDropShadowEffect>
-#include <QLabel>
-#include <QPainter>
-#include <QProgressBar>
-#include <QPropertyAnimation>
-#include <QPushButton>
-#include <QRect>
-#include <QVariant>
+#include <QImage>
 #include <QWidget>
 
-#include <cmath>
+class QProgressBar;
+class QGraphicsDropShadowEffect;
+class QLabel;
+class QHBoxLayout;
+class QVBoxLayout;
 
 class IconWidget : public QWidget {
     Q_OBJECT
@@ -26,18 +21,29 @@ class IconWidget : public QWidget {
     //    void addImageFromUrl();
     //    void setImageFromData();
 
-    void setImage(QImage i);
-    QImage image() const;
-    void setImageData(QByteArray ba);
-    QByteArray &imageData();
-    void setImageInfo(QFileInfo fi);
-    QFileInfo imageInfo() const;
+    inline void setImage(QImage img);
+    inline QImage image() const;
 
-    static QString sizeUnit(qint64 size);
+    inline void setImageData(QByteArray ba);
+    inline QByteArray &imageData();
 
+    inline void setImageInfo(QFileInfo fi);
+    inline QFileInfo imageInfo() const;
+
+    inline QString Hash() const;
+
+    enum UPLOAD_STATUS { PENDING, UPLOADING, UPLOADED, FAILED };
+    void setStatus(UPLOAD_STATUS newStatus) { emit statusChanged(newStatus); }
+    UPLOAD_STATUS status() { return m_status; }
    signals:
     void onDeleteBtnClicked(IconWidget *);
     void onViewBtnClicked(IconWidget *);
+    void onUploadBtnClicked(IconWidget *);
+    void statusChanged(UPLOAD_STATUS newStatus);
+
+   public slots:
+    void onStatusChanged(UPLOAD_STATUS newStatus);
+    void updateUploadProgress(qint64 bytesSent, qint64 bytesTotal);
 
    protected:
     void paintEvent(QPaintEvent *) override;
@@ -48,19 +54,55 @@ class IconWidget : public QWidget {
     void setShadow();
     void setDeleteBtn();
     void setViewBtn();
+    void setUploadBtn();
     void setInfo();
 
     QImage pix;
     QFileInfo info;
     QByteArray data;
     QImage thumb;
+    QString hash;
+
+    UPLOAD_STATUS m_status = PENDING;
 
     bool hover = false;
     QGraphicsDropShadowEffect *shadow;
     QVBoxLayout *infoBox;
     QHBoxLayout *bottomLine;
+    QLabel *statusLine;
+    QProgressBar *progress;
 
     const int INFO_SPACE = 164;
 };
+
+inline void IconWidget::setImage(QImage img) {
+    pix = img;
+    thumb = pix.scaled(width(), height() - INFO_SPACE, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
+
+inline QImage IconWidget::image() const {
+    return pix;
+}
+
+inline void IconWidget::setImageData(QByteArray ba) {
+    data = ba;
+    hash = QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex();
+}
+
+inline QByteArray &IconWidget::imageData() {
+    return data;
+}
+
+inline void IconWidget::setImageInfo(QFileInfo fi) {
+    info = fi;
+}
+
+inline QFileInfo IconWidget::imageInfo() const {
+    return info;
+}
+
+inline QString IconWidget::Hash() const {
+    return hash;
+}
 
 #endif  // ICONWIDGET_H

@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QDebug>
+#include "base.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -17,19 +17,18 @@ void MainWindow::test() {
     qDebug() << QSslSocket::sslLibraryBuildVersionString();
     qDebug() << QSslSocket::supportsSsl();
 
-    setWindowIcon(QIcon(":/res/lotos_icon.png"));
-    connect(ui->tb1, &QPushButton::clicked, [=] {
+    connect(ui->tb1, &QPushButton::clicked, this, [=] {
         if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
             HttpClient *client = nullptr;
             client = smms->getUploadHistory(1);
-            connect(client, &HttpClient::responseFinished, [=](HttpClient::Response *res) {
+            connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
                 qDebug() << res->getText();
                 SMMS::Response data;
                 SMMS::praseResponse(res->getJson(), data);
                 for (auto obj : qAsConst(data.data)) {
                     SMMS::ImageInfomation info;
                     SMMS::praseImageInfomation(obj.toObject(), info);
-                    qDebug() << info.filename;
+                    qDebug() << timestamp2str(info.timestamp, "yyyy/MM/dd hh:mm:ss");
                 }
 
                 delete res;
@@ -37,7 +36,6 @@ void MainWindow::test() {
         }
     });
     installEventFilter(this);
-    ui->imageList->setStyleSheet("border: 1px solid #dcdfe6;");
 }
 
 MainWindow::~MainWindow() {
@@ -50,6 +48,7 @@ void MainWindow::interfaceStyleManager() {
     loadQStyleSheet(":/res/styles/hostdashboard.css");
 
     setWindowTitle(tr("Lotos"));
+    setWindowIcon(QIcon(":/res/lotos_icon.png"));
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -80,14 +79,13 @@ void MainWindow::interfaceStyleManager() {
     QVBoxLayout *sider_layout = dynamic_cast<QVBoxLayout *>(ui->pageSwitchWidget->layout());
     sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
     sider_layout->insertWidget(1, mainTitle, 0, Qt::AlignHCenter);
-    //    ui->titleBar->setIcon(QPixmap(":/res/lotos_icon.png"));
-    //    ui->titleBar->setTitle(tr("Lotos"));
 }
 
 void MainWindow::init() {
     proxy = HttpClient::getNetworkProxyInstanse();
-    smms = &SMMS::getInstance();
+    smms = &SMMS::Instance();
     globalSettings.load(PATH_CONFIG);
+    notify = &NotificationManager::Instance();
 }
 
 void MainWindow::componentsLayoutManager() {
@@ -96,7 +94,7 @@ void MainWindow::componentsLayoutManager() {
 
     // set imghost upload page
     QGridLayout *gridlayout = new QGridLayout;
-    gridlayout->setMargin(8);
+    gridlayout->setContentsMargins(8, 8, 8, 8);
     gridlayout->setHorizontalSpacing(8);
     gridlayout->setVerticalSpacing(8);
     gridlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -120,6 +118,7 @@ void MainWindow::componentsLayoutManager() {
         connect(this, &MainWindow::widgetPageChanged, pageButton, &PageButton::setCurrentChosen);
         connect(pageButton, &PageButton::indexChanged, this, [=](int current_index) {
             emit widgetPageChanged(current_index);
+            currentPage = current_index - 1;
             ui->stackedWidget->setCurrentIndex(current_index - 1);
             loadPage(PAGE(current_index));
         });
@@ -131,6 +130,8 @@ void MainWindow::componentsLayoutManager() {
     }
     ui->pageButton_1->setChecked(true);
     ui->stackedWidget->setCurrentIndex(UploadPage);
+
+    connect(ui->dragBox, &PicturesContainer::acceptDragFileName, this, &MainWindow::addIconWidget);
 }
 
 void MainWindow::loadPage(MainWindow::PAGE index) {
@@ -155,15 +156,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (obj == this && event->type() == QEvent::Close) {
         onMainProcessClosed();
     }
-    if (obj->objectName() == "pageSwitchWidget" && event->type() == QEvent::Paint) {
-        //        QWidget *page_widget = (QWidget *)obj;
-        //        QPainter painter(page_widget);
-        //        painter.setRenderHint(QPainter::Antialiasing, true);
-        //        painter.setPen(QPen(QColor(220, 223, 230), 2));
-        //        painter.drawLine(page_widget->size().width(), page_widget->size().height() * 0.04,
-        //        page_widget->size().width(),
-        //                         page_widget->size().height() * 0.96);
-    }
     return QWidget::eventFilter(obj, event);
 }
 
@@ -174,13 +166,31 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
     }
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if (currentPage == MainWindow::UploadPage) {
+        if (event->matches(QKeySequence::Paste)) {
+            QClipboard *board = QApplication::clipboard();
+            if (board->mimeData()->hasUrls()) {
+                QList<QUrl> urls = board->mimeData()->urls();
+                for (const QUrl &url : qAsConst(urls)) {
+                    QString fileName = url.toLocalFile();
+                    addIconWidget(fileName);
+                }
+            }
+            if (board->mimeData()->hasImage()) {
+                const QImage &img = board->image();
+            }
+        }
+    }
+}
 void MainWindow::mouseReleaseEvent(QMouseEvent *) {
     mousePressed = false;
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
     //移动窗口
-    if (mousePressed) {
+    if (mousePressed &&
+        (ui->titleBar->geometry().contains(event->pos()) || ui->pageSwitchWidget->geometry().contains(event->pos()))) {
         QPoint move_pos = event->globalPos();
         move(move_pos - movingPoint);
     }
@@ -281,12 +291,40 @@ void MainWindow::onSelectFilesButtonClicked() {
                                                              "任意文件 (*.*)"));
 
     for (const QString &fileName : qAsConst(fileNames)) {
-        QFile file(fileName);
-        file.open(QFile::ReadOnly);
-        QByteArray data = file.readAll();
+        addIconWidget(fileName);
+    }
+}
 
-        if (QImage().loadFromData(data)) {
-            if (SMMS::isSupportFormat(data)) {
+void MainWindow::onUploadButtonClicked() {
+    bool noPending = true;
+    for (auto i : qAsConst(iconWidgets)) {
+        qDebug() << i->imageInfo().fileName();
+        if (i->status() == IconWidget::PENDING || i->status() == IconWidget::FAILED) {
+            uploadFromIconWidget(i);
+            noPending = false;
+        }
+    }
+    if (noPending) {
+        notify->newNotify(this, tr("信息"), tr("没有文件可以上传"));
+    }
+}
+
+void MainWindow::addIconWidget(QString filename) {
+    QFile file(filename);
+    file.open(QFile::ReadOnly);
+    QByteArray data = file.readAll();
+
+    if (QImage().loadFromData(data)) {
+        QString repeat = "";
+        QString tmpHash = QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
+        for (IconWidget *iconwidget : qAsConst(iconWidgets)) {
+            if (iconwidget->Hash() == tmpHash) {
+                repeat = iconwidget->imageInfo().completeBaseName() + "." + iconwidget->imageInfo().completeSuffix();
+                break;
+            }
+        }
+        if (repeat == QString("")) {
+            if (SMMS::supportFormat(data) != "") {
                 if (iconWidgets.count() < UPLOAD_FILE_LIMIT) {
                     uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
 
@@ -297,17 +335,19 @@ void MainWindow::onSelectFilesButtonClicked() {
                     gridLayout->addWidget(widget, iconWidgets.count() / uploadBoxCols,
                                           iconWidgets.count() % uploadBoxCols);
                     widget->setFixedSize(iconWidgetSize);
-                    widget->addImageFromFile(fileName);
+                    widget->addImageFromFile(filename);
 
                     widget->show();
 
                     iconWidgets.append(widget);
 
+                    connect(widget, &IconWidget::onUploadBtnClicked, this, &MainWindow::uploadFromIconWidget);
+
                     connect(widget, &IconWidget::onViewBtnClicked, this, [=](IconWidget *obj) {
-                        PictureViewWidget &x = PictureViewWidget::Instance();
-                        x.setMainWidget(ui->stackedWidget);
-                        x.show();
-                        x.showInfo(obj->imageData(), obj->imageInfo());
+                        PictureViewWidget &view = PictureViewWidget::Instance();
+                        view.setMainWidget(ui->stackedWidget);
+                        view.showInfo(obj->imageData(), obj->imageInfo());
+                        view.show();
                     });
 
                     connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
@@ -335,28 +375,59 @@ void MainWindow::onSelectFilesButtonClicked() {
                         }
                     });
                 } else {
-                    qDebug() << "ERR: 待传区图片数量已达上限";
+                    notify->newNotify(this, tr("错误"), tr("待传区图片数量已达上限(limit: %1)").arg(UPLOAD_FILE_LIMIT),
+                                      "#F56C6C", "#fff");
                 }
             } else {
-                qDebug() << "ERR: 不是受支持的格式";
+                notify->newNotify(this, tr("警告"), tr("不是受支持的格式"), "#E6A23C", "#fff");
             }
         } else {
-            qDebug() << "ERR: 不是有效的图片文件";
+            notify->newNotify(this, tr("提示"), tr("重复的文件\n%1").arg(repeat), "#FFFFFF", "#303133");
         }
+    } else {
+        notify->newNotify(this, tr("错误"), tr("不是有效的图片文件\n文件名: %1").arg(filename), "#F56C6C", "#fff");
     }
 }
 
-void MainWindow::onUploadButtonClicked() {
-    if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
-        for (auto i : qAsConst(iconWidgets)) {
-            qDebug() << i->imageInfo().fileName();
-            HttpClient *client = smms->upload(i->imageData(), i->imageInfo().fileName(), true);
-            connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
-                qDebug() << r->getText();
-                delete r;
-            });
-        }
+void MainWindow::uploadFromIconWidget(IconWidget *iconwidget) {
+    if (iconwidget->status() == IconWidget::UPLOADING) {
+        notify->newNotify(this, tr("信息"), tr("正在上传中"));
+        return;
     }
+    if (iconwidget->status() == IconWidget::UPLOADED) {
+        notify->newNotify(this, tr("信息"), tr("已上传"));
+        return;
+    }
+    HttpClient *client = nullptr;
+
+    if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
+        client = smms->upload(iconwidget->imageData(), iconwidget->imageInfo().fileName(), true);
+    } else {
+        client = smms->upload(iconwidget->imageData(), iconwidget->imageInfo().fileName(), false);
+    }
+    iconwidget->setStatus(IconWidget::UPLOADING);
+    connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
+        SMMS::Response data;
+        SMMS::praseResponse(r->getJson(), data);
+
+        if (data.success) {
+            iconwidget->setStatus(IconWidget::UPLOADED);
+            notify->newNotify(
+                this, tr("上传成功"),
+                iconwidget->imageInfo().completeBaseName() + "." + iconwidget->imageInfo().completeSuffix());
+        } else {
+            iconwidget->setStatus(IconWidget::FAILED);
+            notify->newNotify(this, tr("上传失败"),
+                              iconwidget->imageInfo().completeBaseName() + "." +
+                                  iconwidget->imageInfo().completeSuffix() + "\n" + "message: " + data.message,
+                              "#E6A23C", "#FFF");
+        }
+
+        qDebug() << r->getText();
+        delete r;
+    });
+
+    connect(client, &HttpClient::uplpodProgress, iconwidget, &IconWidget::updateUploadProgress);
 }
 
 bool MainWindow::loadQStyleSheet(const QString &fileName) {

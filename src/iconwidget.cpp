@@ -1,11 +1,14 @@
 #include "iconwidget.h"
 
+#include "base.h"
+#include "utils/lotoshelper.h"
+
 IconWidget::IconWidget(QWidget *parent) : QWidget(parent) {
     infoBox = new QVBoxLayout(this);
-    bottomLine = new QHBoxLayout;
-    infoBox->setMargin(8);
+    bottomLine = new QHBoxLayout(this);
+    infoBox->setContentsMargins(8, 8, 8, 8);
     infoBox->setSpacing(8);
-    bottomLine->setMargin(0);
+    bottomLine->setContentsMargins(0, 0, 0, 0);
     bottomLine->setSpacing(8);
     this->setLayout(infoBox);
 }
@@ -21,8 +24,10 @@ void IconWidget::addImageFromFile(const QString &fileName) {
 
     infoBox->setAlignment(Qt::AlignBottom);
     infoBox->addSpacing(height() - INFO_SPACE);
+    connect(this, &IconWidget::statusChanged, this, &IconWidget::onStatusChanged);
     setInfo();
 
+    setUploadBtn();
     setViewBtn();
     setDeleteBtn();
     update();
@@ -66,7 +71,7 @@ void IconWidget::leaveEvent(QEvent *) {
 }
 
 void IconWidget::setShadow() {
-    shadow = new QGraphicsDropShadowEffect();
+    shadow = new QGraphicsDropShadowEffect(this);
     shadow->setOffset(0, 2);
     shadow->setColor(QColor(0, 0, 0, 255 * 0.08));
     shadow->setBlurRadius(20);
@@ -74,10 +79,10 @@ void IconWidget::setShadow() {
 }
 
 void IconWidget::setInfo() {
-    QProgressBar *progress = new QProgressBar(this);
+    progress = new QProgressBar(this);
     QLabel *nameLine = new QLabel(this);
     QLabel *sizeLine = new QLabel(this);
-    QLabel *statusLine = new QLabel(this);
+    statusLine = new QLabel(this);
 
     infoBox->addWidget(progress);
     infoBox->addWidget(nameLine);
@@ -85,20 +90,17 @@ void IconWidget::setInfo() {
     infoBox->addLayout(bottomLine);
     bottomLine->addWidget(statusLine);
     bottomLine->addStretch();
-    //    painter.setFont(QFont("Microsoft YaHei", 12));
-    //    painter.setPen(QColor("#606266"));
 
-    //    QString text;
-    //    text = (info.baseName().size() > 16 ? info.baseName().left(16) + "..." : info.baseName());
+    progress->setRange(0, 100);
+    progress->setProperty("class_type", "iconwidget.sub.progress");
+    progress->setFixedHeight(9);
 
-    //    painter.drawText(QRect((width() - painter.fontMetrics().width(text)) / 2, height() - INFO_SPACE, width(), 40),
-    //                     text);
+    nameLine->setAlignment(Qt::AlignHCenter);
+    nameLine->setText(info.completeBaseName() + "." + info.completeSuffix());
 
-    //    text =
-    //        "\n" + QString::number(info.size() / pow(2, int(log2(info.size())) / 10 * 10), 'f', 2) +
-    //        sizeUnit(info.size());
-    //    painter.drawText(QRect((width() - painter.fontMetrics().width(text)) / 2, height() - INFO_SPACE, width(), 40),
-    //                     text);
+    sizeLine->setAlignment(Qt::AlignHCenter);
+    sizeLine->setText(formatFileSize(info.size()));
+    setStatus(IconWidget::PENDING);
 }
 
 void IconWidget::setViewBtn() {
@@ -127,43 +129,42 @@ void IconWidget::setDeleteBtn() {
     connect(btn, &QPushButton::clicked, this, [&] { emit onDeleteBtnClicked(this); });
 }
 
-QString IconWidget::sizeUnit(qint64 size) {
-    enum SIZE_TYPE { B, KB, MB } type;
-    type = SIZE_TYPE(int(log2(size) / 10));
-    switch (type) {
-        case B:
-            return "B";
-        case KB:
-            return "KB";
-        case MB:
-            return "MB";
-        default:
+void IconWidget::setUploadBtn() {
+    QPushButton *btn = new QPushButton(this);
+    bottomLine->addWidget(btn);
+    btn->setFixedSize(QSize(32, 32));
+
+    QIcon ico = QIcon();
+    ico.addFile(":/res/icons/upload.png", QSize(24, 24), QIcon::Normal);
+
+    btn->setIcon(ico);
+    btn->setProperty("class_type", "iconwidget.sub.upload");
+    connect(btn, &QPushButton::clicked, this, [&] { emit onUploadBtnClicked(this); });
+}
+
+void IconWidget::onStatusChanged(IconWidget::UPLOAD_STATUS newStatus) {
+    QString statusStr = QString("<h4>%1:</h4> %2");
+    switch (newStatus) {
+        case FAILED:
+            statusStr = statusStr.arg(tr("状态"), tr("上传失败"));
+            break;
+        case PENDING:
+            statusStr = statusStr.arg(tr("状态"), tr("等待上传"));
+            break;
+        case UPLOADED:
+            statusStr = statusStr.arg(tr("状态"), tr("已上传"));
+            break;
+        case UPLOADING:
+            statusStr = statusStr.arg(tr("状态"), tr("上传中"));
             break;
     }
-    return "";
+    statusLine->setText(statusStr);
+    m_status = newStatus;
 }
 
-void IconWidget::setImage(QImage img) {
-    pix = img;
-    thumb = pix.scaled(width(), height() - INFO_SPACE, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-}
-
-QImage IconWidget::image() const {
-    return pix;
-}
-
-void IconWidget::setImageData(QByteArray ba) {
-    data = ba;
-}
-
-QByteArray &IconWidget::imageData() {
-    return data;
-}
-
-void IconWidget::setImageInfo(QFileInfo fi) {
-    info = fi;
-}
-
-QFileInfo IconWidget::imageInfo() const {
-    return info;
+void IconWidget::updateUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
+    if (bytesSent != 0 || bytesTotal != 0) {
+        progress->setFormat(formatFileSize(bytesSent) + "/" + formatFileSize(bytesTotal));
+        progress->setValue((double(bytesSent) / bytesTotal) * 100);
+    }
 }

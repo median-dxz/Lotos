@@ -11,6 +11,8 @@ VPATH += src \
 INCLUDEPATH += src \
                src/ui \
 
+PRECOMPILED_HEADER = base.h
+
 FORMS += \
     mainwindow.ui
 
@@ -24,7 +26,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     resources.qrc
 
-CONFIG += BUILD_X86
+CONFIG += BUILD_X86 cmdline precompile_header
 
 CONFIG(BUILD_X64, BUILD_X86|BUILD_X64) {
     message("X64 Build")
@@ -33,23 +35,29 @@ CONFIG(BUILD_X64, BUILD_X86|BUILD_X64) {
 }
 
 HEADERS += \
-    src/imagehost.h \
     src/mainwindow.h \
     src/settingshelper.h \
     src/ui/iconwidget.h \
+    src/ui/notification.h \
     src/ui/pagebutton.h \
+    src/ui/picturescontainer.h \
     src/ui/pictureviewwidget.h \
     src/ui/titlebar.h \
-    src/utils/httpclient.h
+    src/utils/httpclient.h \
+    src/utils/imagehost.h \
+    src/utils/lotoshelper.h
 
 SOURCES += \
-    src/imagehost.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/settingshelper.cpp \
     src/ui/iconwidget.cpp \
+    src/ui/notification.cpp \
     src/ui/pagebutton.cpp \
+    src/ui/picturescontainer.cpp \
     src/ui/pictureviewwidget.cpp \
     src/ui/titlebar.cpp \
-    src/utils/httpclient.cpp
+    src/utils/httpclient.cpp \
+    src/utils/imagehost.cpp \
+    src/utils/lotoshelper.cpp
 

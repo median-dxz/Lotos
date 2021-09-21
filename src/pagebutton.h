@@ -1,10 +1,9 @@
 #ifndef PAGEBUTTON_H
 #define PAGEBUTTON_H
 
-#include <QLabel>
-#include <QPaintEvent>
-#include <QPainter>
 #include <QPushButton>
+
+class QLabel;
 
 class PageButton : public QPushButton {
     Q_OBJECT
@@ -12,8 +11,11 @@ class PageButton : public QPushButton {
     explicit PageButton(QWidget *parent = nullptr);
 
     void setIndex(int index);
-    void setIconOffset(int x, int y);
     int Index() const;
+    bool isChecked() const;
+    void setChecked(bool c);
+
+    void setIconOffset(int x, int y);
     void setIconPath(QString pathNormal, QString pathIgnited);
 
     void drawPix(const QString iconPath);
@@ -33,7 +35,8 @@ class PageButton : public QPushButton {
 
    private:
     int index;
-    QLabel *iconLabel = new QLabel(this);
+    bool chosen = false;
+    QLabel *iconLabel;
     QPoint iconOffset;
     QString normalIconPath;
     QString ignitedIconPath;

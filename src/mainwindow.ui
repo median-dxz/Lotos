@@ -78,7 +78,7 @@
           <number>0</number>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="uploadPage">
           <property name="sizePolicy">
@@ -107,7 +107,7 @@
             <number>20</number>
            </property>
            <item row="1" column="0">
-            <widget class="QScrollArea" name="dragBox">
+            <widget class="PicturesContainer" name="dragBox">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -128,8 +128,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
-                <height>298</height>
+                <width>998</width>
+                <height>447</height>
                </rect>
               </property>
              </widget>
@@ -244,7 +244,7 @@
                </property>
                <property name="icon">
                 <iconset resource="../resources.qrc">
-                 <normaloff>:/res/icons/upload.png</normaloff>:/res/icons/upload.png</iconset>
+                 <normaloff>:/res/icons/upload_light.png</normaloff>:/res/icons/upload_light.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -811,6 +811,12 @@
    <class>TitleBar</class>
    <extends>QWidget</extends>
    <header>titlebar.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PicturesContainer</class>
+   <extends>QScrollArea</extends>
+   <header>picturescontainer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

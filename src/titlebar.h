@@ -1,15 +1,10 @@
 #ifndef TITLEBAR_H
 #define TITLEBAR_H
 
-#include <QDebug>
-#include <QLabel>
-#include <QLayout>
-#include <QObject>
-#include <QPainter>
-#include <QPushButton>
-#include <QSpacerItem>
 #include <QWidget>
-#include <QWindow>
+
+class QPushButton;
+class QLabel;
 
 class TitleBar : public QWidget {
     Q_OBJECT
@@ -27,10 +22,10 @@ class TitleBar : public QWidget {
     bool eventFilter(QObject *obj, QEvent *event) override;
 
    private:
-    QPushButton *miniBtn = new QPushButton(this);
-    QPushButton *closeBtn = new QPushButton(this);
-    QLabel *mainIcon = new QLabel(this);
-    QLabel *title = new QLabel(this);
+    QPushButton *miniBtn;
+    QPushButton *closeBtn;
+    QLabel *mainIcon;
+    QLabel *title;
 
     bool mbtnHover = false;
     bool cbtnHover = false;
