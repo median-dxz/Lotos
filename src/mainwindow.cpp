@@ -17,12 +17,11 @@ void MainWindow::test() {
     qDebug() << QSslSocket::sslLibraryBuildVersionString();
     qDebug() << QSslSocket::supportsSsl();
 
-    setWindowIcon(QIcon(":/res/lotos_icon.png"));
-    connect(ui->tb1, &QPushButton::clicked, [=] {
+    connect(ui->tb1, &QPushButton::clicked, this, [=] {
         if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
             HttpClient *client = nullptr;
             client = smms->getUploadHistory(1);
-            connect(client, &HttpClient::responseFinished, [=](HttpClient::Response *res) {
+            connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
                 qDebug() << res->getText();
                 SMMS::Response data;
                 SMMS::praseResponse(res->getJson(), data);
@@ -37,7 +36,6 @@ void MainWindow::test() {
         }
     });
     installEventFilter(this);
-    ui->imageList->setStyleSheet("border: 1px solid #dcdfe6;");
 }
 
 MainWindow::~MainWindow() {
@@ -50,6 +48,7 @@ void MainWindow::interfaceStyleManager() {
     loadQStyleSheet(":/res/styles/hostdashboard.css");
 
     setWindowTitle(tr("Lotos"));
+    setWindowIcon(QIcon(":/res/lotos_icon.png"));
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -80,14 +79,13 @@ void MainWindow::interfaceStyleManager() {
     QVBoxLayout *sider_layout = dynamic_cast<QVBoxLayout *>(ui->pageSwitchWidget->layout());
     sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
     sider_layout->insertWidget(1, mainTitle, 0, Qt::AlignHCenter);
-    //    ui->titleBar->setIcon(QPixmap(":/res/lotos_icon.png"));
-    //    ui->titleBar->setTitle(tr("Lotos"));
 }
 
 void MainWindow::init() {
     proxy = HttpClient::getNetworkProxyInstanse();
-    smms = &SMMS::getInstance();
+    smms = &SMMS::Instance();
     globalSettings.load(PATH_CONFIG);
+    notify = &NotificationManager::Instance();
 }
 
 void MainWindow::componentsLayoutManager() {
@@ -96,7 +94,7 @@ void MainWindow::componentsLayoutManager() {
 
     // set imghost upload page
     QGridLayout *gridlayout = new QGridLayout;
-    gridlayout->setMargin(8);
+    gridlayout->setContentsMargins(8, 8, 8, 8);
     gridlayout->setHorizontalSpacing(8);
     gridlayout->setVerticalSpacing(8);
     gridlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -154,15 +152,6 @@ void MainWindow::loadPage(MainWindow::PAGE index) {
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (obj == this && event->type() == QEvent::Close) {
         onMainProcessClosed();
-    }
-    if (obj->objectName() == "pageSwitchWidget" && event->type() == QEvent::Paint) {
-        //        QWidget *page_widget = (QWidget *)obj;
-        //        QPainter painter(page_widget);
-        //        painter.setRenderHint(QPainter::Antialiasing, true);
-        //        painter.setPen(QPen(QColor(220, 223, 230), 2));
-        //        painter.drawLine(page_widget->size().width(), page_widget->size().height() * 0.04,
-        //        page_widget->size().width(),
-        //                         page_widget->size().height() * 0.96);
     }
     return QWidget::eventFilter(obj, event);
 }
@@ -304,10 +293,10 @@ void MainWindow::onSelectFilesButtonClicked() {
                     iconWidgets.append(widget);
 
                     connect(widget, &IconWidget::onViewBtnClicked, this, [=](IconWidget *obj) {
-                        PictureViewWidget &x = PictureViewWidget::Instance();
-                        x.setMainWidget(ui->stackedWidget);
-                        x.show();
-                        x.showInfo(obj->imageData(), obj->imageInfo());
+                        PictureViewWidget &view = PictureViewWidget::Instance();
+                        view.setMainWidget(ui->stackedWidget);
+                        view.show();
+                        view.showInfo(obj->imageData(), obj->imageInfo());
                     });
 
                     connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
@@ -335,27 +324,33 @@ void MainWindow::onSelectFilesButtonClicked() {
                         }
                     });
                 } else {
-                    qDebug() << "ERR: 待传区图片数量已达上限";
+                    notify->newNotify(this, tr("错误"), tr("待传区图片数量已达上限(limit: %1)").arg(UPLOAD_FILE_LIMIT),
+                                      "#F56C6C", "#fff");
                 }
             } else {
-                qDebug() << "ERR: 不是受支持的格式";
+                notify->newNotify(this, tr("警告"), tr("不是受支持的格式"), "#E6A23C", "#fff");
             }
         } else {
-            qDebug() << "ERR: 不是有效的图片文件";
+            notify->newNotify(this, tr("错误"), tr("不是有效的图片文件\n文件名: %1").arg(fileName), "#F56C6C", "#fff");
         }
     }
 }
 
 void MainWindow::onUploadButtonClicked() {
-    if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
-        for (auto i : qAsConst(iconWidgets)) {
-            qDebug() << i->imageInfo().fileName();
-            HttpClient *client = smms->upload(i->imageData(), i->imageInfo().fileName(), true);
-            connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
-                qDebug() << r->getText();
-                delete r;
-            });
+    for (auto i : qAsConst(iconWidgets)) {
+        qDebug() << i->imageInfo().fileName();
+        HttpClient *client = nullptr;
+
+        if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
+            client = smms->upload(i->imageData(), i->imageInfo().fileName(), true);
+        } else {
+            client = smms->upload(i->imageData(), i->imageInfo().fileName(), false);
         }
+
+        connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
+            qDebug() << r->getText();
+            delete r;
+        });
     }
 }
 

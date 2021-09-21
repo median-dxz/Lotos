@@ -12,6 +12,9 @@
 #include <QPainter>
 #include <QScreen>
 #include <QWidget>
+#include <cmath>
+
+#include "iconwidget.h"
 
 class PictureViewWidget : public QWidget {
     Q_OBJECT

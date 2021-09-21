@@ -12,7 +12,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent) {
     titleBarLayout->addWidget(miniBtn);
     titleBarLayout->addWidget(closeBtn);
 
-    titleBarLayout->setMargin(0);
+    titleBarLayout->setContentsMargins(0, 0, 0, 0);
     titleBarLayout->setSpacing(0);
     setLayout(titleBarLayout);
 

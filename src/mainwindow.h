@@ -15,6 +15,7 @@
 #include "settingshelper.h"
 
 #include "iconwidget.h"
+#include "notification.h"
 #include "pagebutton.h"
 #include "pictureviewwidget.h"
 #include "titlebar.h"
@@ -58,6 +59,7 @@ class MainWindow : public QMainWindow {
     QNetworkProxy proxy;
     SMMS *smms;
     SettingsHelper globalSettings;
+    NotificationManager *notify;
 
     int uploadBoxCols = 0;
 

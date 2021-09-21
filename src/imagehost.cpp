@@ -2,7 +2,7 @@
 
 SMMS::SMMS(QObject *parent, QString api) : QObject(parent), basic_api(api) {}
 
-SMMS &SMMS::getInstance() {
+SMMS &SMMS::Instance() {
     static SMMS instance;
     return instance;
 }

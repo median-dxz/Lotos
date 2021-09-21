@@ -32,3 +32,12 @@
   border-right: 4px solid #3993fe;
   color: #303133;
 }
+
+
+PictureViewWidget QLabel {
+    color: #ffffff;
+}
+
+#imageList {
+    border: 1px solid #dcdfe6;
+}

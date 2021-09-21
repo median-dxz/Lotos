@@ -40,22 +40,27 @@ void PictureViewWidget::showInfo(QByteArray &ba, QFileInfo i) {
     layout()->setContentsMargins(20, 20, 20, 20);
     layout()->setAlignment(imgBox, Qt::AlignHCenter | Qt::AlignVCenter);
     layout()->setAlignment(info, Qt::AlignHCenter | Qt::AlignBottom);
-    imgBox->setStyleSheet("border:10px solid black");
-
-    info->setText(
-        "sdaff5sgf4165df \n \
-        sadfasdfasdfas \n \
-        sadfasdfas \n \
-        sadfsadfasdfasdfsadf");
-    info->setMaximumWidth(0.2 * width());
 
     QPixmap p = QPixmap();
     p.loadFromData(ba);
+    info->setText(QString(tr("<h3>文件名</h3>\n%1\n"
+                             "<h3>文件路径</h3>\n%2\n"
+                             "<h3>文件大小</h3>\n%3\n"
+                             "<h3>图片尺寸</h3>\n%4 × %5"))
+                      .arg(i.fileName())
+                      .arg(i.filePath())
+                      .arg(QString::number(i.size() / pow(2, int(log2(i.size())) / 10 * 10), 'f', 2) +
+                           IconWidget::sizeUnit(i.size()))
+                      .arg(p.width())
+                      .arg(p.height()));
+
     if (p.width() > width() * 0.8 - 6)
         p = p.scaledToWidth(width() * 0.8 - 6, Qt::SmoothTransformation);
     if (p.height() > height())
         p = p.scaledToWidth(height(), Qt::SmoothTransformation);
     imgBox->setPixmap(p);
+
+    info->setMinimumWidth(0.2 * width());
 }
 
 void PictureViewWidget::setBgColor(const QColor &bgColor) {
@@ -66,18 +71,12 @@ void PictureViewWidget::setBgColor(const QColor &bgColor) {
 
 void PictureViewWidget::showEvent(QShowEvent *) {
     if (mainWidget != nullptr) {
-        QGraphicsBlurEffect *e = new QGraphicsBlurEffect;
-        e->setBlurHints(QGraphicsBlurEffect::QualityHint);
-        e->setBlurRadius(10);
-        mainWidget->setGraphicsEffect(e);
-        setGraphicsEffect(nullptr);
         setFixedSize(qApp->primaryScreen()->availableSize());
     }
 }
 
 void PictureViewWidget::hideEvent(QHideEvent *) {
     if (mainWidget != nullptr) {
-        mainWidget->setGraphicsEffect(nullptr);
     }
 }
 

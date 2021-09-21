@@ -37,6 +37,7 @@ HEADERS += \
     src/mainwindow.h \
     src/settingshelper.h \
     src/ui/iconwidget.h \
+    src/ui/notification.h \
     src/ui/pagebutton.h \
     src/ui/pictureviewwidget.h \
     src/ui/titlebar.h \
@@ -48,6 +49,7 @@ SOURCES += \
     src/mainwindow.cpp \
     src/settingshelper.cpp \
     src/ui/iconwidget.cpp \
+    src/ui/notification.cpp \
     src/ui/pagebutton.cpp \
     src/ui/pictureviewwidget.cpp \
     src/ui/titlebar.cpp \

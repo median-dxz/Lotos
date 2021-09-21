@@ -9,7 +9,7 @@
 class SMMS : public QObject {
     Q_OBJECT
    public:
-    static SMMS &getInstance();
+    static SMMS &Instance();
 
     struct Response {
         bool success;
