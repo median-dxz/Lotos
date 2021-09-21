@@ -263,7 +263,7 @@
           <number>0</number>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="uploadPage">
           <property name="sizePolicy">
@@ -437,6 +437,13 @@
          </widget>
          <widget class="QWidget" name="page_5">
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPushButton" name="t1">
+             <property name="text">
+              <string>PushButton</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QPushButton" name="pushButton_7">
              <property name="text">

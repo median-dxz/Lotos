@@ -9,19 +9,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     interfaceStyleManager();
 
     test();
-
-    promptTimer = new QTimer(this);
-    promptTimer->setSingleShot(true);
-    QPushButton *button = new QPushButton(this);
-    button->move(this->width()-250,0);
-    button->setText("start");
-    connect(button,&QPushButton::clicked,this,[=](){startTimer();});
-    connect(promptTimer,&QTimer::timeout,this,[=](){hidewidget();});
-
 }
 
 void MainWindow::test() {
     qDebug() << QSslSocket::supportsSsl();
+    connect(ui->t1, &QPushButton::clicked, this, [=] {
+        notify->newNotify(
+            ui->viewport, "提示提示",
+            "提示啊啊啊啊啊啊\n"
+            "22:01:34: Starting "
+            "E:\\Project\\qt_curriculum_design\\build_lotos_Desktop_Qt_5_12_11_MinGW_64_bit_Debug\\debug\\lotos.exe",
+            ("#fff"));
+    });
 }
 
 MainWindow::~MainWindow() {
@@ -29,7 +28,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::onMainProcessClosed() {
-    globalSettings.save();
+    //    globalSettings.save();
 }
 
 void MainWindow::interfaceStyleManager() {
@@ -55,6 +54,7 @@ void MainWindow::interfaceStyleManager() {
 void MainWindow::init() {
     proxy = HttpClient::getNetworkProxyInstanse();
     smms = &SMMS::getInstance();
+    notify = &NotificationManager::Instance();
     globalSettings.load(PATH_CONFIG);
 }
 
@@ -248,23 +248,3 @@ bool MainWindow::loadQStyleSheet(const QString &fileName) {
         return false;
     }
 }
-void MainWindow::startTimer( ){
-
-    promptWindow = new Notification(this);
-    promptWindow->move(this->x()+this->width()-promptWindow->width(),this->y());
-    QString T="begin";
-    QString C="begin";
-    QString color = "#409EFF";
-    promptWindow->set(T,C,color);
-    promptTimer->start(3000);
-
-    //fade in
-    promptWindow->fadeindown();
-
-}
-void MainWindow::hidewidget(){
-
-    //fade out
-   promptWindow->fadeoutdown();
-}
-

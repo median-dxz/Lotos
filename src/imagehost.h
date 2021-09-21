@@ -9,7 +9,6 @@
 class SMMS : public QObject {
     Q_OBJECT
    public:
-    explicit SMMS(QObject *parent = nullptr, QString api = "https://sm.ms/api/v2");
     static SMMS &getInstance();
 
     struct Response {
@@ -64,6 +63,8 @@ class SMMS : public QObject {
     static void praseUserProfile(const QJsonObject &data, UserProfile &res);
 
    private:
+    explicit SMMS(QObject *parent = nullptr, QString api = "https://sm.ms/api/v2");
+
     const QString name = "sm.ms";
     const QString basic_api;
     QString authorization;

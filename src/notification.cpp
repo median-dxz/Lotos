@@ -1,90 +1,218 @@
 #include "notification.h"
 
-Notification::Notification(QWidget *)
-{
-    this->setWindowFlags(Qt::FramelessWindowHint);
-    this->resize(330,75.2);
+Notification::Notification(QWidget *p, QString tl, QString mes, QString c, int pos) : QFrame(p) {
+    setAttribute(Qt::WA_DeleteOnClose);
 
+    move(p->width(), pos);
+    setFixedWidth(FIXED_WIDTH);
+    setMinimumHeight(MIN_HEIGHT);
 
-    QPushButton *button = new QPushButton(this);
-    button->resize(16,16);
-    button->move(this->width()-16-8,5);
+    setLayout(new QVBoxLayout);
 
-
-
-     QPropertyAnimation *animation = new QPropertyAnimation(this,"windowOpacity");
-     animation->setDuration(4000);
-     animation->setStartValue(1);
-     animation->setEndValue(0);
-     animation->start();
-     connect(animation,SIGNAL(finished()),this,SLOT(close()));
-     connect(button,&QPushButton::clicked,this,this->hide);
-}
-void Notification::set(QString t, QString c ,QString color){
-
-    QFrame *frame = new QFrame(this);
-    frame->setStyleSheet("QFrame{background-color:"+QString(color)+";border-radius:10px}");//设置圆角与背景透明
-    frame->setGeometry(5,5,this->width()-10,this->height()-10); //设置有效范围框
     title = new QLabel(this);
-    title->resize(87,22.6);
-    title->move(10,10.2);
-    core = new QLabel(this);
-    core->resize(114,20.8);
-    core->move(10,34);
+    message = new QLabel(this);
 
-    QGraphicsDropShadowEffect *shadow_effect = new  QGraphicsDropShadowEffect(this);
-    shadow_effect->setOffset(0,0);
-    shadow_effect->setColor(Qt::black);
-    shadow_effect->setBlurRadius(10);
-    frame->setGraphicsEffect(shadow_effect);
-    this->setAttribute(Qt::WA_TranslucentBackground,true);
-    QFont font;
-    font.setFamily("微软雅黑");
-    font.setPixelSize(14);
-    font.setBold(true);//字体加粗
-    core->setFont(font);
-    //core->setPalette(); //可设置字体颜色
-    core->setText(QString(c));
+    QFont font("Microsoft YaHei");
+    font.setStyleStrategy(QFont::PreferAntialias);
+
     font.setPixelSize(16);
+    font.setWeight(QFont::Bold);
     title->setFont(font);
-    title->setText(QString(t));
+    title->setText(tl);
+
+    font.setPixelSize(14);
+    font.setWeight(QFont::Normal);
+    message->setFont(font);
+    message->setText(mes);
+
+    layout()->setSpacing(0);
+    layout()->setContentsMargins(14, 14, 14, 14);
+
+    layout()->addWidget(title);
+    static_cast<QVBoxLayout *>(layout())->addSpacing(8);
+    layout()->addWidget(message);
+
+    effect = new EffectGroup(this);
+    effect->setOffset(QPoint(0, 2));
+    effect->setBlurRadius(20);
+    effect->setColor(QColor(0, 0, 0, 255 * 0.18));
+    effect->setOpacity(0);
+    setGraphicsEffect(effect);
+
+    setStyleSheet(QString(".Notification{ "
+                          "border-radius: 8px;"
+                          "background: %1;"
+                          "border:1px solid #ebeef5;"
+                          "}")
+                      .arg(c));
+
+    adjustSize();
+    show();
+    animation();
 }
 
-void Notification::fadeindown(){
-    QRect r = QRect();
-    r.setX(this->x());
-    r.setY(this->y() - this->height());
-    r.setHeight(this->height());
-    r.setWidth(this->width());
-    QRect r2 = r;
-    r2.setX(this->x());
-    r2.setY(this->y());
-    r2.setHeight(this->height());
-    r2.setWidth(this->width());
-    QPropertyAnimation *a = new QPropertyAnimation(this,"geometry");
-    a->setDuration( 150 );
-    a->setStartValue( r );
-    a->setEndValue( r2 );
-    a->start();
-    this->show();
+void Notification::paintEvent(QPaintEvent *e) {
+    QPainter painter(this);
+    QFrame::paintEvent(e);
 }
 
-void Notification::fadeoutdown(){
-    QRect r = QRect();
-    r.setX(this->x());
-    r.setY(this->y());
-    r.setHeight(this->height());
-    r.setWidth(this->width());
-    QRect r2 = r;
-    r2.setX(this->x());
-    r2.setY(this->y()+ this->height());
-    r2.setHeight(this->height());
-    r2.setWidth(this->width());
-    QPropertyAnimation *a = new QPropertyAnimation(this,"geometry");
-    a->setDuration( 500 );
-    a->setStartValue( r );
-    a->setEndValue( r2 );
-    a->start();
-    this->show();
+void Notification::animation() {
+    QSequentialAnimationGroup *sequence = new QSequentialAnimationGroup(this);
+
+    QPropertyAnimation *a_opa_in = new QPropertyAnimation(effect, "opacity");
+    QPropertyAnimation *a_opa_out = new QPropertyAnimation(effect, "opacity");
+
+    a_geo_up = new QPropertyAnimation(this, "pos");
+    a_geo_up->setDuration(100);
+    a_geo_up->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
+
+    QTimeLine *a_geo_left_in = new QTimeLine(400, this);
+    a_geo_left_in->setFrameRange(x(), x() - FIXED_WIDTH - GAP_SPACE);
+    a_geo_left_in->setUpdateInterval(10);
+
+    connect(a_geo_left_in, &QTimeLine::frameChanged, this, [=](int frameValue) { move(frameValue, y()); });
+
+    a_geo_left_in->start();
+
+    a_opa_in->setStartValue(0);
+    a_opa_in->setEndValue(1);
+    a_opa_in->setDuration(300);
+    a_opa_in->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
+
+    a_opa_out->setStartValue(1);
+    a_opa_out->setEndValue(0);
+    a_opa_out->setDuration(150);
+    a_opa_out->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
+
+    sequence->addAnimation(a_opa_in);
+    sequence->addPause(NOTIFY_DURATION);
+    sequence->addAnimation(a_opa_out);
+
+    sequence->start(QAbstractAnimation::DeleteWhenStopped);
+
+    connect(sequence, &QAbstractAnimation::finished, this, &Notification::close);
+    //    connect(sequence, &QAbstractAnimation::finished, this, [=] { emit beforeClose(this); });
+    connect(sequence, &QSequentialAnimationGroup::currentAnimationChanged, this, [=](QAbstractAnimation *current) {
+        if (static_cast<QPropertyAnimation *>(current) == a_opa_out) {
+            emit beforeClose(this);
+        }
+    });
 }
 
+NotificationManager::NotificationManager(QObject *parent) : QObject(parent) {
+    fixTop = new QTimer(this);
+    fixTop->setInterval(10);
+    fixTop->start();
+    connect(fixTop, &QTimer::timeout, this, [=] {
+        int top = Notification::GAP_SPACE;
+        for (auto notification : qAsConst(notifications)) {
+            if (notification->y() > top) {
+                //                notification->a_geo_up->stop();
+                //                notification->a_geo_up->setStartValue(geo);
+                notification->move(notification->x(), notification->y() - 8);
+                //                notification->a_geo_up->setStartValue(geo);
+                //                notification->a_geo_up->start();
+            }
+            top += Notification::GAP_SPACE + notification->height();
+        }
+    });
+}
+
+NotificationManager &NotificationManager::Instance() {
+    static NotificationManager instance;
+    return instance;
+}
+
+void NotificationManager::newNotify(QWidget *parent, QString title, QString message, QString color) {
+    int newTop = Notification::GAP_SPACE;
+    for (auto notification : qAsConst(notifications)) {
+        newTop += Notification::GAP_SPACE + notification->height();
+    }
+    Notification *notification = new Notification(parent, title, message, color, newTop);
+    notifications.append(notification);
+    connect(notification, &Notification::beforeClose, this, [=](Notification *orientedNotification) {
+        QList<Notification *>::iterator del_iter;
+        for (QList<Notification *>::iterator iter = notifications.begin(); iter != notifications.end(); iter++) {
+            if (*iter == orientedNotification) {
+                del_iter = iter;
+            }
+        }
+        notifications.erase(del_iter);
+    });
+}
+
+EffectGroup::EffectGroup(QObject *parent) : QGraphicsDropShadowEffect(parent) {}
+
+void EffectGroup::draw(QPainter *painter) {
+    if (blurRadius() <= 0 && offset().isNull()) {
+        drawSource(painter);
+        return;
+    }
+
+    PixmapPadMode mode = PadToEffectiveBoundingRect;
+
+    // Draw pixmap in device coordinates to avoid pixmap scaling.
+    QPoint pos;
+    const QPixmap pixmap = sourcePixmap(Qt::DeviceCoordinates, &pos, mode);
+    if (pixmap.isNull())
+        return;
+
+    QTransform restoreTransform = painter->worldTransform();
+    painter->setWorldTransform(QTransform());
+
+    const QPixmap &px = pixmap;
+
+    if (px.isNull())
+        return;
+
+    QImage tmp(px.size(), QImage::Format_ARGB32_Premultiplied);
+    tmp.setDevicePixelRatio(px.devicePixelRatio());
+    tmp.fill(0);
+
+    QPainter tmpPainter(&tmp);
+    tmpPainter.setRenderHint(QPainter::HighQualityAntialiasing);
+    tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
+    tmpPainter.drawPixmap(offset(), px);
+    tmpPainter.end();
+
+    // blur the alpha channel
+    QImage blurred(tmp.size(), QImage::Format_ARGB32_Premultiplied);
+    blurred.setDevicePixelRatio(px.devicePixelRatio());
+    blurred.fill(0);
+    QPainter blurPainter(&blurred);
+    qt_blurImage(&blurPainter, tmp, blurRadius(), false, true);
+    blurPainter.end();
+
+    tmp = std::move(blurred);
+
+    // blacken the image...
+    tmpPainter.begin(&tmp);
+    tmpPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    tmpPainter.fillRect(tmp.rect(), color());
+    tmpPainter.end();
+
+    QImage opaque(px.size(), QImage::Format_ARGB32_Premultiplied);
+    opaque.setDevicePixelRatio(px.devicePixelRatio());
+    opaque.fill(0);
+    QPainter opaquePainter(&opaque);
+    // draw the blurred drop shadow...
+    opaquePainter.drawImage(QPointF(0, 0), tmp);
+
+    // draw the actual pixmap...
+    opaquePainter.drawPixmap(QPointF(0, 0), px);
+    opaquePainter.end();
+
+    tmp = QImage(opaque.size(), QImage::Format_ARGB32_Premultiplied);
+    tmp.fill(Qt::transparent);
+
+    tmpPainter.begin(&tmp);
+    tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
+    tmpPainter.drawImage(QPointF(0, 0), opaque);
+    tmpPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    tmpPainter.fillRect(tmp.rect(), QColor(0, 0, 0, 255 * m_opacity));
+    tmpPainter.end();
+
+    painter->drawImage(pos, tmp);
+
+    painter->setWorldTransform(restoreTransform);
+}
