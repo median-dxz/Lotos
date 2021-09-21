@@ -89,3 +89,8 @@ QString MainWindow::getElidedText(QFont font, QString str, int MaxWidth)
     str = list.join('\n');
     return str;
 }
+
+QString MainWindow::Time_t(qint64 time){
+    QDateTime time1 = QDateTime::fromTime_t(time);
+    return time1.toString("yyyy-MM-ddThh:mm:ss.000Z");
+}

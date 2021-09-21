@@ -19,6 +19,7 @@ class  PictureTableLine;
 #include <QStringListModel>
 #include <QTableView>
 #include "picturetable.h"
+#include <QDateTime>
 
 class MainWindow : public QWidget {
     Q_OBJECT
@@ -27,6 +28,7 @@ class MainWindow : public QWidget {
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     QString getElidedText(QFont font, QString str, int MaxWidth);
+    QString Time_t(qint64);
 
    public slots:
     void insertData();
