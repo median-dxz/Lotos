@@ -1,8 +1,13 @@
 #include "titlebar.h"
 
-#include <QDebug>
+#include "base.h"
 
 TitleBar::TitleBar(QWidget *parent) : QWidget(parent) {
+    miniBtn = new QPushButton(this);
+    closeBtn = new QPushButton(this);
+    mainIcon = new QLabel(this);
+    title = new QLabel(this);
+
     QHBoxLayout *titleBarLayout = new QHBoxLayout;
 
     titleBarLayout->addWidget(mainIcon);

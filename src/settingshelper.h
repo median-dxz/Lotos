@@ -1,17 +1,16 @@
 #ifndef SETTINGSHELPER_H
 #define SETTINGSHELPER_H
 
-#include <QDebug>
-#include <QFile>
-#include <QMap>
-#include <QObject>
-#include <QVariant>
-#include <QtNetwork>
+#include <QtCore>
+
+namespace LotosSettings {
 
 const struct {
     const QString imghost_token = "token";
     const QString imghost_isAuthorized = "isAuthorized";
 } KeyMap;
+
+}  // namespace LotosSettings
 
 class SettingsHelper {
    public:

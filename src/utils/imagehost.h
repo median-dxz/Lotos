@@ -2,7 +2,6 @@
 #define IMGEHOST_H
 
 #include <QObject>
-#include <QWidget>
 
 #include "utils/httpclient.h"
 
@@ -65,7 +64,7 @@ class SMMS : public QObject {
     static void praseResponse(const QJsonDocument &data, Response &res);
     static void praseImageInfomation(const QJsonObject &data, ImageInfomation &res);
     static void praseUserProfile(const QJsonObject &data, UserProfile &res);
-    static bool isSupportFormat(QByteArray &data);
+    static QString supportFormat(QByteArray &data);
 
    private:
     explicit SMMS(QObject *parent = nullptr, QString api = "https://sm.ms/api/v2");

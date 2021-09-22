@@ -1,22 +1,16 @@
 #ifndef ICONWIDGET_H
 #define ICONWIDGET_H
 
-#include <QBoxLayout>
 #include <QCryptographicHash>
-#include <QFile>
 #include <QFileInfo>
-#include <QFont>
-#include <QGraphicsDropShadowEffect>
-#include <QLabel>
-#include <QPainter>
-#include <QProgressBar>
-#include <QPropertyAnimation>
-#include <QPushButton>
-#include <QRect>
-#include <QVariant>
+#include <QImage>
 #include <QWidget>
 
-#include <cmath>
+class QProgressBar;
+class QGraphicsDropShadowEffect;
+class QLabel;
+class QHBoxLayout;
+class QVBoxLayout;
 
 class IconWidget : public QWidget {
     Q_OBJECT
@@ -27,21 +21,16 @@ class IconWidget : public QWidget {
     //    void addImageFromUrl();
     //    void setImageFromData();
 
-    void setImage(QImage img) {
-        pix = img;
-        thumb = pix.scaled(width(), height() - INFO_SPACE, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
-    QImage image() const { return pix; }
-    void setImageData(QByteArray ba) {
-        data = ba;
-        hash = QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex();
-    }
-    QByteArray &imageData() { return data; }
-    void setImageInfo(QFileInfo fi) { info = fi; }
-    QFileInfo imageInfo() const { return info; }
-    QString Hash() const { return hash; }
+    inline void setImage(QImage img);
+    inline QImage image() const;
 
-    static QString sizeUnit(qint64 size);
+    inline void setImageData(QByteArray ba);
+    inline QByteArray &imageData();
+
+    inline void setImageInfo(QFileInfo fi);
+    inline QFileInfo imageInfo() const;
+
+    inline QString Hash() const;
 
     enum UPLOAD_STATUS { PENDING, UPLOADING, UPLOADED, FAILED };
     void setStatus(UPLOAD_STATUS newStatus) { emit statusChanged(newStatus); }
@@ -85,5 +74,35 @@ class IconWidget : public QWidget {
 
     const int INFO_SPACE = 164;
 };
+
+inline void IconWidget::setImage(QImage img) {
+    pix = img;
+    thumb = pix.scaled(width(), height() - INFO_SPACE, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
+
+inline QImage IconWidget::image() const {
+    return pix;
+}
+
+inline void IconWidget::setImageData(QByteArray ba) {
+    data = ba;
+    hash = QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex();
+}
+
+inline QByteArray &IconWidget::imageData() {
+    return data;
+}
+
+inline void IconWidget::setImageInfo(QFileInfo fi) {
+    info = fi;
+}
+
+inline QFileInfo IconWidget::imageInfo() const {
+    return info;
+}
+
+inline QString IconWidget::Hash() const {
+    return hash;
+}
 
 #endif  // ICONWIDGET_H

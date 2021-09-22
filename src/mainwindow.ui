@@ -107,7 +107,7 @@
             <number>20</number>
            </property>
            <item row="1" column="0">
-            <widget class="QScrollArea" name="dragBox">
+            <widget class="PicturesContainer" name="dragBox">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -811,6 +811,12 @@
    <class>TitleBar</class>
    <extends>QWidget</extends>
    <header>titlebar.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PicturesContainer</class>
+   <extends>QScrollArea</extends>
+   <header>picturescontainer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

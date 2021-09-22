@@ -1,20 +1,10 @@
 #ifndef PICTUREVIEWWIDGET_H
 #define PICTUREVIEWWIDGET_H
 
-#include <QApplication>
-#include <QBoxLayout>
 #include <QFileInfo>
-#include <QGraphicsBlurEffect>
-#include <QGraphicsDropShadowEffect>
-#include <QLabel>
-#include <QMouseEvent>
-#include <QObject>
-#include <QPainter>
-#include <QScreen>
 #include <QWidget>
-#include <cmath>
 
-#include "iconwidget.h"
+class QLabel;
 
 class PictureViewWidget : public QWidget {
     Q_OBJECT

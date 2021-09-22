@@ -1,5 +1,7 @@
 #include "notification.h"
 
+#include "base.h"
+
 Notification::Notification(QWidget *p, QString tl, QString mes, QString bc, QString fc, int pos) : QFrame(p) {
     setAttribute(Qt::WA_DeleteOnClose);
 

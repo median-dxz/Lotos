@@ -1,19 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QCryptographicHash>
-#include <QDir>
-#include <QFile>
-#include <QFileDialog>
-#include <QGraphicsDropShadowEffect>
-#include <QHBoxLayout>
 #include <QMainWindow>
-#include <QPainter>
-#include <QPushButton>
-#include <QVector>
 
-#include "imagehost.h"
 #include "settingshelper.h"
+
+#include "utils/httpclient.h"
+#include "utils/imagehost.h"
+#include "utils/lotoshelper.h"
 
 #include "iconwidget.h"
 #include "notification.h"
@@ -21,8 +15,7 @@
 #include "pictureviewwidget.h"
 #include "titlebar.h"
 
-#include "utils/httpclient.h"
-#include "utils/lotoshelper.h"
+using namespace LotosSettings;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -44,6 +37,7 @@ class MainWindow : public QMainWindow {
     void onSelectFilesButtonClicked();
     void onUploadButtonClicked();
 
+    void addIconWidget(QString filename);
     void uploadFromIconWidget(IconWidget *iconwidget);
 
    signals:
@@ -56,6 +50,8 @@ class MainWindow : public QMainWindow {
     void mouseReleaseEvent(QMouseEvent *) override;
     void mousePressEvent(QMouseEvent *event) override;
 
+    void keyPressEvent(QKeyEvent *event) override;
+
    private:
     enum PAGE { UploadPage, GalleryPage, HostDashBoardPage, SettingsPage };
 
@@ -65,6 +61,7 @@ class MainWindow : public QMainWindow {
     SettingsHelper globalSettings;
     NotificationManager *notify;
 
+    int currentPage = 0;
     int uploadBoxCols = 0;
 
     void init();

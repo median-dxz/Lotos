@@ -1,6 +1,7 @@
 #include "pictureviewwidget.h"
 
-#include <QDebug>
+#include "base.h"
+#include "utils/lotoshelper.h"
 
 PictureViewWidget::PictureViewWidget(QWidget *parent) : QWidget(parent) {
     mainWidget = 0;
@@ -52,8 +53,7 @@ void PictureViewWidget::showInfo(QByteArray &ba, QFileInfo i) {
                              "<h3>图片尺寸</h3>\n%4 × %5"))
                       .arg(i.fileName())
                       .arg(i.filePath())
-                      .arg(QString::number(i.size() / pow(2, int(log2(i.size())) / 10 * 10), 'f', 2) +
-                           IconWidget::sizeUnit(i.size()))
+                      .arg(formatFileSize(i.size()))
                       .arg(p.width())
                       .arg(p.height()));
     info->setTextInteractionFlags(Qt::TextSelectableByMouse);

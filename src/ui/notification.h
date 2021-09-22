@@ -1,28 +1,15 @@
 #ifndef NOTIFICATION_H
 #define NOTIFICATION_H
 
-#include <QBoxLayout>
-#include <QDebug>
 #include <QFrame>
-#include <QGraphicsDropShadowEffect>
 #include <QGraphicsEffect>
-#include <QGraphicsOpacityEffect>
-#include <QLabel>
 #include <QObject>
-#include <QPainter>
-#include <QPalette>
-#include <QTimer>
-#include <QWidget>
-
-#include <QEasingCurve>
-#include <QParallelAnimationGroup>
-#include <QPropertyAnimation>
-#include <QSequentialAnimationGroup>
-#include <QTimeLine>
 
 class EffectGroup;
 class NotificationManager;
 class Notification;
+
+class QLabel;
 
 class Notification : public QFrame {
     Q_OBJECT
@@ -82,11 +69,8 @@ class EffectGroup : public QGraphicsDropShadowEffect {
     EffectGroup(QObject *parent = 0);
 
     Q_PROPERTY(qreal opacity MEMBER m_color READ opacity WRITE setOpacity NOTIFY opacityChanged)
-    qreal opacity() const { return m_opacity; }
-    void setOpacity(qreal opacity) {
-        m_opacity = opacity;
-        updateBoundingRect();
-    }
+    qreal opacity() const;
+    inline void setOpacity(qreal opacity);
 
    protected:
     void draw(QPainter *painter) override;
@@ -94,5 +78,14 @@ class EffectGroup : public QGraphicsDropShadowEffect {
    private:
     qreal m_opacity = 1;
 };
+
+inline qreal EffectGroup::opacity() const {
+    return m_opacity;
+}
+
+inline void EffectGroup::setOpacity(qreal opacity) {
+    m_opacity = opacity;
+    updateBoundingRect();
+}
 
 #endif  // NOTIFICATION_H

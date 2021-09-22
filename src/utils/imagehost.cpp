@@ -72,15 +72,15 @@ void SMMS::praseUserProfile(const QJsonObject &data, UserProfile &res) {
     res.username = data["username"].toString();
 }
 
-bool SMMS::isSupportFormat(QByteArray &data) {
+QString SMMS::supportFormat(QByteArray &data) {
     QMimeType mime = QMimeDatabase().mimeTypeForData(data);
     const static QStringList supportFormat = {"image/bmp", "image/gif", "image/jpeg", "image/webp", "image/png"};
     for (const QString &type : supportFormat) {
         if (mime.inherits(type)) {
-            return true;
+            return type;
         }
     }
-    return false;
+    return "";
 }
 
 HttpClient *SMMS::getAPIToken(QString username, QString password) {

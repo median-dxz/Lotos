@@ -1,12 +1,11 @@
 #include "iconwidget.h"
 
-#include <QDebug>
-
-#define formatSize(size) (QString::number(size / pow(2, int(log2(size)) / 10 * 10), 'f', 2) + sizeUnit(size))
+#include "base.h"
+#include "utils/lotoshelper.h"
 
 IconWidget::IconWidget(QWidget *parent) : QWidget(parent) {
     infoBox = new QVBoxLayout(this);
-    bottomLine = new QHBoxLayout;
+    bottomLine = new QHBoxLayout(this);
     infoBox->setContentsMargins(8, 8, 8, 8);
     infoBox->setSpacing(8);
     bottomLine->setContentsMargins(0, 0, 0, 0);
@@ -72,7 +71,7 @@ void IconWidget::leaveEvent(QEvent *) {
 }
 
 void IconWidget::setShadow() {
-    shadow = new QGraphicsDropShadowEffect();
+    shadow = new QGraphicsDropShadowEffect(this);
     shadow->setOffset(0, 2);
     shadow->setColor(QColor(0, 0, 0, 255 * 0.08));
     shadow->setBlurRadius(20);
@@ -100,7 +99,7 @@ void IconWidget::setInfo() {
     nameLine->setText(info.completeBaseName() + "." + info.completeSuffix());
 
     sizeLine->setAlignment(Qt::AlignHCenter);
-    sizeLine->setText(formatSize(info.size()));
+    sizeLine->setText(formatFileSize(info.size()));
     setStatus(IconWidget::PENDING);
 }
 
@@ -143,22 +142,6 @@ void IconWidget::setUploadBtn() {
     connect(btn, &QPushButton::clicked, this, [&] { emit onUploadBtnClicked(this); });
 }
 
-QString IconWidget::sizeUnit(qint64 size) {
-    enum SIZE_TYPE { B, KB, MB } type;
-    type = SIZE_TYPE(int(log2(size) / 10));
-    switch (type) {
-        case B:
-            return "B";
-        case KB:
-            return "KB";
-        case MB:
-            return "MB";
-        default:
-            break;
-    }
-    return "";
-}
-
 void IconWidget::onStatusChanged(IconWidget::UPLOAD_STATUS newStatus) {
     QString statusStr = QString("<h4>%1:</h4> %2");
     switch (newStatus) {
@@ -181,7 +164,7 @@ void IconWidget::onStatusChanged(IconWidget::UPLOAD_STATUS newStatus) {
 
 void IconWidget::updateUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
     if (bytesSent != 0 || bytesTotal != 0) {
-        progress->setFormat(formatSize(bytesSent) + "/" + formatSize(bytesTotal));
+        progress->setFormat(formatFileSize(bytesSent) + "/" + formatFileSize(bytesTotal));
         progress->setValue((double(bytesSent) / bytesTotal) * 100);
     }
 }

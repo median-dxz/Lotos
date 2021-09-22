@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QDebug>
+#include "base.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -118,6 +118,7 @@ void MainWindow::componentsLayoutManager() {
         connect(this, &MainWindow::widgetPageChanged, pageButton, &PageButton::setCurrentChosen);
         connect(pageButton, &PageButton::indexChanged, this, [=](int current_index) {
             emit widgetPageChanged(current_index);
+            currentPage = current_index - 1;
             ui->stackedWidget->setCurrentIndex(current_index - 1);
             loadPage(PAGE(current_index));
         });
@@ -129,6 +130,8 @@ void MainWindow::componentsLayoutManager() {
     }
     ui->pageButton_1->setChecked(true);
     ui->stackedWidget->setCurrentIndex(UploadPage);
+
+    connect(ui->dragBox, &PicturesContainer::acceptDragFileName, this, &MainWindow::addIconWidget);
 }
 
 void MainWindow::loadPage(MainWindow::PAGE index) {
@@ -163,6 +166,23 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
     }
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if (currentPage == MainWindow::UploadPage) {
+        if (event->matches(QKeySequence::Paste)) {
+            QClipboard *board = QApplication::clipboard();
+            if (board->mimeData()->hasUrls()) {
+                QList<QUrl> urls = board->mimeData()->urls();
+                for (const QUrl &url : qAsConst(urls)) {
+                    QString fileName = url.toLocalFile();
+                    addIconWidget(fileName);
+                }
+            }
+            if (board->mimeData()->hasImage()) {
+                const QImage &img = board->image();
+            }
+        }
+    }
+}
 void MainWindow::mouseReleaseEvent(QMouseEvent *) {
     mousePressed = false;
 }
@@ -271,85 +291,7 @@ void MainWindow::onSelectFilesButtonClicked() {
                                                              "任意文件 (*.*)"));
 
     for (const QString &fileName : qAsConst(fileNames)) {
-        QFile file(fileName);
-        file.open(QFile::ReadOnly);
-        QByteArray data = file.readAll();
-
-        if (QImage().loadFromData(data)) {
-            QString repeat = "";
-            QString tmpHash = QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
-            for (IconWidget *iconwidget : qAsConst(iconWidgets)) {
-                if (iconwidget->Hash() == tmpHash) {
-                    repeat =
-                        iconwidget->imageInfo().completeBaseName() + "." + iconwidget->imageInfo().completeSuffix();
-                    break;
-                }
-            }
-            if (repeat == QString("")) {
-                if (SMMS::isSupportFormat(data)) {
-                    if (iconWidgets.count() < UPLOAD_FILE_LIMIT) {
-                        uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
-
-                        IconWidget *widget = new IconWidget(ui->dragBox);
-                        widget->hide();  //减少闪烁
-
-                        QGridLayout *gridLayout = ((QGridLayout *)ui->dragBoxContents->layout());
-                        gridLayout->addWidget(widget, iconWidgets.count() / uploadBoxCols,
-                                              iconWidgets.count() % uploadBoxCols);
-                        widget->setFixedSize(iconWidgetSize);
-                        widget->addImageFromFile(fileName);
-
-                        widget->show();
-
-                        iconWidgets.append(widget);
-
-                        connect(widget, &IconWidget::onUploadBtnClicked, this, &MainWindow::uploadFromIconWidget);
-
-                        connect(widget, &IconWidget::onViewBtnClicked, this, [=](IconWidget *obj) {
-                            PictureViewWidget &view = PictureViewWidget::Instance();
-                            view.setMainWidget(ui->stackedWidget);
-                            view.showInfo(obj->imageData(), obj->imageInfo());
-                            view.show();
-                        });
-
-                        connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
-                            QList<IconWidget *>::iterator del_iter;
-                            for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
-                                 iter++) {
-                                if (*iter == obj) {
-                                    del_iter = iter;
-                                    break;
-                                }
-                            }
-                            iconWidgets.erase(del_iter);
-
-                            while (!gridLayout->isEmpty()) {
-                                delete gridLayout->takeAt(0);
-                            }
-
-                            obj->deleteLater();
-
-                            uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
-                            int i = 0;
-                            for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
-                                 iter++, i++) {
-                                gridLayout->addWidget(*iter, i / uploadBoxCols, i % uploadBoxCols);
-                            }
-                        });
-                    } else {
-                        notify->newNotify(this, tr("错误"),
-                                          tr("待传区图片数量已达上限(limit: %1)").arg(UPLOAD_FILE_LIMIT), "#F56C6C",
-                                          "#fff");
-                    }
-                } else {
-                    notify->newNotify(this, tr("警告"), tr("不是受支持的格式"), "#E6A23C", "#fff");
-                }
-            } else {
-                notify->newNotify(this, tr("提示"), tr("重复的文件\n%1").arg(repeat), "#FFFFFF", "#303133");
-            }
-        } else {
-            notify->newNotify(this, tr("错误"), tr("不是有效的图片文件\n文件名: %1").arg(fileName), "#F56C6C", "#fff");
-        }
+        addIconWidget(fileName);
     }
 }
 
@@ -364,6 +306,86 @@ void MainWindow::onUploadButtonClicked() {
     }
     if (noPending) {
         notify->newNotify(this, tr("信息"), tr("没有文件可以上传"));
+    }
+}
+
+void MainWindow::addIconWidget(QString filename) {
+    QFile file(filename);
+    file.open(QFile::ReadOnly);
+    QByteArray data = file.readAll();
+
+    if (QImage().loadFromData(data)) {
+        QString repeat = "";
+        QString tmpHash = QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
+        for (IconWidget *iconwidget : qAsConst(iconWidgets)) {
+            if (iconwidget->Hash() == tmpHash) {
+                repeat = iconwidget->imageInfo().completeBaseName() + "." + iconwidget->imageInfo().completeSuffix();
+                break;
+            }
+        }
+        if (repeat == QString("")) {
+            if (SMMS::supportFormat(data) != "") {
+                if (iconWidgets.count() < UPLOAD_FILE_LIMIT) {
+                    uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
+
+                    IconWidget *widget = new IconWidget(ui->dragBox);
+                    widget->hide();  //减少闪烁
+
+                    QGridLayout *gridLayout = ((QGridLayout *)ui->dragBoxContents->layout());
+                    gridLayout->addWidget(widget, iconWidgets.count() / uploadBoxCols,
+                                          iconWidgets.count() % uploadBoxCols);
+                    widget->setFixedSize(iconWidgetSize);
+                    widget->addImageFromFile(filename);
+
+                    widget->show();
+
+                    iconWidgets.append(widget);
+
+                    connect(widget, &IconWidget::onUploadBtnClicked, this, &MainWindow::uploadFromIconWidget);
+
+                    connect(widget, &IconWidget::onViewBtnClicked, this, [=](IconWidget *obj) {
+                        PictureViewWidget &view = PictureViewWidget::Instance();
+                        view.setMainWidget(ui->stackedWidget);
+                        view.showInfo(obj->imageData(), obj->imageInfo());
+                        view.show();
+                    });
+
+                    connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
+                        QList<IconWidget *>::iterator del_iter;
+                        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
+                             iter++) {
+                            if (*iter == obj) {
+                                del_iter = iter;
+                                break;
+                            }
+                        }
+                        iconWidgets.erase(del_iter);
+
+                        while (!gridLayout->isEmpty()) {
+                            delete gridLayout->takeAt(0);
+                        }
+
+                        obj->deleteLater();
+
+                        uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
+                        int i = 0;
+                        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
+                             iter++, i++) {
+                            gridLayout->addWidget(*iter, i / uploadBoxCols, i % uploadBoxCols);
+                        }
+                    });
+                } else {
+                    notify->newNotify(this, tr("错误"), tr("待传区图片数量已达上限(limit: %1)").arg(UPLOAD_FILE_LIMIT),
+                                      "#F56C6C", "#fff");
+                }
+            } else {
+                notify->newNotify(this, tr("警告"), tr("不是受支持的格式"), "#E6A23C", "#fff");
+            }
+        } else {
+            notify->newNotify(this, tr("提示"), tr("重复的文件\n%1").arg(repeat), "#FFFFFF", "#303133");
+        }
+    } else {
+        notify->newNotify(this, tr("错误"), tr("不是有效的图片文件\n文件名: %1").arg(filename), "#F56C6C", "#fff");
     }
 }
 
