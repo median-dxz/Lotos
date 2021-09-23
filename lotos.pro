@@ -11,7 +11,8 @@ VPATH += src \
 INCLUDEPATH += src \
                src/ui \
 
-PRECOMPILED_HEADER = base.h
+PRECOMPILED_HEADER += \
+    base.h
 
 FORMS += \
     mainwindow.ui
@@ -33,6 +34,12 @@ CONFIG(BUILD_X64, BUILD_X86|BUILD_X64) {
 } else {
     message("X86 Build")
 }
+
+
+VERSION = 0.0.1
+
+DEFINES += \
+    APP_VERSION=\\\"0.0.1\\\"
 
 HEADERS += \
     src/mainwindow.h \

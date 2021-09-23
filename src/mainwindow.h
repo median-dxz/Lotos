@@ -38,10 +38,12 @@ class MainWindow : public QMainWindow {
     void onUploadButtonClicked();
 
     void addIconWidget(QString filename);
+    void delIconWidget(IconWidget *obj);
     void uploadFromIconWidget(IconWidget *iconwidget);
 
    signals:
     void widgetPageChanged(int);
+    void uploadStatusChanged();
 
    protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
@@ -68,7 +70,7 @@ class MainWindow : public QMainWindow {
 
     bool loadQStyleSheet(const QString &fileName);
     void componentsLayoutManager();
-    void interfaceStyleManager();
+    void appearanceManager();
     void loadPage(PAGE index);
 
     void test();

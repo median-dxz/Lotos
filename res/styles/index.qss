@@ -113,7 +113,6 @@ QProgressBar::chunk {
 
 #hostDashBoardPage QLineEdit {
   background-color: #fff;
-  border-radius: 4px;
   border: 1px solid #dcdfe6;
   color: #606266;
   font-size: 14px;
@@ -124,6 +123,10 @@ QProgressBar::chunk {
 
 #hostDashBoardPage QLineEdit:hover {
   border: 1px solid #c0c4cc;
+}
+
+#hostDashBoardPage QLineEdit:focus {
+  border: 1px solid #409eff;
 }
 
 #hostDashBoardPage #tokenLabel {

@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QClipboard>
+#include <QFileDialog>
+#include <QStaticText>
+
 #include "base.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -8,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     init();
     componentsLayoutManager();
-    interfaceStyleManager();
+    appearanceManager();
 
     test();
 }
@@ -18,19 +22,18 @@ void MainWindow::test() {
     qDebug() << QSslSocket::supportsSsl();
 
     connect(ui->tb1, &QPushButton::clicked, this, [=] {
-        if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
+        if (globalSettings.imghost[KeyMap.imghost.isAuthorized] == true) {
             HttpClient *client = nullptr;
             client = smms->getUploadHistory(1);
             connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
                 qDebug() << res->getText();
                 SMMS::Response data;
                 SMMS::praseResponse(res->getJson(), data);
-                for (auto obj : qAsConst(data.data)) {
+                for (const auto &obj : qAsConst(data.data)) {
                     SMMS::ImageInfomation info;
                     SMMS::praseImageInfomation(obj.toObject(), info);
                     qDebug() << timestamp2str(info.timestamp, "yyyy/MM/dd hh:mm:ss");
                 }
-
                 delete res;
             });
         }
@@ -42,10 +45,11 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::interfaceStyleManager() {
+void MainWindow::appearanceManager() {
     loadQStyleSheet(":/res/styles/index.css");
     loadQStyleSheet(":/res/styles/uploadpage.css");
     loadQStyleSheet(":/res/styles/hostdashboard.css");
+    loadQStyleSheet(":/res/styles/settings.css");
 
     setWindowTitle(tr("Lotos"));
     setWindowIcon(QIcon(":/res/lotos_icon.png"));
@@ -79,6 +83,8 @@ void MainWindow::interfaceStyleManager() {
     QVBoxLayout *sider_layout = dynamic_cast<QVBoxLayout *>(ui->pageSwitchWidget->layout());
     sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
     sider_layout->insertWidget(1, mainTitle, 0, Qt::AlignHCenter);
+
+    ui->titleBar->setTitle(tr("   Lotos v") + APP_VERSION);
 }
 
 void MainWindow::init() {
@@ -102,6 +108,26 @@ void MainWindow::componentsLayoutManager() {
 
     connect(ui->selectFilesButton, &QPushButton::clicked, this, &MainWindow::onSelectFilesButtonClicked);
     connect(ui->uploadButton, &QPushButton::clicked, this, &MainWindow::onUploadButtonClicked);
+
+    connect(ui->deleteAllButton, &QPushButton::clicked, this, [=] {
+        QGridLayout *l = static_cast<QGridLayout *>(ui->dragBoxContents->layout());
+        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++) {
+            IconWidget *iw = (*iter);
+            iw->setGraphicsEffect(nullptr);
+            iw->deleteLater();
+            l->removeWidget(iw);
+            iconWidgets.erase(iter);
+        }
+        qDebug() << l->columnCount() << l->rowCount() << l->count();
+        emit uploadStatusChanged();
+    });
+
+    connect(this, &MainWindow::uploadStatusChanged, this, [=] {
+        ui->uploadStatusLabel->setText(
+            QString(tr("待传区文件数: %1 \n 上传模式: %2"))
+                .arg(iconWidgets.size())
+                .arg(globalSettings.user[KeyMap.user.uploadWithToken].toBool() ? "优先使用Token" : "基于IP"));
+    });
     // set imghost dashbroad page
     ui->pageSwitchWidget->installEventFilter(this);
     connect(ui->hostLogin, &QPushButton::clicked, this, &MainWindow::onHostLoginClicked);
@@ -120,7 +146,7 @@ void MainWindow::componentsLayoutManager() {
             emit widgetPageChanged(current_index);
             currentPage = current_index - 1;
             ui->stackedWidget->setCurrentIndex(current_index - 1);
-            loadPage(PAGE(current_index));
+            loadPage(PAGE(current_index - 1));
         });
 
         pageButton->setIconPath(iconPaths.at(index * 2 - 2), iconPaths.at(index * 2 - 1));
@@ -130,21 +156,44 @@ void MainWindow::componentsLayoutManager() {
     }
     ui->pageButton_1->setChecked(true);
     ui->stackedWidget->setCurrentIndex(UploadPage);
+    loadPage(UploadPage);
 
     connect(ui->dragBox, &PicturesContainer::acceptDragFileName, this, &MainWindow::addIconWidget);
+    ui->dragBoxContents->installEventFilter(this);
+
+    connect(ui->preferIPRadio, &QRadioButton::clicked, this,
+            [=] { globalSettings.user[KeyMap.user.uploadWithToken] = false; });
+    connect(ui->preferTokenRadio, &QRadioButton::clicked, this,
+            [=] { globalSettings.user[KeyMap.user.uploadWithToken] = true; });
+    connect(ui->SaveNameEdit, &QLineEdit::textChanged, this,
+            [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveFileName] = str; });
+    connect(ui->SaveFormatCombo, &QComboBox::currentTextChanged, this,
+            [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveImageType] = str; });
 }
 
 void MainWindow::loadPage(MainWindow::PAGE index) {
     switch (index) {
+        case UploadPage:
+            emit uploadStatusChanged();
+            break;
         case HostDashBoardPage:
             ui->hostUsername->clear();
             ui->hostPassword->clear();
-            if (globalSettings.imghost["isAuthorized"].toBool()) {
+            if (globalSettings.imghost[KeyMap.imghost.isAuthorized].toBool()) {
                 ui->hostLogin->click();
             } else {
                 ui->tokenLabel->setText(tr("未登录"));
                 ui->hostUserDiskLimit->hide();
                 ui->userInfoLabel->setText(QString(tr("<div><b>用户组:</b> 未登录用户</div>")));
+            }
+            break;
+        case SettingsPage:
+            ui->SaveFormatCombo->setCurrentText(globalSettings.user[KeyMap.user.clipSaveImageType].toString());
+            ui->SaveNameEdit->setText(globalSettings.user[KeyMap.user.clipSaveFileName].toString());
+            if (globalSettings.user[KeyMap.user.uploadWithToken].toBool()) {
+                ui->preferTokenRadio->setChecked(true);
+            } else {
+                ui->preferIPRadio->setChecked(true);
             }
             break;
         default:
@@ -156,13 +205,35 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (obj == this && event->type() == QEvent::Close) {
         onMainProcessClosed();
     }
-    return QWidget::eventFilter(obj, event);
+    if (obj == ui->dragBoxContents && event->type() == QEvent::Paint) {
+        if (!iconWidgets.size()) {
+            QPainter painter(static_cast<QWidget *>(obj));
+            QFont font = QFont("Microsoft YaHei", 36);
+
+            QString tipstr = tr("Paste & Drag & Select") + tr(" Files Here...");
+
+            painter.setFont(font);
+            painter.setPen(QColor("#C0C4CC"));
+            QRectF rect = ui->dragBoxContents->rect();
+            rect.setRight(rect.width() / 4 * 3);
+            rect.setLeft(rect.width() / 4);
+            painter.drawText(rect, Qt::TextWordWrap | Qt::AlignCenter, tipstr);
+            ui->dragBoxContents->update();
+        }
+
+        return false;
+    }
+
+    return QMainWindow::eventFilter(obj, event);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         movingPoint = event->globalPos() - this->pos();
-        mousePressed = true;
+        if ((ui->titleBar->geometry().contains(event->pos()) ||
+             ui->pageSwitchWidget->geometry().contains(event->pos()))) {
+            mousePressed = true;
+        }
     }
 }
 
@@ -174,23 +245,37 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
                 QList<QUrl> urls = board->mimeData()->urls();
                 for (const QUrl &url : qAsConst(urls)) {
                     QString fileName = url.toLocalFile();
-                    addIconWidget(fileName);
+                    if (QFile(fileName).exists()) {
+                        addIconWidget(fileName);
+                    };
                 }
             }
             if (board->mimeData()->hasImage()) {
                 const QImage &img = board->image();
+                const QString formatTime = globalSettings.user[KeyMap.user.clipSaveFileName].toString();
+
+                const QString filename = QDir::temp().absolutePath() + "/" +
+                                         QDateTime::currentDateTime().toString(formatTime) + "." +
+                                         globalSettings.user[KeyMap.user.clipSaveImageType].toString();
+
+                if (img.save(filename)) {
+                    addIconWidget(filename);
+                } else {
+                    notify->newNotify(this, tr("错误"), tr("未能成功保存文件,请检查保存文件名是否合法:\n") + formatTime,
+                                      "#F56C6C", "#fff");
+                }
             }
         }
     }
 }
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *) {
     mousePressed = false;
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
     //移动窗口
-    if (mousePressed &&
-        (ui->titleBar->geometry().contains(event->pos()) || ui->pageSwitchWidget->geometry().contains(event->pos()))) {
+    if (mousePressed) {
         QPoint move_pos = event->globalPos();
         move(move_pos - movingPoint);
     }
@@ -204,7 +289,7 @@ void MainWindow::onMainProcessClosed() {
 
 void MainWindow::onHostLoginClicked() {
     HttpClient *client = nullptr;
-    if (!globalSettings.imghost["isAuthorized"].toBool()) {
+    if (!globalSettings.imghost[KeyMap.imghost.isAuthorized].toBool()) {
         client = smms->getAPIToken(ui->hostUsername->text(), ui->hostPassword->text());
         this->setCursor(QCursor(Qt::WaitCursor));
         QEventLoop *el = new QEventLoop(this);
@@ -218,8 +303,8 @@ void MainWindow::onHostLoginClicked() {
                 ui->userInfoLabel->setText(tr("<h4>登录失败 </h4>") + data.message);
             } else {
                 QString token = data.data.at(0).toObject()["token"].toString();
-                globalSettings.imghost.insert("token", token);
-                globalSettings.imghost.insert("isAuthorized", true);
+                globalSettings.imghost.insert(KeyMap.imghost.token, token);
+                globalSettings.imghost.insert(KeyMap.imghost.isAuthorized, true);
                 globalSettings.save();
             }
             el->quit();
@@ -229,8 +314,8 @@ void MainWindow::onHostLoginClicked() {
         el->exec();
     }
 
-    if (globalSettings.imghost["isAuthorized"].toBool()) {
-        smms->setToken(globalSettings.imghost["token"].toString());
+    if (globalSettings.imghost[KeyMap.imghost.isAuthorized].toBool()) {
+        smms->setToken(globalSettings.imghost[KeyMap.imghost.token].toString());
 
         ui->hostLogin->setEnabled(false);
         ui->hostLogin->setText(tr("已登录"));
@@ -268,8 +353,8 @@ void MainWindow::onHostLoginClicked() {
 }
 
 void MainWindow::onHostResetClicked() {
-    globalSettings.imghost.insert("token", "");
-    globalSettings.imghost.insert("isAuthorized", false);
+    globalSettings.imghost.insert(KeyMap.imghost.token, "");
+    globalSettings.imghost.insert(KeyMap.imghost.isAuthorized, false);
     globalSettings.save();
 
     ui->hostLogin->setEnabled(true);
@@ -311,9 +396,9 @@ void MainWindow::onUploadButtonClicked() {
 
 void MainWindow::addIconWidget(QString filename) {
     QFile file(filename);
+
     file.open(QFile::ReadOnly);
     QByteArray data = file.readAll();
-
     if (QImage().loadFromData(data)) {
         QString repeat = "";
         QString tmpHash = QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
@@ -331,7 +416,7 @@ void MainWindow::addIconWidget(QString filename) {
                     IconWidget *widget = new IconWidget(ui->dragBox);
                     widget->hide();  //减少闪烁
 
-                    QGridLayout *gridLayout = ((QGridLayout *)ui->dragBoxContents->layout());
+                    QGridLayout *gridLayout = static_cast<QGridLayout *>(ui->dragBoxContents->layout());
                     gridLayout->addWidget(widget, iconWidgets.count() / uploadBoxCols,
                                           iconWidgets.count() % uploadBoxCols);
                     widget->setFixedSize(iconWidgetSize);
@@ -340,6 +425,7 @@ void MainWindow::addIconWidget(QString filename) {
                     widget->show();
 
                     iconWidgets.append(widget);
+                    emit uploadStatusChanged();
 
                     connect(widget, &IconWidget::onUploadBtnClicked, this, &MainWindow::uploadFromIconWidget);
 
@@ -350,30 +436,7 @@ void MainWindow::addIconWidget(QString filename) {
                         view.show();
                     });
 
-                    connect(widget, &IconWidget::onDeleteBtnClicked, this, [=](IconWidget *obj) {
-                        QList<IconWidget *>::iterator del_iter;
-                        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
-                             iter++) {
-                            if (*iter == obj) {
-                                del_iter = iter;
-                                break;
-                            }
-                        }
-                        iconWidgets.erase(del_iter);
-
-                        while (!gridLayout->isEmpty()) {
-                            delete gridLayout->takeAt(0);
-                        }
-
-                        obj->deleteLater();
-
-                        uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
-                        int i = 0;
-                        for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end();
-                             iter++, i++) {
-                            gridLayout->addWidget(*iter, i / uploadBoxCols, i % uploadBoxCols);
-                        }
-                    });
+                    connect(widget, &IconWidget::onDeleteBtnClicked, this, &MainWindow::delIconWidget);
                 } else {
                     notify->newNotify(this, tr("错误"), tr("待传区图片数量已达上限(limit: %1)").arg(UPLOAD_FILE_LIMIT),
                                       "#F56C6C", "#fff");
@@ -400,7 +463,8 @@ void MainWindow::uploadFromIconWidget(IconWidget *iconwidget) {
     }
     HttpClient *client = nullptr;
 
-    if (globalSettings.imghost[KeyMap.imghost_isAuthorized] == true) {
+    if (globalSettings.imghost[KeyMap.imghost.isAuthorized] == true &&
+        globalSettings.user[KeyMap.user.uploadWithToken] == true) {
         client = smms->upload(iconwidget->imageData(), iconwidget->imageInfo().fileName(), true);
     } else {
         client = smms->upload(iconwidget->imageData(), iconwidget->imageInfo().fileName(), false);
@@ -428,6 +492,32 @@ void MainWindow::uploadFromIconWidget(IconWidget *iconwidget) {
     });
 
     connect(client, &HttpClient::uplpodProgress, iconwidget, &IconWidget::updateUploadProgress);
+}
+
+void MainWindow::delIconWidget(IconWidget *obj) {
+    QGridLayout *gridLayout = static_cast<QGridLayout *>(ui->dragBoxContents->layout());
+    QList<IconWidget *>::iterator del_iter;
+    for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++) {
+        if (*iter == obj) {
+            del_iter = iter;
+            break;
+        }
+    }
+    iconWidgets.erase(del_iter);
+
+    while (!gridLayout->isEmpty()) {
+        delete gridLayout->takeAt(0);
+    }
+
+    obj->setGraphicsEffect(nullptr);
+    obj->deleteLater();
+
+    uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
+    int i = 0;
+    for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++, i++) {
+        gridLayout->addWidget(*iter, i / uploadBoxCols, i % uploadBoxCols);
+    }
+    emit uploadStatusChanged();
 }
 
 bool MainWindow::loadQStyleSheet(const QString &fileName) {

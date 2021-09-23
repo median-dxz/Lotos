@@ -13,7 +13,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent) {
     titleBarLayout->addWidget(mainIcon);
     titleBarLayout->addSpacing(10);
     titleBarLayout->addWidget(title);
-    titleBarLayout->addStretch();
+    //    titleBarLayout->addStretch();
     titleBarLayout->addWidget(miniBtn);
     titleBarLayout->addWidget(closeBtn);
 
@@ -28,8 +28,9 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent) {
     miniBtn->installEventFilter(this);
     closeBtn->installEventFilter(this);
 
-    //    title->setFont(QFont("Microsoft YaHei UI", 12));
-    title->setFont(QFont("Agency FB", 16));
+    title->setFont(QFont("Microsoft YaHei UI", 12));
+    //    title->setFont(QFont("Agency FB", 16));
+    title->setAlignment(Qt::AlignCenter);
 
     connect(miniBtn, &QPushButton::clicked, this, &TitleBar::onMiniBtnClicked);
     connect(closeBtn, &QPushButton::clicked, this, &TitleBar::onCloseBtnClicked);

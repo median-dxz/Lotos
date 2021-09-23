@@ -68,8 +68,22 @@
 }
 
 #uploadPage .QPushButton#uploadButton {
+  border-radius: 0;
+  margin-right: 1px;
+}
+
+#uploadPage .QPushButton#deleteAllButton {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+  background-color: #f56c6c;
+}
+
+#uploadPage .QPushButton#deleteAllButton:hover {
+    background-color: #f78989;
+}
+
+#uploadPage .QPushButton#deleteAllButton:pressed{
+    background-color: #dd6161;
 }
 
 IconWidget .QProgressBar[class_type="iconwidget.sub.progress"] {

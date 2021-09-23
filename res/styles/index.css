@@ -41,3 +41,7 @@ PictureViewWidget QLabel {
 #imageList {
     border: 1px solid #dcdfe6;
 }
+
+#uploadStatusLabel {
+    color: #909399;
+}
