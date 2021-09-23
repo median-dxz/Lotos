@@ -15,8 +15,6 @@
 #include "pictureviewwidget.h"
 #include "titlebar.h"
 
-using namespace LotosSettings;
-
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;

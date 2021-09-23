@@ -33,6 +33,7 @@ void MainWindow::test() {
                     SMMS::ImageInfomation info;
                     SMMS::praseImageInfomation(obj.toObject(), info);
                     qDebug() << timestamp2str(info.timestamp, "yyyy/MM/dd hh:mm:ss");
+                    qDebug() << formatExternalLink(info.filename, info.url, ExternalLinkType::Markdown);
                 }
                 delete res;
             });
