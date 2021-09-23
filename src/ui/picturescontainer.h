@@ -14,6 +14,9 @@ class PicturesContainer : public QScrollArea {
    protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+
+   private:
+    int count = 0;
 };
 
 #endif  // PICTURESCONTAINER_H

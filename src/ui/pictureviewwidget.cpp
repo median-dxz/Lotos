@@ -1,5 +1,7 @@
 #include "pictureviewwidget.h"
 
+#include <QScreen>
+
 #include "base.h"
 #include "utils/lotoshelper.h"
 
@@ -9,7 +11,7 @@ PictureViewWidget::PictureViewWidget(QWidget *parent) : QWidget(parent) {
     //    setBgColor(QColor("#fff"));
 
     setAttribute(Qt::WA_TranslucentBackground);
-    QVBoxLayout *l = new QVBoxLayout(this);
+    QVBoxLayout *l = new QVBoxLayout;
     setLayout(l);
     imgBox = new QLabel(this);
     info = new QLabel(this);

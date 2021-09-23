@@ -17,5 +17,8 @@
         <file>res/icons/addimg.png</file>
         <file>res/icons/view.png</file>
         <file>res/icons/upload_light.png</file>
+        <file>res/styles/settings.css</file>
+        <file>res/icons/downarrow.png</file>
+        <file>res/icons/uparrow.png</file>
     </qresource>
 </RCC>

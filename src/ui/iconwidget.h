@@ -33,8 +33,9 @@ class IconWidget : public QWidget {
     inline QString Hash() const;
 
     enum UPLOAD_STATUS { PENDING, UPLOADING, UPLOADED, FAILED };
-    void setStatus(UPLOAD_STATUS newStatus) { emit statusChanged(newStatus); }
-    UPLOAD_STATUS status() { return m_status; }
+    inline void setStatus(UPLOAD_STATUS newStatus);
+    inline UPLOAD_STATUS status() const;
+
    signals:
     void onDeleteBtnClicked(IconWidget *);
     void onViewBtnClicked(IconWidget *);
@@ -103,6 +104,14 @@ inline QFileInfo IconWidget::imageInfo() const {
 
 inline QString IconWidget::Hash() const {
     return hash;
+}
+
+inline void IconWidget::setStatus(IconWidget::UPLOAD_STATUS newStatus) {
+    emit statusChanged(newStatus);
+}
+
+inline IconWidget::UPLOAD_STATUS IconWidget::status() const {
+    return m_status;
 }
 
 #endif  // ICONWIDGET_H

@@ -1,5 +1,6 @@
 #include "pagebutton.h"
 
+#include <QStyle>
 #include "base.h"
 
 PageButton::PageButton(QWidget *parent) : QPushButton(parent) {

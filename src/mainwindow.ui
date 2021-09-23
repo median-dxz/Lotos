@@ -87,12 +87,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <layout class="QGridLayout" name="gridLayout" rowstretch="1,8,1">
+          <layout class="QGridLayout" name="gridLayout" rowstretch="2,10,1,2">
            <property name="leftMargin">
             <number>40</number>
            </property>
            <property name="topMargin">
-            <number>40</number>
+            <number>18</number>
            </property>
            <property name="rightMargin">
             <number>40</number>
@@ -106,58 +106,7 @@
            <property name="verticalSpacing">
             <number>20</number>
            </property>
-           <item row="1" column="0">
-            <widget class="PicturesContainer" name="dragBox">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>300</height>
-              </size>
-             </property>
-             <property name="verticalScrollBarPolicy">
-              <enum>Qt::ScrollBarAsNeeded</enum>
-             </property>
-             <property name="horizontalScrollBarPolicy">
-              <enum>Qt::ScrollBarAlwaysOff</enum>
-             </property>
-             <property name="widgetResizable">
-              <bool>true</bool>
-             </property>
-             <widget class="QWidget" name="dragBoxContents">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>998</width>
-                <height>447</height>
-               </rect>
-              </property>
-             </widget>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="font">
-              <font>
-               <family>Microsoft YaHei UI</family>
-               <pointsize>24</pointsize>
-              </font>
-             </property>
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="text">
-              <string>图片上传</string>
-             </property>
-             <property name="textFormat">
-              <enum>Qt::PlainText</enum>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
+           <item row="3" column="0">
             <layout class="QHBoxLayout" name="inputLayout">
              <property name="spacing">
               <number>0</number>
@@ -211,6 +160,9 @@
                  <height>24</height>
                 </size>
                </property>
+               <property name="shortcut">
+                <string>Shift+A</string>
+               </property>
                <property name="flat">
                 <bool>true</bool>
                </property>
@@ -252,6 +204,38 @@
                  <height>24</height>
                 </size>
                </property>
+               <property name="shortcut">
+                <string>Shift+R</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deleteAllButton">
+               <property name="font">
+                <font>
+                 <family>Microsoft YaHei</family>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>全部删除</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources.qrc">
+                 <normaloff>:/res/icons/del.png</normaloff>:/res/icons/del.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="shortcut">
+                <string>Shift+D</string>
+               </property>
                <property name="flat">
                 <bool>true</bool>
                </property>
@@ -275,18 +259,85 @@
              </item>
             </layout>
            </item>
+           <item row="1" column="0">
+            <widget class="PicturesContainer" name="dragBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>300</height>
+              </size>
+             </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAsNeeded</enum>
+             </property>
+             <property name="horizontalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="dragBoxContents">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>998</width>
+                <height>373</height>
+               </rect>
+              </property>
+             </widget>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="font">
+              <font>
+               <family>Microsoft YaHei UI</family>
+               <pointsize>24</pointsize>
+              </font>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>图片上传</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::PlainText</enum>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="uploadStatusLabel">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="galleryPage">
           <layout class="QGridLayout" name="gridLayout_5">
            <property name="leftMargin">
-            <number>18</number>
+            <number>40</number>
            </property>
            <property name="topMargin">
             <number>18</number>
            </property>
            <property name="rightMargin">
-            <number>18</number>
+            <number>40</number>
            </property>
            <item row="0" column="0">
             <widget class="QTableView" name="imageList"/>
@@ -337,6 +388,18 @@
          </widget>
          <widget class="QWidget" name="hostDashBoardPage">
           <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="spacing">
+            <number>20</number>
+           </property>
+           <property name="leftMargin">
+            <number>40</number>
+           </property>
+           <property name="topMargin">
+            <number>18</number>
+           </property>
+           <property name="rightMargin">
+            <number>40</number>
+           </property>
            <item>
             <widget class="QGroupBox" name="groupBox_2">
              <property name="title">
@@ -549,33 +612,218 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_3">
-          <widget class="QLabel" name="label_5">
-           <property name="geometry">
-            <rect>
-             <x>60</x>
-             <y>220</y>
-             <width>221</width>
-             <height>251</height>
-            </rect>
+         <widget class="QWidget" name="settingsPage">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="spacing">
+            <number>20</number>
            </property>
-           <property name="text">
-            <string>TextLabel</string>
+           <property name="leftMargin">
+            <number>40</number>
            </property>
-          </widget>
-          <widget class="QLabel" name="label_6">
-           <property name="geometry">
-            <rect>
-             <x>360</x>
-             <y>200</y>
-             <width>251</width>
-             <height>291</height>
-            </rect>
+           <property name="topMargin">
+            <number>18</number>
            </property>
-           <property name="text">
-            <string>TextLabel</string>
+           <property name="rightMargin">
+            <number>40</number>
            </property>
-          </widget>
+           <item>
+            <widget class="QGroupBox" name="groupBox_3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="title">
+              <string>上传模式</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_7">
+              <property name="spacing">
+               <number>20</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="preferTokenRadio">
+                <property name="font">
+                 <font>
+                  <family>Microsoft YaHei</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>优先使用登录用户上传</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QRadioButton" name="preferIPRadio">
+                <property name="font">
+                 <font>
+                  <family>Microsoft YaHei</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>优先使用IP上传</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_4">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="title">
+              <string>剪辑板上传</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_6">
+              <property name="spacing">
+               <number>20</number>
+              </property>
+              <item row="1" column="1" colspan="2">
+               <widget class="QLineEdit" name="SaveNameEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>280</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>保存名称: </string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>保存格式: </string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="SaveFormatCombo">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>140</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Microsoft YaHei</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>png</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>jpg</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>bmp</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>gif</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>webp</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(使用两个'代表',将非时间部分用''括起来)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="4">
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>

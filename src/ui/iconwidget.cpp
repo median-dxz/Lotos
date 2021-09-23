@@ -4,12 +4,14 @@
 #include "utils/lotoshelper.h"
 
 IconWidget::IconWidget(QWidget *parent) : QWidget(parent) {
-    infoBox = new QVBoxLayout(this);
-    bottomLine = new QHBoxLayout(this);
+    infoBox = new QVBoxLayout;
+    bottomLine = new QHBoxLayout;
+
     infoBox->setContentsMargins(8, 8, 8, 8);
     infoBox->setSpacing(8);
     bottomLine->setContentsMargins(0, 0, 0, 0);
     bottomLine->setSpacing(8);
+
     this->setLayout(infoBox);
 }
 

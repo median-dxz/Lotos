@@ -5,9 +5,16 @@
 
 namespace LotosSettings {
 
-const struct {
-    const QString imghost_token = "token";
-    const QString imghost_isAuthorized = "isAuthorized";
+const static struct {
+    struct {
+        const QString token = "token";
+        const QString isAuthorized = "isAuthorized";
+    } imghost;
+    struct {
+        const QString uploadWithToken = "uploadWithToken";
+        const QString clipSaveFileName = "clipSaveFileName";
+        const QString clipSaveImageType = "clipSaveImageType";
+    } user;
 } KeyMap;
 
 }  // namespace LotosSettings

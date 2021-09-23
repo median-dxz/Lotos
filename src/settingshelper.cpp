@@ -47,4 +47,8 @@ void SettingsHelper::save() {
 void SettingsHelper::setDefaultValue() {
     imghost.insert("token", "");
     imghost.insert("isAuthorized", false);
+
+    user.insert("uploadWithToken", true);
+    user.insert("clipSaveFileName", "yyMMdd_hhmmss");
+    user.insert("clipSaveImageType", "png");
 }
