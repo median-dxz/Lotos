@@ -3,18 +3,37 @@
 PaintWindow::PaintWindow(QMainWindow * )
 {
 
+    this->setFixedSize(QSize(400,300));
     connect(pTimer, &QTimer::timeout, this, &PaintWindow::updatePaintArc);
     connect(pTimer, &QTimer::timeout, this, &PaintWindow::updatePaintErr);
     connect(pTimer, &QTimer::timeout, this, &PaintWindow::updatePaint);
+
+    Hide = new QPushButton(this);
+    Hide->move(width()-Hide->width(),height()-Hide->height());
+    Hide->setText("back");
 
 }
 
 void PaintWindow::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.translate(width() >> 1, height() >> 1);
-    painting(k , &painter);
+    painter.translate(width() >> 1, (height() >> 1));
+    painter.setFont(QFont("Microsoft YaHei", 12, 400));
+    painter.setPen(QColor("#CCC"));
+    painter.drawText(QRect(-60, 80, width(), 40), text);
+    painter.drawText(QRect(-60, 110, width(), 40), tit);
+    //painter.setRenderHint(QPainter::Antialiasing, true);
+    //paintArc(&painter);
+    //paintTuo(&painter);
+    //paintSuc(&painter);
+    painting(Animation , &painter);
+
+
     update();
+
+
+
+
 
 }
 
@@ -23,13 +42,13 @@ void PaintWindow::paintArc(QPainter *painter)
 {
 
     painter->rotate(second3);
-    gradientArc(painter, 40, 0,  90, 8, qRgb(39,120,196));
-    gradientArc(painter, 40, 180,  90, 8, qRgb(39,120,196));
+    gradientArc(painter, 40, 0,  90, 8, QColor(39,120,196));
+    gradientArc(painter, 40, 180,  90, 8, QColor(39,120,196));
 
 
 }
 
-void PaintWindow:: paintTuo(QPainter *painter)
+void PaintWindow:: paintErr(QPainter *painter)
 {
     QPen pen(QColor(242, 116, 116),8);
     pen.setCapStyle(Qt::RoundCap);
@@ -69,41 +88,37 @@ void PaintWindow::paintSuc(QPainter * painter)
 
      QPen pen(QColor(165, 220, 134),8);
      pen.setCapStyle(Qt::RoundCap);
-     painter->setPen(pen);
+      painter->setPen(pen);
 
-     if(second2>220)
-     {
-         if(i<55)
-           painter->drawLine(-70,-25,-70+i,i-25);
-         if(i>=55)
-         {
-             if(i>=95)
-             {
-                 int j =95;
-                 painter->drawLine(-45-25+i-j,0-25+i-j,-45,0);
-             }
+      if(second2>220)
+      {
+          if(traceSec<55)
+            painter->drawLine(-70,-25,-70+traceSec,traceSec-25);
+          if(traceSec>=55)
+          {
+              if(traceSec>=95)
+              {
+                  int j =95;
+                  painter->drawLine(-45-25+traceSec-j,0-25+traceSec-j,-45,0);
+              }
+              else
+                  painter->drawLine(-70,-25,-45,0);
 
-             else
-                 painter->drawLine(-70,-25,-45,0);
+              painter->drawLine(-45,0,-15,30);
+              painter->drawLine(-15,30,-15+traceSec-55,30-traceSec+55);
+          }
 
-             painter->drawLine(-45,0,-15,30);
-             painter->drawLine(-15,30,-15+i-55,30-i+55);
-         }
-
-     }
-
-
-     gradientArc(painter, 80, 0,  360, 5, QColor(228,244,218));//这个是画圆环的
-     gradientArc(painter, 80, 270,  second2, 5, QColor(165, 220, 134));
-
-     if(second2>=220)
-     {
-         gradientArc(painter, 80, 270,  i*220.0/95, 5, QColor(228,244,218));
-         gradientArc(painter, 80, 160, 110, 5, QColor(228,244,218));
-     }
+      }
 
 
+      gradientArc(painter, 80, 0,  360, 5, QColor(228,244,218));//这个是画圆环的
+      gradientArc(painter, 80, 270,  second2, 5, QColor(165, 220, 134));
 
+      if(second2>=220)
+      {
+          gradientArc(painter, 80, 270,  traceSec*220.0/95, 5, QColor(228,244,218));
+          gradientArc(painter, 80, 160, 110, 5, QColor(228,244,218));
+      }
 
 }
 
@@ -125,22 +140,18 @@ void PaintWindow::gradientArc(QPainter *painter, int radius, int startAngle, int
 }
 
 
-
-// 改变角度，进行旋转
 void PaintWindow::updatePaintArc()
 {
     second2++;
     if(second2>220)
     {
-        i++;
-        if (i > 120)
-            i = 120;
+        traceSec++;
+        if (traceSec > 120)
+            traceSec = 120;
     }
 
     if (second2 > 360)
         second2 = 360;
-
-
     update();
 }
 
@@ -164,15 +175,15 @@ void PaintWindow::updatePaint()
 
 }
 
-void PaintWindow::painting(int k ,QPainter * painter)
+void PaintWindow::painting(int Animation ,QPainter * painter)
 {
 
-    switch (k) {
-    case 1:paintSuc(painter);
+    switch (Animation) {
+    case 0:paintSuc(painter);
            break;
-    case 2:paintTuo(painter);
+    case 1:paintErr(painter);
            break;
-    case 3:paintArc(painter);
+    case 2:paintArc(painter);
            break;
     }
 
@@ -183,5 +194,5 @@ void PaintWindow::reSetTime()
     second1 = 0;
     second2= 0;
     second3= 0;
-    i=0;
+    traceSec=0;
 }

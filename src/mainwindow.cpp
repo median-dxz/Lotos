@@ -1,17 +1,29 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     thread = new Thread();
-    connect(thread, SIGNAL(returnResult(int)), this, SLOT(displayResult(int)));
+    M = new PaintWindow(this);
+    connect(M->Hide , &QPushButton::clicked,this,[=](){  M->hide();this->show();});
+    connect(thread, SIGNAL(returnResult(int,QString ,QString)), this, SLOT(displayResult(int,QString ,QString)));
     connect(thread, &Thread::deleLoading , this, [=](){
-        M->hide();
-        this->show();
-        thread->wait();
+//        M->hide();
+//        this->show();
+        M->show();//提示子线程完成操作
+        this->hide();
+        thread->wait();//thread->setCallback(this,M,cal);thread->start();写到需要打开子线程办事的信号槽里
+    });
+    connect(ui->pushButton_7 , &QPushButton::clicked , this , [=](){
+        qDebug()<<"子线程正在帮您后台运行";
+        thread->setCallback(this,M,thing);
+        thread->start();
+//        M->show();
+//        this->hide();
+        Painting(2,"这个现在没用" ,"用的是thing里的");//这个是切换动画，将参数改一下可以根据返回值来确定
+
     });
 
     init();
@@ -30,9 +42,11 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::displayResult(int)
+void MainWindow::displayResult(int result , QString text , QString tit)
 {
-    qDebug()<<"事件返回值";
+    M->tit=tit;
+    M->text=text;
+    qDebug()<<"子线程返回值";
 }
 
 void MainWindow::onMainProcessClosed() {
@@ -298,22 +312,38 @@ void MainWindow::onUploadButtonClicked() {
     }
 }
 
-void MainWindow::Painting(int i)
+void MainWindow::Painting(int i ,QString text ,QString tit)
 {
     M->reSetTime();
     M->pTimer->setInterval(100);
     switch (i) {
-    case 1:
-        M->k=1;
-        M->pTimer->start(1);
+    case 0:
+        M->Animation=0;
+        M->pTimer->start(0.1);
         break;
-     case 2:
-        M->k=2;
+     case 1:
+        M->Animation=1;
         M->pTimer->start(2);
         break;
-      case 3:
-        M->k=3;
+      case 2:
+        M->Animation=2;
         M->pTimer->start(3);
         break;
     }
+//    M->text = text;
+//    M->tit = tit;
 }
+
+int MainWindow::thing(MainWindow *m ,PaintWindow *M)
+{
+    M->text = "text";//回调文字
+    M->tit = "tit";
+
+     //主线程要干的事搬到这干，不影响主线程操作 如：
+    int result = 0;
+    for(int i = 0; i < 2000000000; i++)
+        result += i;
+    return result;
+
+}
+

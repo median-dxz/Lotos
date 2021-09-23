@@ -12,6 +12,7 @@
 
 #include "imagehost.h"
 #include "settingshelper.h"
+class Thread;
 #include "thread.h"
 #include "paintwindow.h"
 
@@ -39,7 +40,7 @@ class MainWindow : public QMainWindow {
     void onHostResetClicked();
     void onMainProcessClosed();
     void onUploadButtonClicked();
-    void displayResult(int);
+    void displayResult(int, QString , QString);
 
    signals:
     void widgetPageChanged(int);
@@ -61,8 +62,8 @@ class MainWindow : public QMainWindow {
 
     Thread *thread;
     PaintWindow * M = nullptr;
-    void Painting(int i);
-    static int thing();//阻断事件！
+    void Painting(int i,QString text ,QString tit);
+    static int thing(MainWindow *m ,PaintWindow *M);//阻断事件！
 
     void init();
 
