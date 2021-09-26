@@ -1,5 +1,6 @@
 #nt {
   border: 1px solid black;
+
 }
 
 QCheckBox{
@@ -28,13 +29,14 @@ QCheckBox::indicator:checked {
 QPushButton[class_type="link"] {
     border:none;
     background:none;
-    color: green;
+    color: #00a4ff;
 }
 
 QPushButton:hover[class_type="link"] {
     border:none;
     background:none;
     color: blue;
+    /*text-decoration:underline;*/
 }
 
 QPushButton:pressed[class_type="link"] {
@@ -58,3 +60,4 @@ QComboBox QAbstractItemView::item{
    border: none;
    background: blue;
 }
+

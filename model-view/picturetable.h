@@ -28,6 +28,8 @@ const struct {
     QString thumb = "thumb";
 } DataKey;
 
+static const int rowWidth[6]={300,250,250,250,50,50};
+
 class PictureTable : public QFrame {
     Q_OBJECT
    signals:
@@ -35,14 +37,16 @@ class PictureTable : public QFrame {
    public:
     explicit PictureTable(QWidget *parent = nullptr);
 
-    int getLineHeight() const { return lineHeight; };
-    void setLineHeight(int h) { lineHeight = h; };
+    int getLineHeight() const { return lineHeight; }
+    void setLineHeight(int h) { lineHeight = h; }
+    void devListSort(int cmp , int sel , QList <PictureTableLine *> list);
 
 
 
 
    public slots:
     void addData(QVariantMap d);
+    void deleteLine1(PictureTableLine *);
 
 
    private:
@@ -59,31 +63,52 @@ class PictureTableHeader : public QWidget {
     Q_OBJECT
    public:
     PictureTableHeader(QWidget *parent);
-    int getHeaderHeight() const { return lineHeight; };
-    void setHeaderHeight(int h) { lineHeight = h; };
+    int getHeaderHeight() const { return lineHeight; }
+    void setHeaderHeight(int h) { lineHeight = h; }
+    QCheckBox *all;
+    QPushButton *fnSort, *sizeSort, *linkSort;
+
+protected:
+   void paintEvent(QPaintEvent *) override;
 
    private:
     int lineHeight = DefaultHeaderHeight;
+
+public slots:
 };
 
 class PictureTableLine : public QWidget {
     Q_OBJECT
    public:
+    static int s;
+    int in,an;
     PictureTableLine(QWidget *parent, QVariantMap &data);
     int getCheckStatus();
+    void setCheckState(Qt::CheckState);
+    void resetLine(int  , int , int  , int  ,int );
+    QLabel *lab_filename;
+
 
    private:
     QVariantMap &data;
     QCheckBox *cb;
-    QLabel *lab_filename, *lab_link, *lab_width, *lab_size;
-    QPushButton *opt_del;
+    QLabel *lab_link, *lab_width, *lab_size , *lab_rec;
+    QComboBox *bx;
+    QPushButton *opt_del ,*op_view , *op_del ,*op_load;
+    QColor lineBackgroundColor = QColor("#fff");
+    QPixmap p;
 
 
-signals: void onStateChanged(int );
+signals: void onStateChanged();
+         void deleteLine(PictureTableLine *);
 
    protected:
     void paintEvent(QPaintEvent *) override;
+    void enterEvent(QEvent *)override;
+    void leaveEvent(QEvent *)override;
 
+public slots:
+    void x(int );
 
 };
 
