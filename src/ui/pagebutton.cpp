@@ -6,6 +6,7 @@
 PageButton::PageButton(QWidget *parent) : QPushButton(parent) {
     iconLabel = new QLabel(this);
     connect(this, &PageButton::pressed, this, &PageButton::emitClicked);
+    installEventFilter(this);
 }
 
 void PageButton::emitClicked() {
@@ -18,17 +19,50 @@ void PageButton::emitClicked() {
 void PageButton::setCurrentChosen(int index) {
     if (this->index != index) {
         PageButton::setChecked(false);
+        drawPix(normalIconPath);
     } else {
         PageButton::setChecked(true);
+        drawPix(ignitedIconPath);
     }
 }
 
 void PageButton::enterEvent(QEvent *) {
     drawPix(ignitedIconPath);
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "bgC", this);
+    animation->setStartValue(0);
+    animation->setEndValue(255 * 0.1);
+    animation->setDuration(150);
+    animation->start();
 }
 
 void PageButton::leaveEvent(QEvent *) {
-    drawPix(normalIconPath);
+    if (!isChecked()) {
+        drawPix(normalIconPath);
+    }
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "bgC", this);
+    animation->setStartValue(255 * 0.1);
+    animation->setEndValue(0);
+    animation->setDuration(150);
+    animation->start();
+}
+
+bool PageButton::eventFilter(QObject *watched, QEvent *event) {
+    if (watched == this && event->type() == QEvent::Paint) {
+        QPainter p(this);
+        p.fillRect(rect(), QBrush(QColor(0, 0, 0, bgC)));
+        p.end();
+        return false;
+    }
+    return QPushButton::eventFilter(watched, event);
+}
+
+int PageButton::getBgC() const {
+    return bgC;
+}
+
+void PageButton::setBgC(const int &value) {
+    bgC = value;
+    update();
 }
 
 void PageButton::setIconPath(QString pathNormal, QString pathIgnited) {

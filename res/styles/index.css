@@ -13,17 +13,16 @@
 
 #pageSwitchWidget PageButton {
   padding: 0px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   padding-left: 54px;
   border: none;
   border-right: 4px solid rgba(0, 0, 0, 0);
-  background: transparent;
   color: #606266;
   text-align: left;
 }
 
 #pageSwitchWidget PageButton:hover {
-  background-color: rgba(220, 223, 230, 102);
-  border-right: 4px solid #a7d2ff;
   color: #303133;
 }
 

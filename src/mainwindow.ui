@@ -872,9 +872,9 @@
          <property name="lineWidth">
           <number>0</number>
          </property>
-         <layout class="QVBoxLayout" name="layout">
+         <layout class="QVBoxLayout" name="layout" stretch="0,0,0,0,0">
           <property name="spacing">
-           <number>24</number>
+           <number>8</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -893,7 +893,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>40</height>
+              <height>60</height>
              </size>
             </property>
             <property name="maximumSize">
@@ -933,7 +933,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>40</height>
+              <height>60</height>
              </size>
             </property>
             <property name="maximumSize">
@@ -964,7 +964,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>40</height>
+              <height>60</height>
              </size>
             </property>
             <property name="maximumSize">
@@ -995,7 +995,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>40</height>
+              <height>60</height>
              </size>
             </property>
             <property name="maximumSize">
