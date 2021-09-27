@@ -34,6 +34,4 @@ class SettingsHelper {
     friend class MainWindow;
 };
 
-using namespace LotosSettings;
-
 #endif  // SETTINGSHELPER_H

@@ -3,9 +3,13 @@
 
 #include <QClipboard>
 #include <QFileDialog>
-#include <QStaticText>
+#include <QtConcurrent>
 
 #include "base.h"
+
+using namespace LotosSettings;
+using namespace LotosHelper;
+using namespace LotosAnimation;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -39,7 +43,52 @@ void MainWindow::test() {
             });
         }
     });
-    installEventFilter(this);
+
+    connect(ui->tb2, &QPushButton::clicked, this, [=] {
+        std::function<int(void)> sl = [=] {
+            QThread::msleep(800);
+            QMetaObject::invokeMethod(this, "addIconWidget", Qt::QueuedConnection,
+                                      Q_ARG(QString, ":/res/lotos_icon.png"));
+            return 100;
+        };
+        QFuture<int> future;
+        QFutureWatcher<int> *watcher = new QFutureWatcher<int>(this);
+        future = ((QtConcurrent::run(sl)));
+
+        connect(watcher, &QFutureWatcher<int>::started, this, [=] {
+            qDebug() << "async! start!";
+
+            msgBox = new MessageBox(this);
+            maskFrame->layout()->addWidget(msgBox);
+            maskFrame->stackUnder(msgBox);
+            maskFrame->show();
+
+            static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect())->setOpacity(0);
+            fade(static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect()), maskFrame);
+
+            msgBox->show();
+            static int a = 0;
+            if ((++a) % 3 == 0)
+                msgBox->setIcontype(MessageBox::ERROR);
+            else if (a % 3 == 1) {
+                msgBox->setIcontype(MessageBox::WARN);
+            } else {
+                msgBox->setIcontype(MessageBox::INFO);
+            }
+        });
+        connect(watcher, &QFutureWatcher<int>::finished, this, [=] {
+            qDebug() << "async!" << future.result();
+
+            QPropertyAnimation *a =
+                fade(static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect()), maskFrame, false);
+            connect(a, &QPauseAnimation::finished, maskFrame, [=] {
+                maskFrame->hide();
+                msgBox->close();
+            });
+        });
+
+        watcher->setFuture(future);
+    });
 }
 
 MainWindow::~MainWindow() {
@@ -86,6 +135,17 @@ void MainWindow::appearanceManager() {
     sider_layout->insertWidget(1, mainTitle, 0, Qt::AlignHCenter);
 
     ui->titleBar->setTitle(tr("   Lotos v") + APP_VERSION);
+
+    maskFrame = new QFrame(this);
+    maskFrame->setObjectName("mask");
+    QRect tmpRect = rect();
+    tmpRect.setTopLeft(QPoint(7, 7));
+    tmpRect.setBottomRight(tmpRect.bottomRight() - QPoint(7, 7));
+    maskFrame->setGeometry(tmpRect);
+    maskFrame->setLayout(new QHBoxLayout);
+    QGraphicsOpacityEffect *effect = new QGraphicsOpacityEffect(this);
+    maskFrame->setGraphicsEffect(effect);
+    maskFrame->hide();
 }
 
 void MainWindow::init() {
@@ -120,6 +180,7 @@ void MainWindow::componentsLayoutManager() {
             iconWidgets.erase(iter);
         }
         qDebug() << l->columnCount() << l->rowCount() << l->count();
+        ui->dragBoxContents->update();
         emit uploadStatusChanged();
     });
 
@@ -170,6 +231,8 @@ void MainWindow::componentsLayoutManager() {
             [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveFileName] = str; });
     connect(ui->SaveFormatCombo, &QComboBox::currentTextChanged, this,
             [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveImageType] = str; });
+
+    installEventFilter(this);
 }
 
 void MainWindow::loadPage(MainWindow::PAGE index) {
@@ -219,7 +282,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
             rect.setRight(rect.width() / 4 * 3);
             rect.setLeft(rect.width() / 4);
             painter.drawText(rect, Qt::TextWordWrap | Qt::AlignCenter, tipstr);
-            ui->dragBoxContents->update();
         }
 
         return false;
@@ -518,6 +580,7 @@ void MainWindow::delIconWidget(IconWidget *obj) {
     for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++, i++) {
         gridLayout->addWidget(*iter, i / uploadBoxCols, i % uploadBoxCols);
     }
+    ui->dragBoxContents->update();
     emit uploadStatusChanged();
 }
 

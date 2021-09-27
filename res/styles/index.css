@@ -45,3 +45,13 @@ PictureViewWidget QLabel {
 #uploadStatusLabel {
     color: #909399;
 }
+
+#mask {
+    background: rgba(0,0,0,0.4);
+}
+
+.QFrame[class_type="messagebox"] {
+    background: #fff;
+    border-radius: 8px;
+}
+

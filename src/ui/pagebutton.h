@@ -4,6 +4,7 @@
 #include <QPushButton>
 
 class QLabel;
+class QGraphicsDropShadowEffect;
 
 class PageButton : public QPushButton {
     Q_OBJECT
@@ -40,6 +41,8 @@ class PageButton : public QPushButton {
     QPoint iconOffset;
     QString normalIconPath;
     QString ignitedIconPath;
+
+    QGraphicsDropShadowEffect *shadow;
 };
 
 #endif  // PAGEBUTTON_H

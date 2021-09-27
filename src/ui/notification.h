@@ -2,10 +2,9 @@
 #define NOTIFICATION_H
 
 #include <QFrame>
-#include <QGraphicsEffect>
 #include <QObject>
 
-class EffectGroup;
+class OpacityWithShadowEffectsGroup;
 class NotificationManager;
 class Notification;
 
@@ -27,7 +26,7 @@ class Notification : public QFrame {
     QLabel *title;
     QLabel *message;
 
-    EffectGroup *effect;
+    OpacityWithShadowEffectsGroup *effect;
     int index;
     void animation();
 
@@ -52,40 +51,5 @@ class NotificationManager : QObject {
     QList<Notification *> notifications;
     QTimer *fixTop;
 };
-
-Q_DECL_IMPORT void qt_blurImage(QPainter *p,
-                                QImage &blurImage,
-                                qreal radius,
-                                bool quality,
-                                bool alphaOnly,
-                                int transposed = 0);
-
-class EffectGroup : public QGraphicsDropShadowEffect {
-    Q_OBJECT
-   signals:
-    void opacityChanged(const qreal &newOpacity);
-
-   public:
-    EffectGroup(QObject *parent = 0);
-
-    Q_PROPERTY(qreal opacity MEMBER m_color READ opacity WRITE setOpacity NOTIFY opacityChanged)
-    qreal opacity() const;
-    inline void setOpacity(qreal opacity);
-
-   protected:
-    void draw(QPainter *painter) override;
-
-   private:
-    qreal m_opacity = 1;
-};
-
-inline qreal EffectGroup::opacity() const {
-    return m_opacity;
-}
-
-inline void EffectGroup::setOpacity(qreal opacity) {
-    m_opacity = opacity;
-    updateBoundingRect();
-}
 
 #endif  // NOTIFICATION_H

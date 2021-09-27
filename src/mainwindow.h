@@ -10,6 +10,7 @@
 #include "utils/lotoshelper.h"
 
 #include "iconwidget.h"
+#include "messagebox.h"
 #include "notification.h"
 #include "pagebutton.h"
 #include "pictureviewwidget.h"
@@ -76,6 +77,8 @@ class MainWindow : public QMainWindow {
     bool mousePressed = false;
     QPoint movingPoint;
 
+    QFrame *maskFrame;
+    MessageBox *msgBox;
     QList<IconWidget *> iconWidgets;
 
     const int UPLOAD_FILE_LIMIT = 20;

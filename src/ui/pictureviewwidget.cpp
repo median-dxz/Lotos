@@ -5,6 +5,8 @@
 #include "base.h"
 #include "utils/lotoshelper.h"
 
+using namespace LotosHelper;
+
 PictureViewWidget::PictureViewWidget(QWidget *parent) : QWidget(parent) {
     mainWidget = 0;
     //    setOpacity(0.05);

@@ -1,4 +1,4 @@
-QT       += core gui network widgets
+QT       += core gui network widgets concurrent
 
 CONFIG += c++11
 
@@ -45,6 +45,7 @@ HEADERS += \
     src/mainwindow.h \
     src/settingshelper.h \
     src/ui/iconwidget.h \
+    src/ui/messagebox.h \
     src/ui/notification.h \
     src/ui/pagebutton.h \
     src/ui/picturescontainer.h \
@@ -59,6 +60,7 @@ SOURCES += \
     src/mainwindow.cpp \
     src/settingshelper.cpp \
     src/ui/iconwidget.cpp \
+    src/ui/messagebox.cpp \
     src/ui/notification.cpp \
     src/ui/pagebutton.cpp \
     src/ui/picturescontainer.cpp \

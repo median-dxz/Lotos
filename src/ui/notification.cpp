@@ -1,6 +1,9 @@
 #include "notification.h"
 
 #include "base.h"
+#include "utils/lotoshelper.h"
+
+using namespace LotosHelper;
 
 Notification::Notification(QWidget *p, QString tl, QString mes, QString bc, QString fc, int pos) : QFrame(p) {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -34,7 +37,7 @@ Notification::Notification(QWidget *p, QString tl, QString mes, QString bc, QStr
     static_cast<QVBoxLayout *>(layout())->addSpacing(8);
     layout()->addWidget(message);
 
-    effect = new EffectGroup(this);
+    effect = new OpacityWithShadowEffectsGroup(this);
     effect->setOffset(QPoint(0, 2));
     effect->setBlurRadius(20);
     effect->setColor(QColor(0, 0, 0, 255 * 0.18));
@@ -109,6 +112,8 @@ NotificationManager::NotificationManager(QObject *parent) : QObject(parent) {
         for (auto notification : qAsConst(notifications)) {
             if (notification->y() > top) {
                 notification->move(notification->x(), notification->y() - 8);
+            } else {
+                notification->move(notification->x(), top);
             }
             top += Notification::GAP_SPACE + notification->height();
         }
@@ -136,80 +141,4 @@ void NotificationManager::newNotify(QWidget *parent, QString title, QString mess
         }
         notifications.erase(del_iter);
     });
-}
-
-EffectGroup::EffectGroup(QObject *parent) : QGraphicsDropShadowEffect(parent) {}
-
-void EffectGroup::draw(QPainter *painter) {
-    if (blurRadius() <= 0 && offset().isNull()) {
-        drawSource(painter);
-        return;
-    }
-
-    PixmapPadMode mode = PadToEffectiveBoundingRect;
-
-    // Draw pixmap in device coordinates to avoid pixmap scaling.
-    QPoint pos;
-    const QPixmap pixmap = sourcePixmap(Qt::DeviceCoordinates, &pos, mode);
-    if (pixmap.isNull())
-        return;
-
-    QTransform restoreTransform = painter->worldTransform();
-    painter->setWorldTransform(QTransform());
-
-    const QPixmap &px = pixmap;
-
-    if (px.isNull())
-        return;
-
-    QImage tmp(px.size(), QImage::Format_ARGB32_Premultiplied);
-    tmp.setDevicePixelRatio(px.devicePixelRatio());
-    tmp.fill(0);
-
-    QPainter tmpPainter(&tmp);
-    tmpPainter.setRenderHint(QPainter::HighQualityAntialiasing);
-    tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
-    tmpPainter.drawPixmap(offset(), px);
-    tmpPainter.end();
-
-    // blur the alpha channel
-    QImage blurred(tmp.size(), QImage::Format_ARGB32_Premultiplied);
-    blurred.setDevicePixelRatio(px.devicePixelRatio());
-    blurred.fill(0);
-    QPainter blurPainter(&blurred);
-    qt_blurImage(&blurPainter, tmp, blurRadius(), false, true);
-    blurPainter.end();
-
-    tmp = std::move(blurred);
-
-    // blacken the image...
-    tmpPainter.begin(&tmp);
-    tmpPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    tmpPainter.fillRect(tmp.rect(), color());
-    tmpPainter.end();
-
-    QImage opaque(px.size(), QImage::Format_ARGB32_Premultiplied);
-    opaque.setDevicePixelRatio(px.devicePixelRatio());
-    opaque.fill(0);
-    QPainter opaquePainter(&opaque);
-    // draw the blurred drop shadow...
-    opaquePainter.drawImage(QPointF(0, 0), tmp);
-
-    // draw the actual pixmap...
-    opaquePainter.drawPixmap(QPointF(0, 0), px);
-    opaquePainter.end();
-
-    tmp = QImage(opaque.size(), QImage::Format_ARGB32_Premultiplied);
-    tmp.fill(Qt::transparent);
-
-    tmpPainter.begin(&tmp);
-    tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
-    tmpPainter.drawImage(QPointF(0, 0), opaque);
-    tmpPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    tmpPainter.fillRect(tmp.rect(), QColor(0, 0, 0, 255 * m_opacity));
-    tmpPainter.end();
-
-    painter->drawImage(pos, tmp);
-
-    painter->setWorldTransform(restoreTransform);
 }

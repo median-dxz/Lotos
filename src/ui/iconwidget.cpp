@@ -3,6 +3,8 @@
 #include "base.h"
 #include "utils/lotoshelper.h"
 
+using namespace LotosHelper;
+
 IconWidget::IconWidget(QWidget *parent) : QWidget(parent) {
     infoBox = new QVBoxLayout;
     bottomLine = new QHBoxLayout;
@@ -54,22 +56,22 @@ void IconWidget::paintEvent(QPaintEvent *) {
 
 void IconWidget::enterEvent(QEvent *) {
     hover = true;
-    QPropertyAnimation *EnterAnimation = new QPropertyAnimation(shadow, "color", this);
+    QPropertyAnimation *enterAnimation = new QPropertyAnimation(shadow, "color", this);
 
-    EnterAnimation->setDuration(200);
-    EnterAnimation->setStartValue(QColor(0, 0, 0, 255 * 0.08));
-    EnterAnimation->setEndValue(QColor(0, 0, 0, 255 * 0.18));
-    EnterAnimation->start();
+    enterAnimation->setDuration(200);
+    enterAnimation->setStartValue(QColor(0, 0, 0, 255 * 0.08));
+    enterAnimation->setEndValue(QColor(0, 0, 0, 255 * 0.18));
+    enterAnimation->start();
 }
 
 void IconWidget::leaveEvent(QEvent *) {
     hover = false;
-    QPropertyAnimation *EnterAnimation = new QPropertyAnimation(shadow, "color", this);
+    QPropertyAnimation *leaveAnimation = new QPropertyAnimation(shadow, "color", this);
 
-    EnterAnimation->setDuration(200);
-    EnterAnimation->setStartValue(QColor(0, 0, 0, 255 * 0.18));
-    EnterAnimation->setEndValue(QColor(0, 0, 0, 255 * 0.08));
-    EnterAnimation->start();
+    leaveAnimation->setDuration(200);
+    leaveAnimation->setStartValue(QColor(0, 0, 0, 255 * 0.18));
+    leaveAnimation->setEndValue(QColor(0, 0, 0, 255 * 0.08));
+    leaveAnimation->start();
 }
 
 void IconWidget::setShadow() {
