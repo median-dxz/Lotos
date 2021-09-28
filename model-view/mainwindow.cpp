@@ -1,8 +1,10 @@
 #include "mainwindow.h"
+#include <QDebug>
 
 struct ImageInfomation {
     int width;
     int height;
+    bool uploadWithToken;
     QString filename;
     QString storename;
     qint64 size;
@@ -41,16 +43,32 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     d.hash = "hash";
     d.page_link = "page";
     d.path = "path";
-    d.size = 555;
+    d.size = 666;
     d.storename = "storen";
     d.url = "url//";
     d.timestamp = 100;
     d.thumb = f.readAll();
 
+    ImageInfomation d1;
+    d1.width = 100;
+    d1.height = 300;
+    d1.delete_link = "del";
+    d1.filename = "fasfa";
+    d1.hash = "hash";
+    d1.page_link = "page";
+    d1.path = "path";
+    d1.size = 555;
+    d1.storename = "storen";
+    d1.url = "url//";
+    d1.timestamp = 100;
+    d1.thumb = f.readAll();
+
+
     qApp->setFont(QFont("Microsoft YaHei", 12));
     nt->addData(d.toQVariantMap());
     nt->addData(d.toQVariantMap());
-    nt->addData(d.toQVariantMap());
+    nt->addData(d1.toQVariantMap());
+
 
     setLayout(mainLayout);
 }
@@ -78,19 +96,4 @@ QVariantMap ImageInfomation::toQVariantMap() const {
     data["uploadtime"] = timestamp;
     data["thumb"] = thumb;
     return data;
-}
-
-QString MainWindow::getElidedText(QFont font, QString str, int MaxWidth)
-{
-    QStringList list = str.split('\n', QString::SkipEmptyParts);
-    QFontMetrics fontWidth(font);
-    for(int i= 0 ;i<list.size();i++)
-    list[i] = fontWidth.elidedText(list[i],Qt::ElideRight,MaxWidth);
-    str = list.join('\n');
-    return str;
-}
-
-QString MainWindow::Time_t(qint64 time){
-    QDateTime time1 = QDateTime::fromTime_t(time);
-    return time1.toString("yyyy-MM-ddThh:mm:ss.000Z");
 }

@@ -28,7 +28,7 @@ const struct {
     QString thumb = "thumb";
 } DataKey;
 
-static const int rowWidth[6]={300,250,250,250,50,50};
+static const int rowWidth[6]={300,100,250,250,250,50};
 
 class PictureTable : public QFrame {
     Q_OBJECT
@@ -37,8 +37,9 @@ class PictureTable : public QFrame {
    public:
     explicit PictureTable(QWidget *parent = nullptr);
 
-    int getLineHeight() const { return lineHeight; }
-    void setLineHeight(int h) { lineHeight = h; }
+    int getLineHeight() const { return lineHeight; };
+    void setLineHeight(int h) { lineHeight = h; };
+    static bool subDevListSort(const PictureTableLine* info1  ,const  PictureTableLine* info2 );
     void devListSort(int cmp , int sel , QList <PictureTableLine *> list);
 
 
@@ -52,8 +53,9 @@ class PictureTable : public QFrame {
    private:
     PictureTableHeader *header;
     QList<PictureTableLine *> Lines;
-    QList<QVariantMap> datas;
+    QList<QVariantMap > datas;
     QList <int> list;
+    bool flag = 1;
 
 
     int lineHeight = DefaultLineHeight;
@@ -81,22 +83,23 @@ class PictureTableLine : public QWidget {
     Q_OBJECT
    public:
     static int s;
-    int in,an;
+    int in;
     PictureTableLine(QWidget *parent, QVariantMap &data);
-    int getCheckStatus();
+    Qt::CheckState getCheckStatus();
     void setCheckState(Qt::CheckState);
-    void resetLine(int  , int , int  , int  ,int );
+    void resetLine(int  , QString , QString  , QString  ,int );
     QLabel *lab_filename;
-
+    QList <QString> content;
 
    private:
     QVariantMap &data;
     QCheckBox *cb;
     QLabel *lab_link, *lab_width, *lab_size , *lab_rec;
-    QComboBox *bx;
-    QPushButton *opt_del ,*op_view , *op_del ,*op_load;
+//    QComboBox *bx;
+    QPushButton /**opt_del*/ *op_view , *op_del ,*op_load;
     QColor lineBackgroundColor = QColor("#fff");
     QPixmap p;
+//    QLabel *arrow;
 
 
 signals: void onStateChanged();
@@ -108,7 +111,7 @@ signals: void onStateChanged();
     void leaveEvent(QEvent *)override;
 
 public slots:
-    void x(int );
+//    void x(int );
 
 };
 

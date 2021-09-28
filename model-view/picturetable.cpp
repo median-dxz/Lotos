@@ -17,14 +17,41 @@ PictureTable::PictureTable(QWidget *parent) : QFrame(parent) {
     });
 
     connect(header->fnSort , &QPushButton::clicked ,this,[=](){
-//        header->fnSort->setIcon(QIcon(":/checkbox_o_hover.png"));
-        devListSort(1,1,Lines);});
+        devListSort(flag,1,Lines);
+        if(flag == 1)
+        {
+            header->fnSort->setIcon(QIcon(":/checkbox_o_hover.png"));
+            flag =0;}
+        else
+        {
+            header->fnSort->setIcon(QIcon(":/checkbox_o.png"));
+            flag =1;}
+    });
     connect(header->sizeSort , &QPushButton::clicked ,this,[=](){
-//        header->sizeSort->setIcon(QIcon(":/checkbox_o_hover.png"));
-        devListSort(0,2,Lines);});
+        devListSort(flag,2,Lines);
+        if(flag == 1)
+        {
+            header->sizeSort->setIcon(QIcon(":/checkbox_o_hover.png"));
+            flag =0;}
+        else
+        {
+            header->sizeSort->setIcon(QIcon(":/checkbox_o.png"));
+            flag =1;}
+    });
     connect(header->linkSort , &QPushButton::clicked ,this,[=](){
-//        header->linkSort->setIcon(QIcon(":/checkbox_o_hover.png"));
-        devListSort(1,3,Lines);});
+        devListSort(flag,3,Lines);
+        if(flag == 1)
+        {
+            header->linkSort->setIcon(QIcon(":/checkbox_o_hover.png"));
+            flag =0;}
+        else
+        {
+            header->linkSort->setIcon(QIcon(":/checkbox_o.png"));
+            flag =1;}
+    });
+//        Lines[0]->lab_filename->setText("213214");
+//        Lines[1]->lab_filename->setText("213214");
+
 
 }
 void PictureTable::deleteLine1(PictureTableLine * obj)
@@ -54,6 +81,10 @@ void PictureTable::addData(QVariantMap d) {
        {
 
             list.append(Lines[i]->getCheckStatus());
+//            if(i<list.size())
+//                list[i]=Lines[i]->getCheckStatus();
+//            else
+//                list.append(Lines[i]->getCheckStatus());
             qDebug()<<list[i]; }});
     connect(line , SIGNAL(deleteLine(PictureTableLine *)) ,this,SLOT(deleteLine1(PictureTableLine *)));
 
@@ -77,19 +108,18 @@ PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {
     head_name->setText("文件名");
     fnSort=new QPushButton(head_name);
     fnSort->setGeometry(55,3,20,16);
-    fnSort->setIcon(QIcon(":/checkbox_o_hover.png"));
     head_name->setTextInteractionFlags(Qt::TextSelectableByMouse);
     layout()->addWidget(head_name);
 
     QLabel *head_pix =new QLabel(this);
-    head_pix->setFixedWidth(100);
+    head_pix->setFixedWidth(rowWidth[1]);
     head_pix->setFont(font);
     head_pix->setText("预览");
     head_pix->setTextInteractionFlags(Qt::TextSelectableByMouse);
     layout()->addWidget(head_pix);
 
     QLabel *head_link =new QLabel(this);
-    head_link->setFixedWidth(rowWidth[1]);
+    head_link->setFixedWidth(rowWidth[2]);
     head_link->setFont(font);
     head_link->setText("上传时间");
     head_link->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -98,12 +128,11 @@ PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {
 
     linkSort=new QPushButton(head_link);
     linkSort->setGeometry(70,3,20,16);
-    linkSort->setIcon(QIcon(":/checkbox_o_hover.png"));
     head_link->setTextInteractionFlags(Qt::TextSelectableByMouse);
     layout()->addWidget(head_link);
 
     QLabel *head_size =new QLabel(this);
-    head_size->setFixedWidth(rowWidth[2]);
+    head_size->setFixedWidth(rowWidth[3]);
     head_size->setFont(font);
     head_size->setText("大小");
     head_size->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -112,25 +141,24 @@ PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {
 
     sizeSort=new QPushButton(head_size);
     sizeSort->setGeometry(40,3,20,16);
-    sizeSort->setIcon(QIcon(":/checkbox_o_hover.png"));
     head_size->setTextInteractionFlags(Qt::TextSelectableByMouse);
     layout()->addWidget(head_size);
 
     QLabel *head_rec =new QLabel(this);
-    head_rec->setFixedWidth(rowWidth[3]);
+    head_rec->setFixedWidth(rowWidth[4]);
     head_rec->setFont(font);
     head_rec->setText("上传来源");
     head_rec->setTextInteractionFlags(Qt::TextSelectableByMouse);
     ((QHBoxLayout *)layout())->addSpacing(40);
     layout()->addWidget(head_rec);
 
-    QLabel *head_see =new QLabel(this);
-    head_see->setFixedWidth(rowWidth[5]);
-    head_see->setFont(font);
-    head_see->setText("操作");
-    head_see->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    QLabel *head_op =new QLabel(this);
+    head_op->setFixedWidth(rowWidth[5]);
+    head_op->setFont(font);
+    head_op->setText("操作");
+    head_op->setTextInteractionFlags(Qt::TextSelectableByMouse);
     ((QHBoxLayout *)layout())->addSpacing(50);
-    layout()->addWidget(head_see);
+    layout()->addWidget(head_op);
 
 }
 
@@ -138,7 +166,9 @@ PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {
 PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget(parent), data(data) {
 //    setMouseTracking(true);
     in = s--;
-    an =in;
+    content.append(data[DataKey.filename].toString());
+    content.append(data[DataKey.width].toString());
+    content.append(data[DataKey.size].toString());
     setLayout(new QHBoxLayout(this));
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed));
     layout()->setMargin(0);
@@ -150,22 +180,24 @@ PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget
     lab_filename = new QLabel(this);
     //lab_filename->setStyleSheet("color: blue; background-color: yellow");
     lab_filename->setFixedWidth(rowWidth[0]);
-    lab_filename->setText(QString::number(in));
+    lab_filename->setText(data[DataKey.filename].toString());
+    lab_width = new QLabel(this);
+    lab_width->setFixedWidth(rowWidth[1]);
     lab_link = new QLabel(this);
     //lab_link->setStyleSheet("color: blue; background-color: yellow");
-    lab_link->setFixedWidth(rowWidth[1]);
-    lab_link->setText(QString::number(an));
+    lab_link->setFixedWidth(rowWidth[2]);
+    lab_link->setText(data[DataKey.width].toString());
     lab_size = new QLabel(this);
     //lab_size->setStyleSheet("color: blue; background-color: yellow");
-    lab_size->setFixedWidth(rowWidth[2]);
-    lab_size->setText(QString::number(an));
+    lab_size->setFixedWidth(rowWidth[3]);
+    lab_size->setText(data[DataKey.size].toString());
     lab_rec = new QLabel(this);
     //lab_rec->setStyleSheet("color: blue; background-color: yellow");
-    lab_rec->setFixedWidth(rowWidth[3]);
-    lab_rec->setText(QString::number(an));
-    lab_width = new QLabel(this);
-    lab_width->setFixedWidth(100);
-    opt_del = new QPushButton(this);
+    lab_rec->setFixedWidth(rowWidth[4]);
+    lab_rec->setText(QString::number(in));
+//    opt_del = new QPushButton(this);
+//    opt_del->setFixedWidth(90);
+//    opt_del->setStyleSheet("text-align:left");
 
     QFont font ( "Microsoft YaHei", 8, 10);
     op_view = new QPushButton(this);
@@ -207,25 +239,36 @@ PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget
     ((QHBoxLayout *)layout())->addSpacing(10);
     layout()->addWidget(op_load);
     ((QHBoxLayout *)layout())->addSpacing(10);
-    layout()->addWidget(opt_del);
-    ((QHBoxLayout *)layout())->addSpacing(10);
+//    layout()->addWidget(opt_del);
+//    ((QHBoxLayout *)layout())->addSpacing(10);
     op_view->setProperty("class_type", "link");
     op_load->setProperty("class_type", "link");
     op_del->setProperty("class_type", "link");
-    opt_del->setProperty("class_type", "link");
-    opt_del->setFont(font);
-    opt_del->setText(" 复制链接");
-
     connect(op_del , &QPushButton::clicked , this, [=](){emit deleteLine(this);});
-    bx = new QComboBox(this);
-    bx->addItem("预览");
-    bx->addItem("删除");
-    bx->addItem("下载");
-    bx->addItem("复制链接");
-    layout()->addWidget(bx);
-    ((QHBoxLayout *)layout())->addSpacing(10);
-    connect(opt_del, &QPushButton::clicked, bx, &QComboBox::showPopup);
-    connect(bx , SIGNAL(activated(int)) , this ,SLOT(x(int)));
+
+//    opt_del->setProperty("class_type", "link");
+//    opt_del->setFont(font);
+//    opt_del->setText(" 复制链接");
+
+//    arrow = new QLabel(opt_del);
+//    arrow->setGeometry(70,3,20,18);
+//    arrow->setScaledContents(true);
+//    arrow->setPixmap(QPixmap("C:/Users/lenovo/Desktop/downarrow.png"));
+
+
+//    bx = new QComboBox(this);
+//    bx->addItem("预览");
+//    bx->addItem("删除");
+//    bx->addItem("下载");
+//    bx->addItem("复制链接");
+//    layout()->addWidget(bx);
+//    ((QHBoxLayout *)layout())->addSpacing(10);
+//    connect(opt_del, &QPushButton::clicked, bx, &QComboBox::showPopup);
+//    connect(opt_del, &QPushButton::clicked, arrow ,[&](){arrow->setPixmap(QPixmap("C:/Users/lenovo/Desktop/uparrow.png"));});
+//    connect(bx, &QComboBox::hidePopup, arrow ,[&](){
+//        qDebug()<<"fadsgas";
+//        arrow->setPixmap(QPixmap("C:/Users/lenovo/Desktop/downarrow.png"));});
+//    connect(bx , SIGNAL(activated(int)) , this ,SLOT(x(int)));
 }
 
 
@@ -261,76 +304,104 @@ void PictureTableLine::leaveEvent(QEvent *)
     lineBackgroundColor =QColor("#fff");
 }
 
-void PictureTableLine::x(int i){
-    //复制链接操作
+//void PictureTableLine::x(int i){
+//    if(i==0)
+//    {
+//        qDebug()<<"执行预览操作";
 
-}
+//    }
+//    if(i==1)
+//    {
+//        qDebug()<<"执行删除操作";
+//    }
+//    if(i==2)
+//    {
+//        qDebug()<<"执行下载操作";
+//    }
+//    if(i==3)
+//    {
+//        qDebug()<<"执行复制链接操作";
 
-int PictureTableLine::getCheckStatus(){return  cb->checkState();}
+//    }
+
+
+//}
+
+Qt::CheckState PictureTableLine::getCheckStatus(){return  cb->checkState();}
 void PictureTableLine::setCheckState(Qt::CheckState state){ cb->setCheckState(state);}
 
+bool PictureTable::subDevListSort( const PictureTableLine *info1, const PictureTableLine *info2 )
+{
+    return info1->in < info2->in;  //升序排列
+   //return info1->width() < info2->width();     //降序排列
+}
 
 void PictureTable::devListSort(int cmp , int sel , QList <PictureTableLine *> list)
 {
-    QList <int > fn;//更新列表数据
-    QList <int > link;
-    QList <int > size;
+    QList <QString > fn;//更新列表数据
+    QList <QString > link;
+    QList <QString > size;
     QList <int > rec;
     QList <int > width;
-    if(cmp==1)
+    QList <Qt::CheckState > check;
+    if(cmp)
     {
         switch (sel) {
-        case 1:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->in < info2->in;});break;
-        case 2:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->an < info2->an;});break;
-        case 3:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->an < info2->an;});break;
+        case 1:qSort(list.begin(), list.end(),[](const  PictureTableLine*info1, const PictureTableLine *info2){return info1->content[0] < info2->content[0];});break;
+        case 2:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->content[1] < info2->content[1];});break;
+        case 3:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->content[2] < info2->content[2];});break;
         }
 
     }
     else
     {
         switch (sel) {
-        case 1:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->in > info2->in;});break;
-        case 2:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->an > info2->an;});break;
-        case 3:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->an > info2->an;});break;
+        case 1:qSort(list.begin(), list.end(), [](const  PictureTableLine*info1, const PictureTableLine *info2){return info1->content[0] > info2->content[0];});break;
+        case 2:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->content[1] > info2->content[1];});break;
+        case 3:qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2){return info1->content[2] > info2->content[2];});break;
 
         }
 
     }
 
+
     for(int i = 0; i <list.length(); i++)
     {
-        fn.append(list[i]->in);
-        link.append(list[i]->an);
-        size.append(list[i]->an);
-        rec.append(list[i]->an);
-        width.append(list[i]->an);
-        qDebug()<< i << list.at(i)->in;
+        fn.append(list[i]->content[0]);
+        link.append(list[i]->content[1]);
+        size.append(list[i]->content[2]);
+        rec.append(list[i]->in);
+        width.append(list[i]->in);
+        check.append(list[i]->getCheckStatus());
+        qDebug()<< i << list.at(i)->content[0];
+        //Lines[i]->resetLine(list[i]->in , list[i]->an , list[i]->an ,list[i]->an );
+       // Lines[i]->resetLine(fn[i] , link[i] ,size[i] ,rec[i] );
         //Lines[i] =list[i];//这个不行是因为换了整体
-        qDebug()<< i << Lines.at(i)->in;//还没换过去
+        qDebug()<< i << Lines.at(i)->content[0];//还没换过去
     }
 
     for(int i = 0; i <list.length(); i++)
     {
-
-        Lines[i]->resetLine(width[i] , fn[i] , link[i] ,size[i] ,rec[i] );
-        Lines[i]->in =fn[i];
-        Lines[i]->an =link[i];
-        Lines[i]->an =size[i];
-        Lines[i]->an =rec[i];
-        qDebug()<< i << Lines.at(i)->in;//换过去
+        Lines[i]->resetLine(width[i] , fn[i], link[i] ,size[i] ,rec[i] );
+        Lines[i]->content[0] =fn[i];
+        Lines[i]->content[1] =link[i];
+        Lines[i]->content[2] =size[i];
+        Lines[i]->in =rec[i];
+        Lines[i]->setCheckState(check[i]);
+        //qDebug()<< i << Lines.at(i)->in;//换过去
     }
 
 }
 int PictureTableLine::s=3;
 
-void PictureTableLine::resetLine(int k,int i , int a , int b ,int c)
+void PictureTableLine::resetLine(int pix,QString fn , QString link , QString size ,int c)
 {
     p.load(":/checkbox_o.png");
     p = p.scaledToHeight(height() - 8, Qt::SmoothTransformation);
     lab_width->setPixmap(p);
-    lab_filename->setText(QString::number(i));
-    lab_link->setText(QString::number(a));
-    lab_size->setText(QString::number(b));
+    lab_filename->setText(fn);
+    lab_link->setText(link);
+    lab_size->setText(size);
     lab_rec->setText(QString::number(c));
 }
 
