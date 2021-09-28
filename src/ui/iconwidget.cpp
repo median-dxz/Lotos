@@ -1,5 +1,6 @@
 #include "iconwidget.h"
 
+#include <QtConcurrent>
 #include "base.h"
 #include "utils/lotoshelper.h"
 
@@ -11,18 +12,20 @@ IconWidget::IconWidget(QWidget *parent) : QWidget(parent) {
 
     infoBox->setContentsMargins(8, 8, 8, 8);
     infoBox->setSpacing(8);
+
     bottomLine->setContentsMargins(0, 0, 0, 0);
     bottomLine->setSpacing(8);
 
     this->setLayout(infoBox);
 }
 
-void IconWidget::addImageFromFile(const QString &fileName) {
-    setImage(QImage(fileName));
+void IconWidget::addImageFromFile(const QString &fileName, const QByteArray &fileData) {
+    auto func = std::bind(&IconWidget::setImage, this, fileData);
+
+    QFuture<void> future;
+    future = (QtConcurrent::run(func));
+
     setImageInfo(QFileInfo(fileName));
-    QFile file(fileName);
-    file.open(QFile::ReadOnly);
-    setImageData(QByteArray(file.readAll()));
 
     setShadow();
 
@@ -34,7 +37,6 @@ void IconWidget::addImageFromFile(const QString &fileName) {
     setUploadBtn();
     setViewBtn();
     setDeleteBtn();
-    update();
 }
 
 void IconWidget::paintEvent(QPaintEvent *) {
@@ -47,8 +49,10 @@ void IconWidget::paintEvent(QPaintEvent *) {
 
     QRect rect;
 
-    rect.setRect((width() - thumb.width()) / 2, 0, thumb.width(), thumb.height());
-    painter.drawImage(rect, thumb);
+    if (!thumb.isNull()) {
+        rect.setRect((width() - thumb.width()) / 2, 0, thumb.width(), thumb.height());
+        painter.drawImage(rect, thumb);
+    }
 
     painter.setPen(QColor("#ebeef5"));
     painter.drawRect(0, 0, width() - painter.pen().width(), height() - painter.pen().width());

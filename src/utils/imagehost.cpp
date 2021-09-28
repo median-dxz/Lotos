@@ -72,7 +72,7 @@ void SMMS::praseUserProfile(const QJsonObject &data, UserProfile &res) {
     res.username = data["username"].toString();
 }
 
-QString SMMS::supportFormat(QByteArray &data) {
+QString SMMS::supportFormat(const QByteArray &data) {
     QMimeType mime = QMimeDatabase().mimeTypeForData(data);
     const static QStringList supportFormat = {"image/bmp", "image/gif", "image/jpeg", "image/webp", "image/png"};
     for (const QString &type : supportFormat) {

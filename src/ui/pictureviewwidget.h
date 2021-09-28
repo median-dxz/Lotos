@@ -23,7 +23,7 @@ class PictureViewWidget : public QWidget {
     void setMainWidget(QWidget *mainWidget);
     void setBgColor(const QColor &bgColor);
     void setOpacity(double opacity);
-    void showInfo(QByteArray &ba, QFileInfo i);
+    void showInfo(const QByteArray &ba, QFileInfo i);
 
    private:
     explicit PictureViewWidget(QWidget *parent = nullptr);

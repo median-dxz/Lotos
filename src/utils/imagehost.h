@@ -64,7 +64,7 @@ class SMMS : public QObject {
     static void praseResponse(const QJsonDocument &data, Response &res);
     static void praseImageInfomation(const QJsonObject &data, ImageInfomation &res);
     static void praseUserProfile(const QJsonObject &data, UserProfile &res);
-    static QString supportFormat(QByteArray &data);
+    static QString supportFormat(const QByteArray &data);
 
    private:
     explicit SMMS(QObject *parent = nullptr, QString api = "https://sm.ms/api/v2");

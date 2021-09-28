@@ -17,14 +17,10 @@ class IconWidget : public QWidget {
    public:
     explicit IconWidget(QWidget *parent = nullptr);
 
-    void addImageFromFile(const QString &fileName);
-    //    void addImageFromUrl();
-    //    void setImageFromData();
-
-    inline void setImage(QImage img);
+    inline void setImage(const QByteArray &img);
     inline QImage image() const;
 
-    inline void setImageData(QByteArray ba);
+    inline void setImageData(const QByteArray &ba);
     inline QByteArray &imageData();
 
     inline void setImageInfo(QFileInfo fi);
@@ -45,6 +41,7 @@ class IconWidget : public QWidget {
    public slots:
     void onStatusChanged(UPLOAD_STATUS newStatus);
     void updateUploadProgress(qint64 bytesSent, qint64 bytesTotal);
+    void addImageFromFile(const QString &fileName, const QByteArray &fileData);
 
    protected:
     void paintEvent(QPaintEvent *) override;
@@ -76,18 +73,20 @@ class IconWidget : public QWidget {
     const int INFO_SPACE = 164;
 };
 
-inline void IconWidget::setImage(QImage img) {
-    pix = img;
+inline void IconWidget::setImage(const QByteArray &img) {
+    pix = QImage::fromData(img);
+    setImageData(img);
     thumb = pix.scaled(width(), height() - INFO_SPACE, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    update();
 }
 
 inline QImage IconWidget::image() const {
     return pix;
 }
 
-inline void IconWidget::setImageData(QByteArray ba) {
+inline void IconWidget::setImageData(const QByteArray &ba) {
     data = ba;
-    hash = QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex();
+    hash = QCryptographicHash::hash(ba.left(1024 * 20), QCryptographicHash::Md5).toHex();
 }
 
 inline QByteArray &IconWidget::imageData() {

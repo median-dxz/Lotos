@@ -42,7 +42,7 @@ void PictureViewWidget::setOpacity(double opacity) {
     this->setWindowOpacity(opacity);
 }
 
-void PictureViewWidget::showInfo(QByteArray &ba, QFileInfo i) {
+void PictureViewWidget::showInfo(const QByteArray &ba, QFileInfo i) {
     layout()->setContentsMargins(20, 20, 20, 10);
     layout()->setAlignment(imgBox, Qt::AlignHCenter | Qt::AlignVCenter);
     layout()->setAlignment(info, Qt::AlignHCenter | Qt::AlignBottom);
