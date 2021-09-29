@@ -39,7 +39,6 @@ class PictureTable : public QFrame {
 
     int getLineHeight() const { return lineHeight; };
     void setLineHeight(int h) { lineHeight = h; };
-    static bool subDevListSort(const PictureTableLine* info1  ,const  PictureTableLine* info2 );
     void devListSort(int cmp , int sel , QList <PictureTableLine *> list);
 
 
@@ -68,7 +67,8 @@ class PictureTableHeader : public QWidget {
     int getHeaderHeight() const { return lineHeight; }
     void setHeaderHeight(int h) { lineHeight = h; }
     QCheckBox *all;
-    QPushButton *fnSort, *sizeSort, *linkSort;
+    QPushButton *head_name,*head_link ,*head_size;
+    QLabel *fnSort, *sizeSort, *linkSort;
 
 protected:
    void paintEvent(QPaintEvent *) override;
@@ -95,11 +95,11 @@ class PictureTableLine : public QWidget {
     QVariantMap &data;
     QCheckBox *cb;
     QLabel *lab_link, *lab_width, *lab_size , *lab_rec;
-//    QComboBox *bx;
-    QPushButton /**opt_del*/ *op_view , *op_del ,*op_load;
+    QComboBox *bx;
+    QPushButton *opt_del, *op_view , *op_del ,*op_load;
     QColor lineBackgroundColor = QColor("#fff");
     QPixmap p;
-//    QLabel *arrow;
+    QLabel *arrow;
 
 
 signals: void onStateChanged();
@@ -111,7 +111,7 @@ signals: void onStateChanged();
     void leaveEvent(QEvent *)override;
 
 public slots:
-//    void x(int );
+    void x(int );
 
 };
 

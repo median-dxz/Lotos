@@ -16,37 +16,49 @@ PictureTable::PictureTable(QWidget *parent) : QFrame(parent) {
             else  Lines[i]->setCheckState(Qt::Unchecked);
     });
 
-    connect(header->fnSort , &QPushButton::clicked ,this,[=](){
+    connect(header->head_name , &QPushButton::clicked ,this,[=](){
         devListSort(flag,1,Lines);
         if(flag == 1)
         {
-            header->fnSort->setIcon(QIcon(":/checkbox_o_hover.png"));
+            header->fnSort->setPixmap(QPixmap(":/上箭头.png"));
+            header->sizeSort->setPixmap(QPixmap(""));
+            header->linkSort->setPixmap(QPixmap(""));
             flag =0;}
         else
         {
-            header->fnSort->setIcon(QIcon(":/checkbox_o.png"));
+            header->fnSort->setPixmap(QPixmap(":/下箭头.png"));
+            header->sizeSort->setPixmap(QPixmap(""));
+            header->linkSort->setPixmap(QPixmap(""));
             flag =1;}
     });
-    connect(header->sizeSort , &QPushButton::clicked ,this,[=](){
+    connect(header->head_size , &QPushButton::clicked ,this,[=](){
         devListSort(flag,2,Lines);
         if(flag == 1)
         {
-            header->sizeSort->setIcon(QIcon(":/checkbox_o_hover.png"));
+            header->sizeSort->setPixmap(QPixmap(":/上箭头.png"));
+            header->fnSort->setPixmap(QPixmap(""));
+            header->linkSort->setPixmap(QPixmap(""));
             flag =0;}
         else
         {
-            header->sizeSort->setIcon(QIcon(":/checkbox_o.png"));
+            header->sizeSort->setPixmap(QPixmap(":/下箭头.png"));
+            header->fnSort->setPixmap(QPixmap(""));
+            header->linkSort->setPixmap(QPixmap(""));
             flag =1;}
     });
-    connect(header->linkSort , &QPushButton::clicked ,this,[=](){
+    connect(header->head_link , &QPushButton::clicked ,this,[=](){
         devListSort(flag,3,Lines);
         if(flag == 1)
         {
-            header->linkSort->setIcon(QIcon(":/checkbox_o_hover.png"));
+            header->linkSort->setPixmap(QPixmap(":/上箭头.png"));
+            header->fnSort->setPixmap(QPixmap(""));
+            header->sizeSort->setPixmap(QPixmap(""));
             flag =0;}
         else
         {
-            header->linkSort->setIcon(QIcon(":/checkbox_o.png"));
+            header->linkSort->setPixmap(QPixmap(":/下箭头.png"));
+            header->fnSort->setPixmap(QPixmap(""));
+            header->sizeSort->setPixmap(QPixmap(""));
             flag =1;}
     });
 //        Lines[0]->lab_filename->setText("213214");
@@ -81,10 +93,6 @@ void PictureTable::addData(QVariantMap d) {
        {
 
             list.append(Lines[i]->getCheckStatus());
-//            if(i<list.size())
-//                list[i]=Lines[i]->getCheckStatus();
-//            else
-//                list.append(Lines[i]->getCheckStatus());
             qDebug()<<list[i]; }});
     connect(line , SIGNAL(deleteLine(PictureTableLine *)) ,this,SLOT(deleteLine1(PictureTableLine *)));
 
@@ -102,49 +110,74 @@ PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {
     all->setFixedWidth(40);
     layout()->addWidget(all);
     QFont font ( "Microsoft YaHei", 8, 10);
-    QLabel *head_name =new QLabel(this);
+    head_name =new QPushButton(this);
+    //head_name->setStyleSheet("color: blue; background-color: yellow");
     head_name->setFixedWidth(rowWidth[0]);
     head_name->setFont(font);
     head_name->setText("文件名");
-    fnSort=new QPushButton(head_name);
+    head_name->setStyleSheet("text-align:left");
+    head_name->setProperty("class_type", "head");
+//    QLabel *l = new QLabel(head_name);
+//    l->setGeometry(55,3,20,16);
+//    l->setScaledContents(true);
+//    //l->setStyleSheet("color: blue; background-color: yellow");
+//    l->setPixmap(QPixmap(":/checkbox.png"));
+    fnSort=new QLabel(head_name);
     fnSort->setGeometry(55,3,20,16);
-    head_name->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    fnSort->setScaledContents(true);
+//    fnSort->setIcon(QIcon("C:/Users/lenovo/Desktop/downarrow.png"));
+    //head_name->setTextInteractionFlags(Qt::TextSelectableByMouse);
     layout()->addWidget(head_name);
 
     QLabel *head_pix =new QLabel(this);
+    //head_link->setStyleSheet("color: blue; background-color: yellow");
     head_pix->setFixedWidth(rowWidth[1]);
     head_pix->setFont(font);
     head_pix->setText("预览");
     head_pix->setTextInteractionFlags(Qt::TextSelectableByMouse);
     layout()->addWidget(head_pix);
 
-    QLabel *head_link =new QLabel(this);
+
+
+
+    head_link =new QPushButton(this);
+    //head_link->setStyleSheet("color: blue; background-color: yellow");
     head_link->setFixedWidth(rowWidth[2]);
     head_link->setFont(font);
     head_link->setText("上传时间");
-    head_link->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    head_link->setStyleSheet("text-align:left");
+    head_link->setProperty("class_type", "head");
+   // head_link->setTextInteractionFlags(Qt::TextSelectableByMouse);
     ((QHBoxLayout *)layout())->addSpacing(60);
     layout()->addWidget(head_link);
 
-    linkSort=new QPushButton(head_link);
+    linkSort=new QLabel(head_link);
     linkSort->setGeometry(70,3,20,16);
-    head_link->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    linkSort->setScaledContents(true);
+//    linkSort->setIcon(QIcon("C:/Users/lenovo/Desktop/downarrow.png"));
+    //head_link->setTextInteractionFlags(Qt::TextSelectableByMouse);
     layout()->addWidget(head_link);
 
-    QLabel *head_size =new QLabel(this);
+    head_size =new QPushButton(this);
+    //head_size->setStyleSheet("color: blue; background-color: yellow");
     head_size->setFixedWidth(rowWidth[3]);
     head_size->setFont(font);
     head_size->setText("大小");
-    head_size->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    head_size->setStyleSheet("text-align:left");
+    head_size->setProperty("class_type", "head");
+    //head_size->setTextInteractionFlags(Qt::TextSelectableByMouse);
     ((QHBoxLayout *)layout())->addSpacing(40);
     layout()->addWidget(head_size);
 
-    sizeSort=new QPushButton(head_size);
+    sizeSort=new QLabel(head_size);
     sizeSort->setGeometry(40,3,20,16);
-    head_size->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    sizeSort->setScaledContents(true);
+//    sizeSort->setIcon(QIcon("C:/Users/lenovo/Desktop/downarrow.png"));
+    //head_size->setTextInteractionFlags(Qt::TextSelectableByMouse);
     layout()->addWidget(head_size);
 
     QLabel *head_rec =new QLabel(this);
+    //head_rec->setStyleSheet("color: blue; background-color: yellow");
     head_rec->setFixedWidth(rowWidth[4]);
     head_rec->setFont(font);
     head_rec->setText("上传来源");
@@ -153,6 +186,7 @@ PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {
     layout()->addWidget(head_rec);
 
     QLabel *head_op =new QLabel(this);
+    //head_rec->setStyleSheet("color: blue; background-color: yellow");
     head_op->setFixedWidth(rowWidth[5]);
     head_op->setFont(font);
     head_op->setText("操作");
@@ -195,9 +229,9 @@ PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget
     //lab_rec->setStyleSheet("color: blue; background-color: yellow");
     lab_rec->setFixedWidth(rowWidth[4]);
     lab_rec->setText(QString::number(in));
-//    opt_del = new QPushButton(this);
-//    opt_del->setFixedWidth(90);
-//    opt_del->setStyleSheet("text-align:left");
+    opt_del = new QPushButton(this);
+    opt_del->setFixedWidth(90);
+    opt_del->setStyleSheet("text-align:left");
 
     QFont font ( "Microsoft YaHei", 8, 10);
     op_view = new QPushButton(this);
@@ -239,36 +273,36 @@ PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget
     ((QHBoxLayout *)layout())->addSpacing(10);
     layout()->addWidget(op_load);
     ((QHBoxLayout *)layout())->addSpacing(10);
-//    layout()->addWidget(opt_del);
-//    ((QHBoxLayout *)layout())->addSpacing(10);
+    layout()->addWidget(opt_del);
+    ((QHBoxLayout *)layout())->addSpacing(10);
     op_view->setProperty("class_type", "link");
     op_load->setProperty("class_type", "link");
     op_del->setProperty("class_type", "link");
     connect(op_del , &QPushButton::clicked , this, [=](){emit deleteLine(this);});
 
-//    opt_del->setProperty("class_type", "link");
-//    opt_del->setFont(font);
-//    opt_del->setText(" 复制链接");
+    opt_del->setProperty("class_type", "link");
+    opt_del->setFont(font);
+    opt_del->setText(" 复制链接");
 
-//    arrow = new QLabel(opt_del);
-//    arrow->setGeometry(70,3,20,18);
-//    arrow->setScaledContents(true);
-//    arrow->setPixmap(QPixmap("C:/Users/lenovo/Desktop/downarrow.png"));
+    arrow = new QLabel(opt_del);
+    arrow->setGeometry(70,3,20,18);
+    arrow->setScaledContents(true);
+    arrow->setPixmap(QPixmap("C:/Users/lenovo/Desktop/downarrow.png"));
 
 
-//    bx = new QComboBox(this);
-//    bx->addItem("预览");
-//    bx->addItem("删除");
-//    bx->addItem("下载");
-//    bx->addItem("复制链接");
-//    layout()->addWidget(bx);
-//    ((QHBoxLayout *)layout())->addSpacing(10);
-//    connect(opt_del, &QPushButton::clicked, bx, &QComboBox::showPopup);
-//    connect(opt_del, &QPushButton::clicked, arrow ,[&](){arrow->setPixmap(QPixmap("C:/Users/lenovo/Desktop/uparrow.png"));});
-//    connect(bx, &QComboBox::hidePopup, arrow ,[&](){
-//        qDebug()<<"fadsgas";
-//        arrow->setPixmap(QPixmap("C:/Users/lenovo/Desktop/downarrow.png"));});
-//    connect(bx , SIGNAL(activated(int)) , this ,SLOT(x(int)));
+    bx = new QComboBox(this);
+    bx->addItem("预览");
+    bx->addItem("删除");
+    bx->addItem("下载");
+    bx->addItem("复制链接");
+    layout()->addWidget(bx);
+    ((QHBoxLayout *)layout())->addSpacing(10);
+    connect(opt_del, &QPushButton::clicked, bx, &QComboBox::showPopup);
+    connect(opt_del, &QPushButton::clicked, arrow ,[&](){arrow->setPixmap(QPixmap("C:/Users/lenovo/Desktop/uparrow.png"));});
+    connect(bx, &QComboBox::hidePopup, arrow ,[&](){
+        qDebug()<<"fadsgas";
+        arrow->setPixmap(QPixmap("C:/Users/lenovo/Desktop/downarrow.png"));});
+    connect(bx , SIGNAL(activated(int)) , this ,SLOT(x(int)));
 }
 
 
@@ -304,37 +338,32 @@ void PictureTableLine::leaveEvent(QEvent *)
     lineBackgroundColor =QColor("#fff");
 }
 
-//void PictureTableLine::x(int i){
-//    if(i==0)
-//    {
-//        qDebug()<<"执行预览操作";
+void PictureTableLine::x(int i){
+    if(i==0)
+    {
+        qDebug()<<"执行预览操作";
 
-//    }
-//    if(i==1)
-//    {
-//        qDebug()<<"执行删除操作";
-//    }
-//    if(i==2)
-//    {
-//        qDebug()<<"执行下载操作";
-//    }
-//    if(i==3)
-//    {
-//        qDebug()<<"执行复制链接操作";
+    }
+    if(i==1)
+    {
+        qDebug()<<"执行删除操作";
+    }
+    if(i==2)
+    {
+        qDebug()<<"执行下载操作";
+    }
+    if(i==3)
+    {
+        qDebug()<<"执行复制链接操作";
 
-//    }
+    }
 
 
-//}
+}
 
 Qt::CheckState PictureTableLine::getCheckStatus(){return  cb->checkState();}
 void PictureTableLine::setCheckState(Qt::CheckState state){ cb->setCheckState(state);}
 
-bool PictureTable::subDevListSort( const PictureTableLine *info1, const PictureTableLine *info2 )
-{
-    return info1->in < info2->in;  //升序排列
-   //return info1->width() < info2->width();     //降序排列
-}
 
 void PictureTable::devListSort(int cmp , int sel , QList <PictureTableLine *> list)
 {
