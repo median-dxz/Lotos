@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     d.url = "url//";
     d.timestamp = 100;
     d.thumb = f.readAll();
+    d.uploadWithToken =1;
 
     ImageInfomation d1;
     d1.width = 100;
@@ -62,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     d1.url = "url//";
     d1.timestamp = 100;
     d1.thumb = f.readAll();
+    d1.uploadWithToken =0;
 
 
     qApp->setFont(QFont("Microsoft YaHei", 12));
@@ -94,6 +96,7 @@ QVariantMap ImageInfomation::toQVariantMap() const {
     data["size"] = size;
     data["url"] = url;
     data["uploadtime"] = timestamp;
+    data["uploadWithToken"]=uploadWithToken;
     data["thumb"] = thumb;
     return data;
 }

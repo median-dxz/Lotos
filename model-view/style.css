@@ -51,18 +51,7 @@ QPushButton[class_type="head"] {
     background:none;
 }
 
-QPushButton:hover[class_type="head"] {
-    border:none;
-    background:none;
-    color: lightgray;
-    /*text-decoration:underline;*/
-}
 
-/*QPushButton:pressed[class_type="head"] {
-    border:none;
-    background:none;
-    color: darkgray;
-}*/
 
 QComboBox{
     border:none;
