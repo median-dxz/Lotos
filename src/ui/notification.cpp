@@ -28,6 +28,7 @@ Notification::Notification(QWidget *p, QString tl, QString mes, QString bc, QStr
     font.setPixelSize(14);
     font.setWeight(QFont::Normal);
     message->setFont(font);
+    message->setWordWrap(true);
     message->setText(mes);
 
     layout()->setSpacing(0);
@@ -51,8 +52,7 @@ Notification::Notification(QWidget *p, QString tl, QString mes, QString bc, QStr
                           ".Notification QLabel{"
                           "color: %2;"
                           "}")
-                      .arg(bc)
-                      .arg(fc));
+                      .arg(bc, fc));
 
     adjustSize();
     show();
@@ -72,18 +72,22 @@ void Notification::animation() {
 
     QTimeLine *a_geo_left_in = new QTimeLine(400, this);
     a_geo_left_in->setFrameRange(x(), x() - FIXED_WIDTH - GAP_SPACE);
-    a_geo_left_in->setUpdateInterval(10);
+    a_geo_left_in->setUpdateInterval(16);
+
+    a_geo_up = new QTimeLine(150, this);
+    a_geo_up->setUpdateInterval(16);
 
     connect(a_geo_left_in, &QTimeLine::frameChanged, this, [=](int frameValue) { move(frameValue, y()); });
+    connect(a_geo_up, &QTimeLine::frameChanged, this, [=](int frameValue) { move(x(), frameValue); });
 
     a_geo_left_in->start();
 
     a_opa_in->setStartValue(0);
-    a_opa_in->setEndValue(1);
+    a_opa_in->setEndValue(0.99);
     a_opa_in->setDuration(300);
-    a_opa_in->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
+    a_opa_in->setEasingCurve(QEasingCurve(QEasingCurve::OutInQuad));
 
-    a_opa_out->setStartValue(1);
+    a_opa_out->setStartValue(0.99);
     a_opa_out->setEndValue(0);
     a_opa_out->setDuration(150);
     a_opa_out->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
@@ -103,22 +107,7 @@ void Notification::animation() {
     });
 }
 
-NotificationManager::NotificationManager(QObject *parent) : QObject(parent) {
-    fixTop = new QTimer(this);
-    fixTop->setInterval(10);
-    fixTop->start();
-    connect(fixTop, &QTimer::timeout, this, [=] {
-        int top = Notification::GAP_SPACE;
-        for (auto notification : qAsConst(notifications)) {
-            if (notification->y() > top) {
-                notification->move(notification->x(), notification->y() - 8);
-            } else {
-                notification->move(notification->x(), top);
-            }
-            top += Notification::GAP_SPACE + notification->height();
-        }
-    });
-}
+NotificationManager::NotificationManager(QObject *parent) : QObject(parent) {}
 
 NotificationManager &NotificationManager::Instance() {
     static NotificationManager instance;
@@ -133,12 +122,28 @@ void NotificationManager::newNotify(QWidget *parent, QString title, QString mess
     Notification *notification = new Notification(parent, title, message, bgC, fgC, newTop);
     notifications.append(notification);
     connect(notification, &Notification::beforeClose, this, [=](Notification *orientedNotification) {
-        QList<Notification *>::iterator del_iter;
-        for (QList<Notification *>::iterator iter = notifications.begin(); iter != notifications.end(); iter++) {
-            if (*iter == orientedNotification) {
-                del_iter = iter;
+        notifications.removeOne(orientedNotification);
+        int top = Notification::GAP_SPACE;
+        for (auto notification : qAsConst(notifications)) {
+            if (notification->y() > top) {
+                notification->a_geo_up->stop();
+                notification->a_geo_up->setFrameRange(notification->y(), top);
+                notification->a_geo_up->start();
             }
+            top += Notification::GAP_SPACE + notification->height();
         }
-        notifications.erase(del_iter);
     });
 }
+
+void NotificationManager::newNotify(NOTIFY_FACTORY::parac c, NOTIFY_FACTORY::parat t) {
+    newNotify(p, t.title, t.message, c.bgC, c.fgC);
+}
+
+void NotificationManager::setNotifyParent(QWidget *value) {
+    p = value;
+}
+
+const NOTIFYS::parac NOTIFYS::INFO{"#edf2fc", "#909399"};
+const NOTIFYS::parac NOTIFYS::ERROR{"#fef0f0", "#f56c6c"};
+const NOTIFYS::parac NOTIFYS::SUCCESS{"#f0f9eb", "#67c23a"};
+const NOTIFYS::parac NOTIFYS::WARN{"#fdf6ec", "#e6a23c"};

@@ -11,6 +11,7 @@ class QGraphicsDropShadowEffect;
 class QLabel;
 class QHBoxLayout;
 class QVBoxLayout;
+class QPushButton;
 
 class IconWidget : public QWidget {
     Q_OBJECT
@@ -59,7 +60,6 @@ class IconWidget : public QWidget {
     QFileInfo info;
     QByteArray data;
     QImage thumb;
-    QString hash;
 
     UPLOAD_STATUS m_status = PENDING;
 
@@ -69,6 +69,7 @@ class IconWidget : public QWidget {
     QHBoxLayout *bottomLine;
     QLabel *statusLine;
     QProgressBar *progress;
+    QPushButton *uploadBtn;
 
     const int INFO_SPACE = 164;
 };
@@ -86,7 +87,6 @@ inline QImage IconWidget::image() const {
 
 inline void IconWidget::setImageData(const QByteArray &ba) {
     data = ba;
-    hash = QCryptographicHash::hash(ba.left(1024 * 20), QCryptographicHash::Md5).toHex();
 }
 
 inline QByteArray &IconWidget::imageData() {
@@ -99,10 +99,6 @@ inline void IconWidget::setImageInfo(QFileInfo fi) {
 
 inline QFileInfo IconWidget::imageInfo() const {
     return info;
-}
-
-inline QString IconWidget::Hash() const {
-    return hash;
 }
 
 inline void IconWidget::setStatus(IconWidget::UPLOAD_STATUS newStatus) {

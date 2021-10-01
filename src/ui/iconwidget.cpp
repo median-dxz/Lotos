@@ -31,12 +31,14 @@ void IconWidget::addImageFromFile(const QString &fileName, const QByteArray &fil
 
     infoBox->setAlignment(Qt::AlignBottom);
     infoBox->addSpacing(height() - INFO_SPACE);
-    connect(this, &IconWidget::statusChanged, this, &IconWidget::onStatusChanged);
-    setInfo();
 
+    setInfo();
     setUploadBtn();
     setViewBtn();
     setDeleteBtn();
+
+    connect(this, &IconWidget::statusChanged, this, &IconWidget::onStatusChanged);
+    setStatus(IconWidget::PENDING);
 }
 
 void IconWidget::paintEvent(QPaintEvent *) {
@@ -102,13 +104,13 @@ void IconWidget::setInfo() {
     progress->setRange(0, 100);
     progress->setProperty("class_type", "iconwidget.sub.progress");
     progress->setFixedHeight(9);
+    progress->setFormat("");
 
     nameLine->setAlignment(Qt::AlignHCenter);
-    nameLine->setText(info.completeBaseName() + "." + info.completeSuffix());
+    nameLine->setText(info.fileName());
 
     sizeLine->setAlignment(Qt::AlignHCenter);
     sizeLine->setText(formatFileSize(info.size()));
-    setStatus(IconWidget::PENDING);
 }
 
 void IconWidget::setViewBtn() {
@@ -148,6 +150,7 @@ void IconWidget::setUploadBtn() {
     btn->setIcon(ico);
     btn->setProperty("class_type", "iconwidget.sub.upload");
     connect(btn, &QPushButton::clicked, this, [&] { emit onUploadBtnClicked(this); });
+    uploadBtn = btn;
 }
 
 void IconWidget::onStatusChanged(IconWidget::UPLOAD_STATUS newStatus) {
@@ -155,15 +158,19 @@ void IconWidget::onStatusChanged(IconWidget::UPLOAD_STATUS newStatus) {
     switch (newStatus) {
         case FAILED:
             statusStr = statusStr.arg(tr("状态"), tr("上传失败"));
+            uploadBtn->setDisabled(false);
             break;
         case PENDING:
             statusStr = statusStr.arg(tr("状态"), tr("等待上传"));
+            uploadBtn->setDisabled(false);
             break;
         case UPLOADED:
             statusStr = statusStr.arg(tr("状态"), tr("已上传"));
+            uploadBtn->setDisabled(true);
             break;
         case UPLOADING:
             statusStr = statusStr.arg(tr("状态"), tr("上传中"));
+            uploadBtn->setDisabled(true);
             break;
     }
     statusLine->setText(statusStr);
@@ -172,7 +179,6 @@ void IconWidget::onStatusChanged(IconWidget::UPLOAD_STATUS newStatus) {
 
 void IconWidget::updateUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
     if (bytesSent != 0 || bytesTotal != 0) {
-        progress->setFormat(formatFileSize(bytesSent) + "/" + formatFileSize(bytesTotal));
         progress->setValue((double(bytesSent) / bytesTotal) * 100);
     }
 }

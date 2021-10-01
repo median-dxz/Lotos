@@ -1,8 +1,10 @@
 #include "lotoshelper.h"
 
+#include <QApplication>
+#include <QFile>
 #include <QPainter>
-
 #include <QPropertyAnimation>
+
 #include <cmath>
 
 QString LotosHelper::getElidedText(QFont font, QString str, int maxWidth) {
@@ -52,6 +54,19 @@ QString LotosHelper::formatExternalLink(QString filename, QString url, ExternalL
     return "";
 }
 
+bool LotosHelper::loadQStyleSheet(const QString &fileName) {
+    QFile qssFile(fileName);
+    QString stylesheet = qApp->styleSheet();
+    if (qssFile.open(QFile::ReadOnly)) {
+        stylesheet += qssFile.readAll();
+        qApp->setStyleSheet(stylesheet);
+        qssFile.close();
+        return true;
+    } else {
+        return false;
+    }
+}
+
 QPropertyAnimation *LotosAnimation::fade(QGraphicsEffect *effect, QWidget *parent, bool direction, int duration) {
     QPropertyAnimation *animation = new QPropertyAnimation(effect, "opacity", parent);
     animation->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
@@ -86,6 +101,7 @@ void OpacityWithShadowEffectsGroup::draw(QPainter *painter) {
 
     QTransform restoreTransform = painter->worldTransform();
     painter->setWorldTransform(QTransform());
+    painter->setRenderHint(QPainter::HighQualityAntialiasing);
 
     const QPixmap &px = pixmap;
 
@@ -96,9 +112,11 @@ void OpacityWithShadowEffectsGroup::draw(QPainter *painter) {
     tmp.setDevicePixelRatio(px.devicePixelRatio());
     tmp.fill(0);
 
-    QPainter tmpPainter(&tmp);
-    tmpPainter.setRenderHint(QPainter::HighQualityAntialiasing);
+    QPainter tmpPainter;
+
+    tmpPainter.begin(&tmp);
     tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
+    tmpPainter.setRenderHint(QPainter::HighQualityAntialiasing);
     tmpPainter.drawPixmap(offset(), px);
     tmpPainter.end();
 
@@ -122,9 +140,14 @@ void OpacityWithShadowEffectsGroup::draw(QPainter *painter) {
     opaque.setDevicePixelRatio(px.devicePixelRatio());
     opaque.fill(0);
     QPainter opaquePainter(&opaque);
+    opaquePainter.setRenderHint(QPainter::HighQualityAntialiasing);
     // draw the blurred drop shadow...
-    opaquePainter.drawImage(QPointF(0, 0), tmp);
-
+    if (m_shadowRepaintNeeded || m_shadowBuffer.isNull()) {
+        opaquePainter.drawImage(QPointF(0, 0), tmp);
+        m_shadowBuffer = std::move(tmp);
+    } else {
+        opaquePainter.drawImage(QPointF(0, 0), m_shadowBuffer);
+    }
     // draw the actual pixmap...
     opaquePainter.drawPixmap(QPointF(0, 0), px);
     opaquePainter.end();
@@ -134,6 +157,7 @@ void OpacityWithShadowEffectsGroup::draw(QPainter *painter) {
 
     tmpPainter.begin(&tmp);
     tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
+    tmpPainter.setRenderHint(QPainter::HighQualityAntialiasing);
     tmpPainter.drawImage(QPointF(0, 0), opaque);
     tmpPainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
     tmpPainter.fillRect(tmp.rect(), QColor(0, 0, 0, 255 * m_opacity));
@@ -142,4 +166,5 @@ void OpacityWithShadowEffectsGroup::draw(QPainter *painter) {
     painter->drawImage(pos, tmp);
 
     painter->setWorldTransform(restoreTransform);
+    m_shadowRepaintNeeded = true;
 }

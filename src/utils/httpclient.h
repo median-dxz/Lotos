@@ -4,22 +4,15 @@
 #include <QObject>
 #include <QtNetwork>
 
+//维护单一网络请求
 class HttpClient : public QObject {
     Q_OBJECT
    public:
     explicit HttpClient(QObject *parent = nullptr);
-    explicit HttpClient(QString url);
+    explicit HttpClient(QString url, QObject *parent = nullptr);
 
     bool setUrl(QString url);
     void setHeaders(QMap<QString, QVariant> headers);
-
-    void get();
-    void get(QUrl url);  //简单访问重载
-
-    void post(QByteArray *data);
-
-    void downloadFile();
-    void uploadFile(QByteArray *data, QString name, QString fileName);
 
     //全局单一实例
     static QNetworkAccessManager &getNetworkAccessManagerInstanse();
@@ -41,6 +34,17 @@ class HttpClient : public QObject {
         QString getText() { return codec->toUnicode(data); }
         QJsonDocument getJson() { return QJsonDocument::fromJson(data); }
     };
+
+   public slots:
+    void cancel();
+    void get();
+    void get(QUrl url);  //简单访问重载
+
+    void post(QByteArray *data);
+
+    void downloadFile();
+    void uploadFile(QByteArray *data, QString name, QString fileName);
+
    signals:
     void responseFinished(Response *);
     void downloadProgress(qint64, qint64);
@@ -49,6 +53,7 @@ class HttpClient : public QObject {
    private:
     QUrl Url;
     QMap<QString, QVariant> Headers;
+    QNetworkReply *reply = nullptr;
 
     TYPE_REQUEST_FINISHED REQUEST_TYPE;
 

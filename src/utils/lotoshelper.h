@@ -1,23 +1,19 @@
 #ifndef LOTOSHELPER_H
 #define LOTOSHELPER_H
 
-#include <QDateTime>
-#include <QGraphicsEffect>
 #include <QWidget>
 
 namespace LotosHelper {
 
+#define timestamp2str(time, format) (QDateTime::fromTime_t(time).toString(format))
+
 QString getElidedText(QFont font, QString str, int MaxWidth);
-
-inline QString timestamp2str(qint64 time, QString format) {
-    QDateTime time_ = QDateTime::fromTime_t(time);
-    return time_.toString(format);
-};
-
 QString formatFileSize(qint64 size);
 
 enum ExternalLinkType { BBCode, HTML, Markdown, URL };
 QString formatExternalLink(QString filename, QString url, ExternalLinkType type = URL);
+
+bool loadQStyleSheet(const QString &fileName);
 
 }  // namespace LotosHelper
 
@@ -25,7 +21,17 @@ namespace LotosAnimation {
 
 QPropertyAnimation *fade(QGraphicsEffect *, QWidget *, bool direction = true, int duration = 100);
 
-}
+}  // namespace LotosAnimation
+
+namespace LotosAsync {
+
+// scaledImageAsync;
+// readFileAsync;
+// loadImageFromDataAsync;
+
+}  // namespace LotosAsync
+
+#include <QGraphicsEffect>
 
 Q_DECL_IMPORT void qt_blurImage(QPainter *p,
                                 QImage &blurImage,
@@ -51,6 +57,8 @@ class OpacityWithShadowEffectsGroup : public QGraphicsDropShadowEffect {
 
    private:
     qreal m_opacity = 1;
+    bool m_shadowRepaintNeeded = true;
+    QImage m_shadowBuffer;
 };
 
 inline qreal OpacityWithShadowEffectsGroup::opacity() const {
@@ -59,6 +67,7 @@ inline qreal OpacityWithShadowEffectsGroup::opacity() const {
 
 inline void OpacityWithShadowEffectsGroup::setOpacity(qreal opacity) {
     m_opacity = opacity;
+    m_shadowRepaintNeeded = false;
     updateBoundingRect();
 }
 

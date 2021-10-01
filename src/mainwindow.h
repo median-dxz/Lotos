@@ -25,21 +25,28 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
+    enum PAGE { UploadPage, GalleryPage, HostDashBoardPage, SettingsPage };
+
    public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
    private slots:
     void onHostLoginClicked();
-    void onHostResetClicked();
+    void onButtonHostResetClicked();
     void onMainProcessClosed();
-    void onSelectFilesButtonClicked();
-    void onUploadButtonClicked();
+    void onButtonSelectFilesClicked();
+    void onButtonUploadClicked();
 
     void addIconWidget(QString filename);
     void delIconWidget(IconWidget *obj);
-    void uploadFromIconWidget(IconWidget *iconwidget);
+    void delAllIconWidgets();
 
+    void uploadFromIconWidget(IconWidget *iconwidget);
+    void startPictureViewFromIconWidget(IconWidget *obj);
+
+    void loadPage(int index);
+    void onUploadStatusChanged();
    signals:
     void widgetPageChanged(int);
     void uploadStatusChanged();
@@ -54,8 +61,6 @@ class MainWindow : public QMainWindow {
     void keyPressEvent(QKeyEvent *event) override;
 
    private:
-    enum PAGE { UploadPage, GalleryPage, HostDashBoardPage, SettingsPage };
-
     Ui::MainWindow *ui;
     QNetworkProxy proxy;
     SMMS *smms;
@@ -67,10 +72,8 @@ class MainWindow : public QMainWindow {
 
     void init();
 
-    bool loadQStyleSheet(const QString &fileName);
-    void componentsLayoutManager();
+    void componentsManager();
     void appearanceManager();
-    void loadPage(PAGE index);
 
     void test();
 
@@ -80,6 +83,8 @@ class MainWindow : public QMainWindow {
     QFrame *maskFrame;
     MessageBox *msgBox;
     QList<IconWidget *> iconWidgets;
+    QMap<IconWidget *, QString> iconHashs;
+    QMap<IconWidget *, QPointer<HttpClient>> iconClients;
 
     const int UPLOAD_FILE_LIMIT = 20;
     const QString PATH_CONFIG = "config.json";

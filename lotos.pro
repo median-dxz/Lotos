@@ -53,7 +53,8 @@ HEADERS += \
     src/ui/titlebar.h \
     src/utils/httpclient.h \
     src/utils/imagehost.h \
-    src/utils/lotoshelper.h
+    src/utils/lotoshelper.h \
+    src/utils/promise.h
 
 SOURCES += \
     src/main.cpp \
@@ -68,5 +69,6 @@ SOURCES += \
     src/ui/titlebar.cpp \
     src/utils/httpclient.cpp \
     src/utils/imagehost.cpp \
-    src/utils/lotoshelper.cpp
+    src/utils/lotoshelper.cpp \
+    src/utils/promise.cpp
 
