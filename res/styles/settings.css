@@ -4,15 +4,11 @@
 }
 
 #settingsPage QLabel {
-  color: #303133;
+  color: #606266;
   font-size: 14px;
 }
 
 #settingsPage QPushButton {
-  background: #fff;
-  border: 1px solid #dcdfe6;
-  border-color: #dcdfe6;
-  color: #606266;
   text-align: center;
   margin: 0;
   font-weight: 500;
@@ -21,44 +17,18 @@
   font: 14px;
 }
 
-#settingsPage QPushButton:hover {
-  color: #409eff;
-  border-color: #c6e2ff;
-  background-color: #ecf5ff;
-}
-
-#settingsPage QPushButton:pressed {
-  border-color: #409eff;
-}
-
-#settingsPage QPushButton:disabled{
-  color: #C0C4CC;
-  border-color: #E4E7ED;
-}
-
 #settingsPage QLineEdit {
-  background-color: #fff;
-  border: 1px solid #dcdfe6;
-  color: #606266;
   font-size: 14px;
   height: 20px;
   margin-bottom: 6px;
   padding: 2px 6px;
 }
 
-#settingsPage QLineEdit:hover {
-  border: 1px solid #c0c4cc;
-}
-
-#settingsPage QLineEdit:focus {
-  border: 1px solid #409eff;
-}
-
 #settingsPage QComboBox {
-    background-color: #fff;
-    border: 1px solid #dcdfe6;
-    padding: 2px 6px;
-    color: #303133;
+  background-color: #fff;
+  border: 1px solid #dcdfe6;
+  padding: 2px 6px;
+  color: #303133;
 }
 
 #settingsPage QComboBox:hover {
@@ -66,31 +36,31 @@
 }
 
 #settingsPage QComboBox::drop-down {
-    border: none;
-    background: none;
-    right: 8px;
+  border: none;
+  background: none;
+  right: 8px;
 }
 
 #settingsPage QComboBox::down-arrow {
-    image: url(:/res/icons/downarrow.png);
+  image: url(:/res/icons/downarrow.png);
 }
 
 #settingsPage QComboBox::down-arrow:on {
-    image: url(:/res/icons/uparrow.png);
+  image: url(:/res/icons/uparrow.png);
 }
 
 #settingsPage QComboBox::on {
-    border: 1px solid #409eff;
+  border: 1px solid #409eff;
 }
 
 #settingsPage QComboBox QAbstractItemView {
-    border: 1px solid #DCDFE6;
-    selection-background-color: #F5F7FA;
-    selection-color: #303133;
-    color: #606266;
-    padding-left: 6px;
+  border: 1px solid #dcdfe6;
+  selection-background-color: #f5f7fa;
+  selection-color: #303133;
+  color: #606266;
+  padding-left: 6px;
 }
 
 #settingsPage QRadioButton {
-     color: #606266;
+  color: #606266;
 }

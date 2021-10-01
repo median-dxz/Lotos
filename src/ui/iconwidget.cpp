@@ -5,6 +5,7 @@
 #include "utils/lotoshelper.h"
 
 using namespace LotosHelper;
+using namespace LotosAnimation;
 
 IconWidget::IconWidget(QWidget *parent) : QWidget(parent) {
     infoBox = new QVBoxLayout;
@@ -62,22 +63,14 @@ void IconWidget::paintEvent(QPaintEvent *) {
 
 void IconWidget::enterEvent(QEvent *) {
     hover = true;
-    QPropertyAnimation *enterAnimation = new QPropertyAnimation(shadow, "color", this);
-
-    enterAnimation->setDuration(200);
-    enterAnimation->setStartValue(QColor(0, 0, 0, 255 * 0.08));
-    enterAnimation->setEndValue(QColor(0, 0, 0, 255 * 0.18));
-    enterAnimation->start();
+    QPropertyAnimation *enterAnimation = alphaGradient(shadow, "color", QColor(0, 0, 0), 0.08, 0.18, this);
+    enterAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void IconWidget::leaveEvent(QEvent *) {
     hover = false;
-    QPropertyAnimation *leaveAnimation = new QPropertyAnimation(shadow, "color", this);
-
-    leaveAnimation->setDuration(200);
-    leaveAnimation->setStartValue(QColor(0, 0, 0, 255 * 0.18));
-    leaveAnimation->setEndValue(QColor(0, 0, 0, 255 * 0.08));
-    leaveAnimation->start();
+    QPropertyAnimation *leaveAnimation = alphaGradient(shadow, "color", QColor(0, 0, 0), 0.08, 0.18, this, 200, false);
+    leaveAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void IconWidget::setShadow() {
@@ -103,6 +96,7 @@ void IconWidget::setInfo() {
 
     progress->setRange(0, 100);
     progress->setProperty("class_type", "iconwidget.sub.progress");
+    progress->setProperty(StyleType.name, StyleType.progressbar.normal);
     progress->setFixedHeight(9);
     progress->setFormat("");
 
@@ -122,7 +116,8 @@ void IconWidget::setViewBtn() {
     ico.addFile(":/res/icons/view.png", QSize(24, 24));
 
     btn->setIcon(ico);
-    btn->setProperty("class_type", "iconwidget.sub.view");
+    btn->setProperty("class_type", "iconwidget.sub.btn");
+    btn->setProperty(StyleType.name, StyleType.button.normal);
     connect(btn, &QPushButton::clicked, this, [&] { emit onViewBtnClicked(this); });
 }
 
@@ -135,7 +130,8 @@ void IconWidget::setDeleteBtn() {
     ico.addFile(":/res/icons/del.png", QSize(24, 24), QIcon::Normal);
 
     btn->setIcon(ico);
-    btn->setProperty("class_type", "iconwidget.sub.del");
+    btn->setProperty("class_type", "iconwidget.sub.btn");
+    btn->setProperty(StyleType.name, StyleType.button.danger);
     connect(btn, &QPushButton::clicked, this, [&] { emit onDeleteBtnClicked(this); });
 }
 
@@ -148,7 +144,8 @@ void IconWidget::setUploadBtn() {
     ico.addFile(":/res/icons/upload.png", QSize(24, 24), QIcon::Normal);
 
     btn->setIcon(ico);
-    btn->setProperty("class_type", "iconwidget.sub.upload");
+    btn->setProperty("class_type", "iconwidget.sub.btn");
+    btn->setProperty(StyleType.name, StyleType.button.normal);
     connect(btn, &QPushButton::clicked, this, [&] { emit onUploadBtnClicked(this); });
     uploadBtn = btn;
 }

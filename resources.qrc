@@ -20,5 +20,8 @@
         <file>res/styles/settings.css</file>
         <file>res/icons/downarrow.png</file>
         <file>res/icons/uparrow.png</file>
+        <file>res/styles/common.css</file>
+        <file>res/styles/imglist.css</file>
+        <file>res/styles/widgets.css</file>
     </qresource>
 </RCC>

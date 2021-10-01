@@ -43,10 +43,14 @@ class MainWindow : public QMainWindow {
     void delAllIconWidgets();
 
     void uploadFromIconWidget(IconWidget *iconwidget);
-    void startPictureViewFromIconWidget(IconWidget *obj);
+    void previewFromIconWidget(IconWidget *obj);
 
     void loadPage(int index);
     void onUploadStatusChanged();
+
+    MessageBox *openMessagegBox();
+    void closeMessageBox(int msecs = 0);
+
    signals:
     void widgetPageChanged(int);
     void uploadStatusChanged();

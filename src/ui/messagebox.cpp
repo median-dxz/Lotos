@@ -41,17 +41,15 @@ MessageBox::MessageBox(QWidget *parent) : QFrame(parent) {
     boxLayout->addWidget(m_iconArea);
 
     animation = new QTimeLine(600, this);
-    animation->setEasingCurve(QEasingCurve(QEasingCurve::OutCubic));
     animation->setUpdateInterval(10);
     animation->setFrameRange(0, 360);
 
     connect(animation, &QTimeLine::frameChanged, this, &MessageBox::paintIcon);
 
-    m_mainTextArea = new QLabel(this);
-    m_mainTextArea->setAlignment(Qt::AlignHCenter | Qt::AlignBaseline);
-    boxLayout->addWidget(m_mainTextArea);
+    m_mainArea = new QGridLayout;
+    boxLayout->addLayout(m_mainArea);
 
-    m_dialogButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok, this);
+    m_dialogButtonBox = new QDialogButtonBox(this);
     m_dialogButtonBox->setCenterButtons(true);
     boxLayout->addWidget(m_dialogButtonBox, Qt::AlignHCenter);
 }
@@ -255,7 +253,12 @@ void MessageBox::setIcontype(const IconType &icontype) {
     if (icontype == WAIT) {
         animation->setLoopCount(0);
         animation->setEasingCurve(QEasingCurve(QEasingCurve::Linear));
+    } else {
+        animation->setLoopCount(1);
+        animation->setEasingCurve(QEasingCurve(QEasingCurve::OutQuad));
     }
+    animation->setCurrentTime(0);
+    animation->stop();
     animation->start();
 }
 
@@ -267,12 +270,12 @@ void MessageBox::setDialogButtonBox(QDialogButtonBox *dialogButtonBox) {
     m_dialogButtonBox = dialogButtonBox;
 }
 
-QLabel *MessageBox::mainTextArea() const {
-    return m_mainTextArea;
+QGridLayout *MessageBox::mainArea() const {
+    return m_mainArea;
 }
 
-void MessageBox::setMainTextArea(QLabel *mainTextArea) {
-    m_mainTextArea = mainTextArea;
+void MessageBox::setMainArea(QGridLayout *mainArea) {
+    m_mainArea = mainArea;
 }
 
 void MessageBox::gradientArc(QPainter *painter,

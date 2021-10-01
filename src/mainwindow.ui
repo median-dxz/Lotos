@@ -205,7 +205,7 @@
                 </size>
                </property>
                <property name="shortcut">
-                <string>Shift+R</string>
+                <string>Shift+U</string>
                </property>
                <property name="flat">
                 <bool>true</bool>
@@ -489,7 +489,7 @@
               <item row="5" column="3">
                <layout class="QHBoxLayout" name="horizontalLayout">
                 <item>
-                 <widget class="QPushButton" name="hostLogin">
+                 <widget class="QPushButton" name="hostLoginButton">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -505,7 +505,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="hostReset">
+                 <widget class="QPushButton" name="hostResetButton">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                     <horstretch>0</horstretch>

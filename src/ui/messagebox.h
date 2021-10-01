@@ -7,6 +7,7 @@ class QPushButton;
 class QLabel;
 class QTimeLine;
 class QDialogButtonBox;
+class QGridLayout;
 
 class MessageBox : public QFrame {
    public:
@@ -19,12 +20,12 @@ class MessageBox : public QFrame {
     QDialogButtonBox *dialogButtonBox() const;
     void setDialogButtonBox(QDialogButtonBox *dialogButtonBox);
 
-    QLabel *mainTextArea() const;
-    void setMainTextArea(QLabel *mainTextArea);
+    QGridLayout *mainArea() const;
+    void setMainArea(QGridLayout *mainArea);
 
    private:
     QLabel *m_iconArea;
-    QLabel *m_mainTextArea;
+    QGridLayout *m_mainArea;
     QDialogButtonBox *m_dialogButtonBox;
     IconType m_icontype;
 

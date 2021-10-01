@@ -1,0 +1,17 @@
+PictureViewWidget QLabel {
+  color: #ffffff;
+}
+
+IconWidget .QLabel {
+  color: #606266;
+  font-size: 12px;
+}
+
+#dragBox {
+    border: 2px dashed #dcdfe6;
+    border-radius: 2px;
+  }
+  
+  #dragBox #dragBoxContents {
+    background-color: #ffffff;
+  }

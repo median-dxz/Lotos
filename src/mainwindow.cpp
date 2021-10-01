@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QClipboard>
+#include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QtConcurrent>
 
@@ -47,40 +48,6 @@ void MainWindow::test() {
 
     connect(ui->tb2, &QPushButton::clicked, this, [=] {
         Promise<int> *promise = new Promise<int>(this);
-
-        promise->onStarted([=] {
-            qDebug() << "async! start!";
-
-            msgBox = new MessageBox(this);
-            maskFrame->layout()->addWidget(msgBox);
-            maskFrame->stackUnder(msgBox);
-            maskFrame->show();
-
-            static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect())->setOpacity(0);
-            fade(static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect()), maskFrame);
-
-            msgBox->show();
-            static int a = 0;
-            if ((++a) % 3 == 0)
-                msgBox->setIcontype(MessageBox::ERROR);
-            else if (a % 3 == 1) {
-                msgBox->setIcontype(MessageBox::WARN);
-            } else {
-                msgBox->setIcontype(MessageBox::INFO);
-            }
-        });
-
-        promise->onFinished([=](Promise<int>::result result) {
-            qDebug() << "async!" << result;
-
-            QPropertyAnimation *a =
-                fade(static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect()), maskFrame, false);
-            connect(a, &QPauseAnimation::finished, maskFrame, [=] {
-                maskFrame->hide();
-                msgBox->close();
-            });
-        });
-
         promise->setPromise([=](Promise<int>::Resolver resolve, Promise<int>::Rejector) {
             QThread::msleep(800);
             QMetaObject::invokeMethod(this, "addIconWidget", Qt::QueuedConnection,
@@ -95,11 +62,6 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::appearanceManager() {
-    loadQStyleSheet(":/res/styles/index.css");
-    loadQStyleSheet(":/res/styles/uploadpage.css");
-    loadQStyleSheet(":/res/styles/hostdashboard.css");
-    loadQStyleSheet(":/res/styles/settings.css");
-
     setWindowTitle(tr("Lotos"));
     setWindowIcon(QIcon(":/res/lotos_icon.png"));
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
@@ -152,6 +114,23 @@ void MainWindow::appearanceManager() {
     gridlayout->setVerticalSpacing(8);
     gridlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     ui->dragBoxContents->setLayout(gridlayout);
+
+    ui->selectFilesButton->setProperty(StyleType.name, StyleType.button.primary);
+    ui->uploadButton->setProperty(StyleType.name, StyleType.button.primary);
+    ui->deleteAllButton->setProperty(StyleType.name, StyleType.button.danger);
+
+    ui->hostResetButton->setProperty(StyleType.name, StyleType.button.normal);
+    ui->hostLoginButton->setProperty(StyleType.name, StyleType.button.normal);
+
+    QDir stylesDir(":/res/styles/");
+    QStringList stylesFilter;
+    stylesFilter << "*.css"
+                 << "*.qss";
+    stylesDir.setNameFilters(stylesFilter);
+    const QStringList entryList = stylesDir.entryList();
+    for (const QString &stylesheet : entryList) {
+        loadQStyleSheet(stylesDir.path() + "/" + stylesheet);
+    }
 }
 
 void MainWindow::init() {
@@ -176,8 +155,9 @@ void MainWindow::componentsManager() {
 
     // set imghost dashbroad page
     ui->pageSwitchWidget->installEventFilter(this);
-    connect(ui->hostLogin, &QPushButton::clicked, this, &MainWindow::onHostLoginClicked);
-    connect(ui->hostReset, &QPushButton::clicked, this, &MainWindow::onButtonHostResetClicked);
+    ui->hostUserDiskLimit->hide();
+    connect(ui->hostLoginButton, &QPushButton::clicked, this, &MainWindow::onHostLoginClicked);
+    connect(ui->hostResetButton, &QPushButton::clicked, this, &MainWindow::onButtonHostResetClicked);
 
     // set pagebutton toggle signal&icon
     QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
@@ -297,42 +277,43 @@ void MainWindow::onMainProcessClosed() {
 }
 
 void MainWindow::onHostLoginClicked() {
-    HttpClient *client = nullptr;
     if (!globalSettings.imghost[KeyMap.imghost.isAuthorized].toBool()) {
-        client = smms->getAPIToken(ui->hostUsername->text(), ui->hostPassword->text());
-        this->setCursor(QCursor(Qt::WaitCursor));
-        QEventLoop *el = new QEventLoop(this);
+        msgBox = openMessagegBox();
+        msgBox->setIcontype(MessageBox::WAIT);
+
+        HttpClient *client = smms->getAPIToken(ui->hostUsername->text(), ui->hostPassword->text());
+
         connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
             SMMS::Response data;
             SMMS::praseResponse(res->getJson(), data);
 
             if (res->statusCode.toUInt() != 200) {
+                msgBox->setIcontype(MessageBox::ERROR);
                 ui->userInfoLabel->setText(tr("网络错误!"));
             } else if (data.success == false) {
+                msgBox->setIcontype(MessageBox::ERROR);
                 ui->userInfoLabel->setText(tr("<h4>登录失败 </h4>") + data.message);
             } else {
+                msgBox->setIcontype(MessageBox::SUCCESS);
                 QString token = data.data.at(0).toObject()["token"].toString();
                 globalSettings.imghost.insert(KeyMap.imghost.token, token);
                 globalSettings.imghost.insert(KeyMap.imghost.isAuthorized, true);
                 globalSettings.save();
+                onHostLoginClicked();
             }
-            el->quit();
-            this->setCursor(QCursor(Qt::ArrowCursor));
+
+            closeMessageBox(1000);
             delete res;
         });
-        el->exec();
-    }
-
-    if (globalSettings.imghost[KeyMap.imghost.isAuthorized].toBool()) {
+    } else {
         smms->setToken(globalSettings.imghost[KeyMap.imghost.token].toString());
 
-        ui->hostLogin->setEnabled(false);
-        ui->hostLogin->setText(tr("已登录"));
+        ui->hostLoginButton->setEnabled(false);
+        ui->hostLoginButton->setText(tr("已登录"));
         ui->tokenLabel->setText(smms->token());
         ui->userInfoLabel->setText(tr("正在获取用户信息..."));
-        ui->hostDashBoardPage->setCursor(QCursor(Qt::WaitCursor));
 
-        client = smms->getUserProfile();
+        HttpClient *client = smms->getUserProfile();
         connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
             SMMS::Response data;
             SMMS::UserProfile profile;
@@ -355,7 +336,6 @@ void MainWindow::onHostLoginClicked() {
                 ui->hostUserDiskLimit->setValue(profile.disk_usage_raw / profile.disk_limit_raw * 100);
                 ui->hostUserDiskLimit->setFormat(profile.disk_usage + "/" + profile.disk_limit);
             }
-            ui->hostDashBoardPage->setCursor(QCursor(Qt::ArrowCursor));
             delete res;
         });
     }
@@ -366,8 +346,8 @@ void MainWindow::onButtonHostResetClicked() {
     globalSettings.imghost.insert(KeyMap.imghost.isAuthorized, false);
     globalSettings.save();
 
-    ui->hostLogin->setEnabled(true);
-    ui->hostLogin->setText(tr("登录"));
+    ui->hostLoginButton->setEnabled(true);
+    ui->hostLoginButton->setText(tr("登录"));
     ui->hostUsername->clear();
     ui->hostPassword->clear();
 
@@ -448,8 +428,7 @@ void MainWindow::addIconWidget(QString filename) {
                         emit uploadStatusChanged();
 
                         connect(widget, &IconWidget::onUploadBtnClicked, this, &MainWindow::uploadFromIconWidget);
-                        connect(widget, &IconWidget::onViewBtnClicked, this,
-                                &MainWindow::startPictureViewFromIconWidget);
+                        connect(widget, &IconWidget::onViewBtnClicked, this, &MainWindow::previewFromIconWidget);
                         connect(widget, &IconWidget::onDeleteBtnClicked, this, &MainWindow::delIconWidget);
                     } else {
                         notify->newNotify(NOTIFYS::ERROR, NOTIFYS::imageWidgetLimit(UPLOAD_FILE_LIMIT));
@@ -529,7 +508,7 @@ void MainWindow::loadPage(int index) {
             ui->hostUsername->clear();
             ui->hostPassword->clear();
             if (globalSettings.imghost[KeyMap.imghost.isAuthorized].toBool()) {
-                ui->hostLogin->click();
+                ui->hostLoginButton->click();
             } else {
                 ui->tokenLabel->setText(tr("未登录"));
                 ui->hostUserDiskLimit->hide();
@@ -593,7 +572,7 @@ void MainWindow::delIconWidget(IconWidget *obj) {
     emit uploadStatusChanged();
 }
 
-void MainWindow::startPictureViewFromIconWidget(IconWidget *obj) {
+void MainWindow::previewFromIconWidget(IconWidget *obj) {
     PictureViewWidget &view = PictureViewWidget::Instance();
     view.setMainWidget(ui->stackedWidget);
     view.showInfo(obj->imageData(), obj->imageInfo());
@@ -605,4 +584,31 @@ void MainWindow::onUploadStatusChanged() {
         QString(tr("待传区文件数: %1 \n 上传模式: %2"))
             .arg(iconWidgets.size())
             .arg(globalSettings.user[KeyMap.user.uploadWithToken].toBool() ? "优先使用Token" : "基于IP"));
+}
+
+MessageBox *MainWindow::openMessagegBox() {
+    MessageBox *msgBox = new MessageBox(this);
+    maskFrame->layout()->addWidget(msgBox);
+    maskFrame->stackUnder(msgBox);
+    maskFrame->show();
+
+    QGraphicsOpacityEffect *maskEffect = static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect());
+    maskEffect->setOpacity(0);
+    fade(maskEffect, maskFrame)->start(QAbstractAnimation::DeleteWhenStopped);
+
+    msgBox->show();
+    return msgBox;
+}
+
+void MainWindow::closeMessageBox(int msecs) {
+    QGraphicsOpacityEffect *maskEffect = static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect());
+    QSequentialAnimationGroup *g = new QSequentialAnimationGroup(this);
+    g->addAnimation(fade(maskEffect, maskFrame, 100, false));
+    g->addPause(msecs);
+    g->start(QAbstractAnimation::DeleteWhenStopped);
+
+    connect(g, &QAbstractAnimation::finished, maskFrame, [=] {
+        maskFrame->hide();
+        msgBox->close();
+    });
 }

@@ -6,6 +6,7 @@
 #include <QPropertyAnimation>
 
 #include <cmath>
+#include <utility>
 
 QString LotosHelper::getElidedText(QFont font, QString str, int maxWidth) {
     QStringList list = str.split('\n', QString::SkipEmptyParts);
@@ -67,19 +68,39 @@ bool LotosHelper::loadQStyleSheet(const QString &fileName) {
     }
 }
 
-QPropertyAnimation *LotosAnimation::fade(QGraphicsEffect *effect, QWidget *parent, bool direction, int duration) {
+QPropertyAnimation *LotosAnimation::fade(QGraphicsEffect *effect, QWidget *parent, int duration, bool direction) {
     QPropertyAnimation *animation = new QPropertyAnimation(effect, "opacity", parent);
     animation->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
     animation->setDuration(duration);
-    animation->setStartValue(0);
-    animation->setEndValue(0.99);
+
     if (direction) {
-        animation->setDirection(QAbstractAnimation::Forward);
+        animation->setStartValue(0);
+        animation->setEndValue(0.99);
     } else {
-        animation->setDirection(QAbstractAnimation::Backward);
-        animation->setCurrentTime(duration);
+        animation->setStartValue(0.99);
+        animation->setEndValue(0);
     }
-    animation->start(QAbstractAnimation::DeleteWhenStopped);
+    return animation;
+}
+
+QPropertyAnimation *LotosAnimation::alphaGradient(QObject *obj,
+                                                  const QByteArray &name,
+                                                  QColor c,
+                                                  qreal alpha1,
+                                                  qreal alpha2,
+                                                  QWidget *parent,
+                                                  int duration,
+                                                  bool direction) {
+    QPropertyAnimation *animation = new QPropertyAnimation(obj, name, parent);
+    animation->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
+    animation->setDuration(duration);
+    if (!direction) {
+        std::swap(alpha1, alpha2);
+    }
+    c.setAlphaF(alpha1);
+    animation->setStartValue(c);
+    c.setAlphaF(alpha2);
+    animation->setEndValue(c);
     return animation;
 }
 
@@ -168,3 +189,6 @@ void OpacityWithShadowEffectsGroup::draw(QPainter *painter) {
     painter->setWorldTransform(restoreTransform);
     m_shadowRepaintNeeded = true;
 }
+
+using namespace LotosHelper;
+StyleClass::_Type StyleClass::_type;

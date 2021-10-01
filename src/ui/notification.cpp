@@ -4,6 +4,7 @@
 #include "utils/lotoshelper.h"
 
 using namespace LotosHelper;
+using namespace LotosAnimation;
 
 Notification::Notification(QWidget *p, QString tl, QString mes, QString bc, QString fc, int pos) : QFrame(p) {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -67,8 +68,8 @@ void Notification::paintEvent(QPaintEvent *e) {
 void Notification::animation() {
     QSequentialAnimationGroup *sequence = new QSequentialAnimationGroup(this);
 
-    QPropertyAnimation *a_opa_in = new QPropertyAnimation(effect, "opacity");
-    QPropertyAnimation *a_opa_out = new QPropertyAnimation(effect, "opacity");
+    QPropertyAnimation *a_opa_in = fade(effect, this, 300);
+    QPropertyAnimation *a_opa_out = fade(effect, this, 150, false);
 
     QTimeLine *a_geo_left_in = new QTimeLine(400, this);
     a_geo_left_in->setFrameRange(x(), x() - FIXED_WIDTH - GAP_SPACE);
@@ -82,15 +83,7 @@ void Notification::animation() {
 
     a_geo_left_in->start();
 
-    a_opa_in->setStartValue(0);
-    a_opa_in->setEndValue(0.99);
-    a_opa_in->setDuration(300);
     a_opa_in->setEasingCurve(QEasingCurve(QEasingCurve::OutInQuad));
-
-    a_opa_out->setStartValue(0.99);
-    a_opa_out->setEndValue(0);
-    a_opa_out->setDuration(150);
-    a_opa_out->setEasingCurve(QEasingCurve(QEasingCurve::InOutQuad));
 
     sequence->addAnimation(a_opa_in);
     sequence->addPause(NOTIFY_DURATION);

@@ -1,64 +1,8 @@
-#dragBox {
-  border: 2px dashed #dcdfe6;
-  border-radius: 2px;
-}
-
-#dragBox #dragBoxContents {
-  background-color: #ffffff;
-}
-
-#dragBox .QPushButton[class_type="iconwidget.sub.del"] {
-  border-radius: 4px;
-  background-color: #f56c6c;
-  border: none;
-}
-
-#dragBox .QPushButton:hover[class_type="iconwidget.sub.del"] {
-  background-color: #f78989;
-}
-
-#dragBox .QPushButton:pressed[class_type="iconwidget.sub.del"] {
-  background-color: #dd6161;
-}
-
-#dragBox .QPushButton[class_type="iconwidget.sub.view"],
-#dragBox .QPushButton[class_type="iconwidget.sub.upload"] {
-  border-radius: 4px;
-  background-color: #ffffff;
-  border: 1px solid #dcdfe6;
-}
-
-#dragBox .QPushButton:hover[class_type="iconwidget.sub.view"],
-#dragBox .QPushButton:hover[class_type="iconwidget.sub.upload"] {
-  border-color: #c6e2ff;
-  background-color: #ecf5ff;
-}
-
-#dragBox .QPushButton:pressed[class_type="iconwidget.sub.view"],
-#dragBox .QPushButton:pressed[class_type="iconwidget.sub.upload"] {
-  border-color: #3a8ee6;
-}
-
-
-
 #uploadPage .QPushButton {
   height: 20px;
   width: 102px;
   padding: 12px 24px;
-  color: #fff;
-  background-color: #409eff;
-  border-color: none;
-  border-radius: 4px;
-}
 
-#uploadPage .QPushButton:hover {
-  background: #66b1ff;
-  border-color: #66b1ff;
-}
-
-#uploadPage .QPushButton:pressed {
-  background-color: #409eff;
-  border-color: #409eff;
 }
 
 #uploadPage .QPushButton#selectFilesButton {
@@ -75,32 +19,8 @@
 #uploadPage .QPushButton#deleteAllButton {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  background-color: #f56c6c;
 }
 
-#uploadPage .QPushButton#deleteAllButton:hover {
-    background-color: #f78989;
-}
-
-#uploadPage .QPushButton#deleteAllButton:pressed{
-    background-color: #dd6161;
-}
-
-IconWidget .QProgressBar[class_type="iconwidget.sub.progress"] {
-  border-radius: 4px;
-  border: none;
-  background-color: #ebeef5;
-  text-align: center;
-  font-size: 9px;
-}
-
-IconWidget .QProgressBar[class_type="iconwidget.sub.progress"]::chunk {
-  background-color: #409eff;
-  border-radius: 4px;
-  border: none;
-}
-
-IconWidget .QLabel {
-    color: #606266;
-    font-size: 12px;
+#uploadStatusLabel {
+  color: #909399;
 }

@@ -45,6 +45,8 @@ HEADERS += \
     src/mainwindow.h \
     src/settingshelper.h \
     src/ui/iconwidget.h \
+    src/ui/linkcopybox.h \
+    src/ui/loginbox.h \
     src/ui/messagebox.h \
     src/ui/notification.h \
     src/ui/pagebutton.h \
@@ -61,6 +63,8 @@ SOURCES += \
     src/mainwindow.cpp \
     src/settingshelper.cpp \
     src/ui/iconwidget.cpp \
+    src/ui/linkcopybox.cpp \
+    src/ui/loginbox.cpp \
     src/ui/messagebox.cpp \
     src/ui/notification.cpp \
     src/ui/pagebutton.cpp \
@@ -69,6 +73,5 @@ SOURCES += \
     src/ui/titlebar.cpp \
     src/utils/httpclient.cpp \
     src/utils/imagehost.cpp \
-    src/utils/lotoshelper.cpp \
-    src/utils/promise.cpp
+    src/utils/lotoshelper.cpp
 
