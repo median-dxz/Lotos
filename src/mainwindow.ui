@@ -260,7 +260,7 @@
             </layout>
            </item>
            <item row="1" column="0">
-            <widget class="PicturesContainer" name="dragBox">
+            <widget class="PicturesContainer" name="uploadBox">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -282,7 +282,7 @@
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
-             <widget class="QWidget" name="dragBoxContents">
+             <widget class="QWidget" name="uploadBoxContents">
               <property name="geometry">
                <rect>
                 <x>0</x>

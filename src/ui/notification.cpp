@@ -40,9 +40,7 @@ Notification::Notification(QWidget *p, QString tl, QString mes, QString bc, QStr
     layout()->addWidget(message);
 
     effect = new OpacityWithShadowEffectsGroup(this);
-    effect->setOffset(QPoint(0, 2));
-    effect->setBlurRadius(20);
-    effect->setColor(QColor(0, 0, 0, 255 * 0.18));
+    shadowGenerator(effect, 0.18, 0, 2, 20);
     effect->setOpacity(0);
     setGraphicsEffect(effect);
 

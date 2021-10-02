@@ -40,8 +40,11 @@ constexpr static StyleClass::_Type &StyleType = StyleClass::_type;
 }  // namespace LotosHelper
 
 class QPropertyAnimation;
+class QGraphicsDropShadowEffect;
 namespace LotosAnimation {
 
+void shadowGenerator(QGraphicsDropShadowEffect *s, QColor c, int xOffset, int yOffset, int blurRadius);
+void shadowGenerator(QGraphicsDropShadowEffect *s, qreal alphaF, int xOffset, int yOffset, int blurRadius);
 QPropertyAnimation *fade(QGraphicsEffect *, QWidget *, int duration = 100, bool direction = true);
 QPropertyAnimation *alphaGradient(QObject *obj,
                                   const QByteArray &name,

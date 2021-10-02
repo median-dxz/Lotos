@@ -103,6 +103,23 @@ QPropertyAnimation *LotosAnimation::alphaGradient(QObject *obj,
     animation->setEndValue(c);
     return animation;
 }
+void LotosAnimation::shadowGenerator(QGraphicsDropShadowEffect *s, QColor c, int xOffset, int yOffset, int blurRadius) {
+    s->setOffset(xOffset, yOffset);
+    s->setBlurRadius(blurRadius);
+    s->setColor(c);
+}
+
+void LotosAnimation::shadowGenerator(QGraphicsDropShadowEffect *s,
+                                     qreal alphaF,
+                                     int xOffset,
+                                     int yOffset,
+                                     int blurRadius) {
+    s->setOffset(xOffset, yOffset);
+    s->setBlurRadius(blurRadius);
+    QColor c(0, 0, 0);
+    c.setAlphaF(alphaF);
+    s->setColor(c);
+}
 
 OpacityWithShadowEffectsGroup::OpacityWithShadowEffectsGroup(QObject *parent) : QGraphicsDropShadowEffect(parent) {}
 

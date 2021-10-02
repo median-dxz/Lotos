@@ -47,13 +47,13 @@ void MainWindow::test() {
     });
 
     connect(ui->tb2, &QPushButton::clicked, this, [=] {
-        Promise<int> *promise = new Promise<int>(this);
-        promise->setPromise([=](Promise<int>::Resolver resolve, Promise<int>::Rejector) {
-            QThread::msleep(800);
-            QMetaObject::invokeMethod(this, "addIconWidget", Qt::QueuedConnection,
-                                      Q_ARG(QString, ":/res/lotos_icon.png"));
-            resolve(100);
-        });
+        //        Promise<int> *promise = new Promise<int>(this);
+        //        promise->setPromise([=](Promise<int>::Resolver resolve, Promise<int>::Rejector) {
+        //            QThread::msleep(800);
+        //            QMetaObject::invokeMethod(this, "addIconWidget", Qt::QueuedConnection,
+        //                                      Q_ARG(QString, ":/res/lotos_icon.png"));
+        //            resolve(100);
+        //        });
     });
 }
 
@@ -71,22 +71,21 @@ void MainWindow::appearanceManager() {
     qApp->setFont(QFont("Microsoft YaHei UI"));
 
     QGraphicsDropShadowEffect *box_shadow = new QGraphicsDropShadowEffect(this);
-    box_shadow->setBlurRadius(12);
-    box_shadow->setOffset(0, 1);
-    box_shadow->setColor(QColor(0, 0, 0, 255 * 0.18));
+    shadowGenerator(box_shadow, 0.18, 0, 1, 12);
     ui->viewport->setGraphicsEffect(box_shadow);
 
     QGraphicsDropShadowEffect *sider_bar_shadow = new QGraphicsDropShadowEffect(this);
-    sider_bar_shadow->setBlurRadius(12);
-    sider_bar_shadow->setOffset(2, 0);
-    sider_bar_shadow->setColor(QColor(0, 0, 0, 255 * 0.18));
+    shadowGenerator(sider_bar_shadow, 0.18, 2, 0, 12);
     ui->pageSwitchWidget->setGraphicsEffect(sider_bar_shadow);
 
     QLabel *mainIcon = new QLabel(this);
     QLabel *mainTitle = new QLabel(this);
     mainIcon->setScaledContents(true);
-    mainIcon->setFixedSize(QSize(72, 72));
+    mainIcon->setFixedSize(QSize(96, 96));
     mainIcon->setPixmap(QPixmap(":/res/lotos_icon.png"));
+    QGraphicsDropShadowEffect *icon_shadow = new QGraphicsDropShadowEffect(this);
+    shadowGenerator(icon_shadow, 0.28, 0, 0, 20);
+    mainIcon->setGraphicsEffect(icon_shadow);
 
     mainTitle->setText(tr("Lotos"));
     mainTitle->setFont(QFont("Agency FB", 32));
@@ -95,7 +94,7 @@ void MainWindow::appearanceManager() {
     sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
     sider_layout->insertWidget(1, mainTitle, 0, Qt::AlignHCenter);
 
-    ui->titleBar->setTitle(tr("   Lotos v") + APP_VERSION);
+    ui->titleBar->setTitle(tr("Lotos v") + APP_VERSION);
 
     maskFrame = new QFrame(this);
     maskFrame->setObjectName("mask");
@@ -113,7 +112,8 @@ void MainWindow::appearanceManager() {
     gridlayout->setHorizontalSpacing(8);
     gridlayout->setVerticalSpacing(8);
     gridlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    ui->dragBoxContents->setLayout(gridlayout);
+    ui->uploadBoxContents->setLayout(gridlayout);
+    ui->uploadBox->getContentsLayout();
 
     ui->selectFilesButton->setProperty(StyleType.name, StyleType.button.primary);
     ui->uploadButton->setProperty(StyleType.name, StyleType.button.primary);
@@ -127,8 +127,7 @@ void MainWindow::appearanceManager() {
     stylesFilter << "*.css"
                  << "*.qss";
     stylesDir.setNameFilters(stylesFilter);
-    const QStringList entryList = stylesDir.entryList();
-    for (const QString &stylesheet : entryList) {
+    for (const QString &stylesheet : stylesDir.entryList()) {
         loadQStyleSheet(stylesDir.path() + "/" + stylesheet);
     }
 }
@@ -148,10 +147,12 @@ void MainWindow::componentsManager() {
     // set imghost upload page
     connect(ui->selectFilesButton, &QPushButton::clicked, this, &MainWindow::onButtonSelectFilesClicked);
     connect(ui->uploadButton, &QPushButton::clicked, this, &MainWindow::onButtonUploadClicked);
-    connect(ui->deleteAllButton, &QPushButton::clicked, this, &MainWindow::delAllIconWidgets);
+    connect(ui->deleteAllButton, &QPushButton::clicked, ui->uploadBox, &PicturesContainer::delAllIconWidgets);
 
-    connect(ui->dragBox, &PicturesContainer::acceptDragFileName, this, &MainWindow::addIconWidget);
     connect(this, &MainWindow::uploadStatusChanged, this, &MainWindow::onUploadStatusChanged);
+
+    connect(ui->uploadBox, &PicturesContainer::iconWidgetsChanged, this, &MainWindow::onUploadStatusChanged);
+    connect(ui->uploadBox, &PicturesContainer::uploadImage, this, &MainWindow::uploadImage);
 
     // set imghost dashbroad page
     ui->pageSwitchWidget->installEventFilter(this);
@@ -188,7 +189,7 @@ void MainWindow::componentsManager() {
     connect(ui->SaveFormatCombo, &QComboBox::currentTextChanged, this,
             [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveImageType] = str; });
 
-    ui->dragBoxContents->installEventFilter(this);
+    ui->uploadBoxContents->installEventFilter(this);
     installEventFilter(this);
 }
 
@@ -196,8 +197,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (obj == this && event->type() == QEvent::Close) {
         onMainProcessClosed();
     }
-    if (obj == ui->dragBoxContents && event->type() == QEvent::Paint) {
-        if (!iconWidgets.size()) {
+    if (obj == ui->uploadBoxContents && event->type() == QEvent::Paint) {
+        if (!ui->uploadBox->count()) {
             QPainter painter(static_cast<QWidget *>(obj));
             QFont font = QFont("Microsoft YaHei", 36);
 
@@ -205,7 +206,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
 
             painter.setFont(font);
             painter.setPen(QColor("#C0C4CC"));
-            QRectF rect = ui->dragBoxContents->rect();
+            QRectF rect = ui->uploadBoxContents->rect();
             rect.setRight(rect.width() / 4 * 3);
             rect.setLeft(rect.width() / 4);
             painter.drawText(rect, Qt::TextWordWrap | Qt::AlignCenter, tipstr);
@@ -213,7 +214,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
 
         return false;
     }
-
     return QMainWindow::eventFilter(obj, event);
 }
 
@@ -223,12 +223,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
             QClipboard *board = QApplication::clipboard();
             if (board->mimeData()->hasUrls()) {
                 QList<QUrl> urls = board->mimeData()->urls();
+                QStringList list;
                 for (const QUrl &url : qAsConst(urls)) {
-                    QString fileName = url.toLocalFile();
-                    if (QFile(fileName).exists()) {
-                        addIconWidget(fileName);
-                    };
+                    list << url.toLocalFile();
                 }
+                ui->uploadBox->addIconWidgets(list);
             }
             if (board->mimeData()->hasImage()) {
                 const QImage &img = board->image();
@@ -239,7 +238,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
                                          globalSettings.user[KeyMap.user.clipSaveImageType].toString();
 
                 if (img.save(filename)) {
-                    addIconWidget(filename);
+                    ui->uploadBox->addIconWidget(filename);
                 } else {
                     notify->newNotify(NOTIFYS::ERROR, NOTIFYS::imageClipBoardNotSave(formatTime));
                 }
@@ -363,113 +362,34 @@ void MainWindow::onButtonSelectFilesClicked() {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("选择图片"), dir.absolutePath(),
                                                           tr("Support Images(*.png *.jpg *.jpeg *.bmp *webp *.gif);;"
                                                              "任意文件 (*.*)"));
-
-    for (const QString &fileName : qAsConst(fileNames)) {
-        addIconWidget(fileName);
-    }
+    ui->uploadBox->addIconWidgets(fileNames);
 }
 
 void MainWindow::onButtonUploadClicked() {
-    bool noPending = true;
-    for (auto i : qAsConst(iconWidgets)) {
+    int pending = 0;
+    for (IconWidget *i : ui->uploadBox->widgets()) {
         if (i->status() == IconWidget::PENDING || i->status() == IconWidget::FAILED) {
-            uploadFromIconWidget(i);
-            noPending = false;
+            uploadImage(i);
+            pending++;
         }
     }
-    if (noPending) {
+    if (!pending) {
         notify->newNotify(NOTIFYS::INFO, NOTIFYS::imageWidgetNoPending());
     }
 }
 
-void MainWindow::addIconWidget(QString filename) {
-    Promise<QByteArray> *promise = new Promise<QByteArray>(this);
-    Promise<void> *promise1 = new Promise<void>(this);
-    Promise<QString> *promise2 = new Promise<QString>(this);
-
-    promise->onFinished([=](Promise<QByteArray>::result data) {
-        promise1->setPromise([=](Promise<void>::Resolver, Promise<void>::Rejector reject) {
-            if (QImage::fromData(data).isNull()) {
-                reject();
-            }
-        });
-
-        promise2->onFinished([=](Promise<QString>::result v) {
-            QString tmpHash = v;
-            QString repeat = "";
-            for (IconWidget *iconwidget : qAsConst(iconWidgets)) {
-                if (iconHashs[iconwidget] == tmpHash) {
-                    repeat = iconwidget->imageInfo().fileName();
-                    break;
-                }
-            }
-            if (repeat == QString("")) {
-                if (SMMS::supportFormat(data) != "") {
-                    if (iconWidgets.count() < UPLOAD_FILE_LIMIT) {
-                        if (!iconWidgets.size()) {
-                            ui->dragBoxContents->update();
-                        }
-                        uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
-
-                        IconWidget *widget = new IconWidget(ui->dragBox);
-                        widget->hide();  //减少闪烁
-
-                        QGridLayout *gridLayout = static_cast<QGridLayout *>(ui->dragBoxContents->layout());
-                        gridLayout->addWidget(widget, iconWidgets.count() / uploadBoxCols,
-                                              iconWidgets.count() % uploadBoxCols);
-                        widget->setFixedSize(iconWidgetSize);
-                        widget->addImageFromFile(filename, data);
-
-                        widget->show();
-
-                        iconWidgets.append(widget);
-                        iconHashs.insert(widget, tmpHash);
-                        iconClients.insert(widget, nullptr);
-                        emit uploadStatusChanged();
-
-                        connect(widget, &IconWidget::onUploadBtnClicked, this, &MainWindow::uploadFromIconWidget);
-                        connect(widget, &IconWidget::onViewBtnClicked, this, &MainWindow::previewFromIconWidget);
-                        connect(widget, &IconWidget::onDeleteBtnClicked, this, &MainWindow::delIconWidget);
-                    } else {
-                        notify->newNotify(NOTIFYS::ERROR, NOTIFYS::imageWidgetLimit(UPLOAD_FILE_LIMIT));
-                    }
-                } else {
-                    notify->newNotify(NOTIFYS::ERROR, NOTIFYS::imageNotSupported());
-                }
-            } else {
-                notify->newNotify(NOTIFYS::ERROR, NOTIFYS::imageRepeated(filename));
-            }
-        });
-
-        promise2->setPromise([=](Promise<QString>::Resolver resolve, Promise<QString>::Rejector) {
-            resolve(QCryptographicHash::hash(data.left(1024 * 20), QCryptographicHash::Md5).toHex());
-        });
-    });
-
-    promise->setPromise([=](Promise<QByteArray>::Resolver resolve, Promise<QByteArray>::Rejector reject) {
-        QFile file(filename);
-        if (!file.open(QFile::ReadOnly)) {
-            reject();
-        }
-        resolve(file.readAll());
-    });
-
-    promise->onFailed([=] { notify->newNotify(NOTIFYS::ERROR, NOTIFYS::imageFileError(filename)); });
-    promise1->onFailed([=] { notify->newNotify(NOTIFYS::ERROR, NOTIFYS::imageFileError(filename)); });
-}
-
-void MainWindow::uploadFromIconWidget(IconWidget *iconwidget) {
-    QPointer<HttpClient> &client = iconClients[iconwidget];
+void MainWindow::uploadImage(IconWidget *obj) {
+    QPointer<HttpClient> &client = ui->uploadBox->client(obj);
     if (globalSettings.imghost[KeyMap.imghost.isAuthorized] == true &&
         globalSettings.user[KeyMap.user.uploadWithToken] == true) {
-        client = smms->upload(iconwidget->imageData(), iconwidget->imageInfo().fileName(), true);
+        client = smms->upload(obj->imageData(), obj->imageInfo().fileName(), true);
     } else {
-        client = smms->upload(iconwidget->imageData(), iconwidget->imageInfo().fileName(), false);
+        client = smms->upload(obj->imageData(), obj->imageInfo().fileName(), false);
     }
-    iconwidget->setStatus(IconWidget::UPLOADING);
+    obj->setStatus(IconWidget::UPLOADING);
     connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
         if (r->isSucceeded == false) {
-            iconwidget->setStatus(IconWidget::FAILED);
+            obj->setStatus(IconWidget::FAILED);
             if (r->ERROR_INFO.toString() == "Operation canceled") {
                 notify->newNotify(NOTIFYS::WARN, NOTIFYS::uploadCanceled());
             } else {
@@ -483,18 +403,18 @@ void MainWindow::uploadFromIconWidget(IconWidget *iconwidget) {
         SMMS::praseResponse(r->getJson(), data);
 
         if (data.success) {
-            iconwidget->setStatus(IconWidget::UPLOADED);
-            notify->newNotify(NOTIFYS::SUCCESS, NOTIFYS::uploadSucceed(iconwidget->imageInfo().fileName()));
+            obj->setStatus(IconWidget::UPLOADED);
+            notify->newNotify(NOTIFYS::SUCCESS, NOTIFYS::uploadSucceed(obj->imageInfo().fileName()));
         } else {
-            iconwidget->setStatus(IconWidget::FAILED);
-            notify->newNotify(NOTIFYS::WARN, NOTIFYS::uploadFailed(iconwidget->imageInfo().fileName(), data.message));
+            obj->setStatus(IconWidget::FAILED);
+            notify->newNotify(NOTIFYS::WARN, NOTIFYS::uploadFailed(obj->imageInfo().fileName(), data.message));
         }
 
         qDebug() << r->getText();
         delete r;
     });
 
-    connect(client, &HttpClient::uplpodProgress, iconwidget, &IconWidget::updateUploadProgress);
+    connect(client, &HttpClient::uplpodProgress, obj, &IconWidget::updateUploadProgress);
 }
 
 void MainWindow::loadPage(int index) {
@@ -529,60 +449,10 @@ void MainWindow::loadPage(int index) {
     }
 }
 
-void MainWindow::delAllIconWidgets() {
-    QGridLayout *l = static_cast<QGridLayout *>(ui->dragBoxContents->layout());
-    for (auto iw : qAsConst(iconWidgets)) {
-        if (!iconClients[iw].isNull()) {
-            iconClients[iw]->cancel();
-        }
-        iw->setGraphicsEffect(nullptr);
-        iw->deleteLater();
-        l->removeWidget(iw);
-    }
-    iconWidgets.clear();
-    iconHashs.clear();
-    iconClients.clear();
-    ui->dragBoxContents->update();
-    emit uploadStatusChanged();
-}
-
-void MainWindow::delIconWidget(IconWidget *obj) {
-    QGridLayout *gridLayout = static_cast<QGridLayout *>(ui->dragBoxContents->layout());
-
-    if (!iconClients[obj].isNull()) {
-        iconClients[obj]->cancel();
-    }
-    obj->setGraphicsEffect(nullptr);
-    obj->deleteLater();
-
-    iconWidgets.removeOne(obj);
-    iconHashs.remove(obj);
-    iconClients.remove(obj);
-
-    while (!gridLayout->isEmpty()) {
-        delete gridLayout->takeAt(0);
-    }
-
-    //    uploadBoxCols = (ui->dragBoxContents->width() - 18) / iconWidgetSize.width();
-    int i = 0;
-    for (QList<IconWidget *>::iterator iter = iconWidgets.begin(); iter != iconWidgets.end(); iter++, i++) {
-        gridLayout->addWidget(*iter, i / uploadBoxCols, i % uploadBoxCols);
-    }
-    ui->dragBoxContents->update();
-    emit uploadStatusChanged();
-}
-
-void MainWindow::previewFromIconWidget(IconWidget *obj) {
-    PictureViewWidget &view = PictureViewWidget::Instance();
-    view.setMainWidget(ui->stackedWidget);
-    view.showInfo(obj->imageData(), obj->imageInfo());
-    view.show();
-}
-
 void MainWindow::onUploadStatusChanged() {
     ui->uploadStatusLabel->setText(
         QString(tr("待传区文件数: %1 \n 上传模式: %2"))
-            .arg(iconWidgets.size())
+            .arg(ui->uploadBox->count())
             .arg(globalSettings.user[KeyMap.user.uploadWithToken].toBool() ? "优先使用Token" : "基于IP"));
 }
 

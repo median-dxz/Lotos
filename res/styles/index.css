@@ -11,6 +11,10 @@
   background-color: #ffffff;
 }
 
+#mask {
+  background: rgba(0, 0, 0, 0.4);
+}
+
 #pageSwitchWidget PageButton {
   padding: 0px;
   margin-top: 10px;
@@ -26,12 +30,7 @@
   color: #303133;
 }
 
-#pageSwitchWidget PageButton[class_type="pagebutton.checked"],
-#pageSwitchWidget PageButton[class_type="pagebutton.checked"]:pressed {
+#pageSwitchWidget PageButton[class_type="pagebutton.checked"]{
   border-right: 4px solid #3993fe;
   color: #303133;
-}
-
-#mask {
-  background: rgba(0, 0, 0, 0.4);
 }

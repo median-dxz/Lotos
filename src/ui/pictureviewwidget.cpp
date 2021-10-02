@@ -6,9 +6,9 @@
 #include "utils/lotoshelper.h"
 
 using namespace LotosHelper;
+using namespace LotosAnimation;
 
 PictureViewWidget::PictureViewWidget(QWidget *parent) : QWidget(parent) {
-    mainWidget = 0;
     //    setOpacity(0.05);
     //    setBgColor(QColor("#fff"));
 
@@ -32,17 +32,10 @@ PictureViewWidget &PictureViewWidget::Instance() {
     return instance;
 }
 
-void PictureViewWidget::setMainWidget(QWidget *mainWidget) {
-    this->mainWidget = mainWidget;
+void PictureViewWidget::showInfo(const QByteArray &ba, QFileInfo i) {
     move(0, 0);
     setFixedSize(qApp->primaryScreen()->availableSize());
-}
 
-void PictureViewWidget::setOpacity(double opacity) {
-    this->setWindowOpacity(opacity);
-}
-
-void PictureViewWidget::showInfo(const QByteArray &ba, QFileInfo i) {
     layout()->setContentsMargins(20, 20, 20, 10);
     layout()->setAlignment(imgBox, Qt::AlignHCenter | Qt::AlignVCenter);
     layout()->setAlignment(info, Qt::AlignHCenter | Qt::AlignBottom);
@@ -69,27 +62,13 @@ void PictureViewWidget::showInfo(const QByteArray &ba, QFileInfo i) {
     imgBox->setPixmap(p);
 
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
-    effect->setOffset(QPoint(0, 0));
-    effect->setBlurRadius(14);
-    effect->setColor(QColor(0, 0, 0, 255 * 0.6));
+    shadowGenerator(effect, 0.6, 0, 0, 14);
     info->setGraphicsEffect(effect);
 }
 
-void PictureViewWidget::setBgColor(const QColor &bgColor) {
-    QPalette palette = this->palette();
-    palette.setBrush(QPalette::Window, bgColor);
-    this->setPalette(palette);
-}
+void PictureViewWidget::showEvent(QShowEvent *) {}
 
-void PictureViewWidget::showEvent(QShowEvent *) {
-    if (mainWidget != nullptr) {
-    }
-}
-
-void PictureViewWidget::hideEvent(QHideEvent *) {
-    if (mainWidget != nullptr) {
-    }
-}
+void PictureViewWidget::hideEvent(QHideEvent *) {}
 
 void PictureViewWidget::paintEvent(QPaintEvent *event) {
     QPainter p(this);

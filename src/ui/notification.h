@@ -83,11 +83,11 @@ class NotificationManager : QObject {
         }
 
         static parat uploadCanceled() {
-            return {tr("上传取消"), tr("注意:如果上传进度达到100%,则已经上传到服务器,只是未响应回复请求"), 3};
+            return {tr("上传取消"), tr("注意:如果上传进度达到100%,则可能已经上传到服务器,只是回复请求未响应"), 3};
         }
 
         static parat imageFileError(QString _1) {
-            return {tr("错误"), QString(tr("打开图片文件失败，文件无效或不存在\n文件名: %1")).arg(_1), 4};
+            return {tr("错误"), QString(tr("载入图片数据失败，文件无效或不存在\n文件名: %1")).arg(_1), 4};
         }
 
         static parat imageRepeated(QString _1) { return {tr("错误"), QString(tr("重复的文件\n%1")).arg(_1), 5}; }

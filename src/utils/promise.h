@@ -99,6 +99,7 @@ class Promise {
                 std::placeholders::_1, d);
 
             d->setPromise(this);
+
             d->future = QtConcurrent::run(executor, resolver, rejector);
             d->start();
         }

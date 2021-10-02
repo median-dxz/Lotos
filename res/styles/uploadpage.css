@@ -1,3 +1,12 @@
+#uploadBox {
+  border: 2px dashed #dcdfe6;
+  border-radius: 2px;
+}
+
+#uploadBox #uploadBoxContents {
+  background-color: #ffffff;
+}
+
 #uploadPage .QPushButton {
   height: 20px;
   width: 102px;

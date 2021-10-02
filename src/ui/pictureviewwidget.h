@@ -20,9 +20,6 @@ class PictureViewWidget : public QWidget {
 
     bool eventFilter(QObject *obj, QEvent *event) override;
    public slots:
-    void setMainWidget(QWidget *mainWidget);
-    void setBgColor(const QColor &bgColor);
-    void setOpacity(double opacity);
     void showInfo(const QByteArray &ba, QFileInfo i);
 
    private:
@@ -31,8 +28,6 @@ class PictureViewWidget : public QWidget {
 
     QLabel *imgBox;
     QLabel *info;
-
-    QWidget *mainWidget;  //需要遮罩的主窗体
 };
 
 #endif  // PICTUREVIEWWIDGET_H

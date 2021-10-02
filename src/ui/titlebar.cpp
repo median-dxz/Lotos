@@ -11,9 +11,8 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent) {
     QHBoxLayout *titleBarLayout = new QHBoxLayout;
 
     titleBarLayout->addWidget(mainIcon);
-    titleBarLayout->addSpacing(10);
+    titleBarLayout->addSpacing(40);
     titleBarLayout->addWidget(title);
-    //    titleBarLayout->addStretch();
     titleBarLayout->addWidget(miniBtn);
     titleBarLayout->addWidget(closeBtn);
 
@@ -62,11 +61,10 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event) {
             if (mbtnHover) {
                 painter.fillRect(QRect(0, 0, 32, 32), QColor(0xdc, 0xdf, 0xe6, 255 * 0.4));
                 painter.setPen(pen);
-                painter.drawLine(8, 16, 24, 16);
             } else {
                 painter.setPen(pen);
-                painter.drawLine(8, 16, 24, 16);
             }
+            painter.drawLine(8, 16, 24, 16);
             return true;
         }
     }
@@ -85,14 +83,13 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event) {
                 pen.setColor("#ffffff");
                 painter.fillRect(QRect(0, 0, 32, 32), QColor("#f56c6c"));
                 painter.setPen(pen);
-                painter.drawLine(8, 8, 24, 24);
-                painter.drawLine(24, 8, 8, 24);
+
             } else {
                 pen.setColor("#606266");
                 painter.setPen(pen);
-                painter.drawLine(8, 8, 24, 24);
-                painter.drawLine(24, 8, 8, 24);
             }
+            painter.drawLine(8, 8, 24, 24);
+            painter.drawLine(24, 8, 8, 24);
             return true;
         }
     }

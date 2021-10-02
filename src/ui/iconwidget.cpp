@@ -75,9 +75,7 @@ void IconWidget::leaveEvent(QEvent *) {
 
 void IconWidget::setShadow() {
     shadow = new QGraphicsDropShadowEffect(this);
-    shadow->setOffset(0, 2);
-    shadow->setColor(QColor(0, 0, 0, 255 * 0.08));
-    shadow->setBlurRadius(20);
+    shadowGenerator(shadow, 0.08, 0, 2, 20);
     this->setGraphicsEffect(shadow);
 }
 
@@ -101,7 +99,8 @@ void IconWidget::setInfo() {
     progress->setFormat("");
 
     nameLine->setAlignment(Qt::AlignHCenter);
-    nameLine->setText(info.fileName());
+    nameLine->setText(getElidedText(nameLine->font(), info.fileName(), nameLine->width()));
+    nameLine->setToolTip(info.fileName());
 
     sizeLine->setAlignment(Qt::AlignHCenter);
     sizeLine->setText(formatFileSize(info.size()));

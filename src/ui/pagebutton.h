@@ -8,7 +8,7 @@ class QGraphicsDropShadowEffect;
 
 class PageButton : public QPushButton {
     Q_OBJECT
-    Q_PROPERTY(int bgC READ getBgC WRITE setBgC NOTIFY bgCChanged)
+    Q_PROPERTY(int bgC READ getBgC WRITE setBgC)
    public:
     explicit PageButton(QWidget *parent = nullptr);
 
@@ -38,7 +38,6 @@ class PageButton : public QPushButton {
 
    signals:
     void indexChanged(int);
-    void bgCChanged(int);
 
    private:
     int index;

@@ -18,9 +18,7 @@ MessageBox::MessageBox(QWidget *parent) : QFrame(parent) {
     setProperty("class_type", "messagebox");
 
     OpacityWithShadowEffectsGroup *effect = new OpacityWithShadowEffectsGroup(this);
-    effect->setOffset(0, 1);
-    effect->setColor(QColor(0, 0, 0, 255 * 0.28));
-    effect->setBlurRadius(40);
+    shadowGenerator(effect, 0.28, 0, 1, 40);
     effect->setOpacity(1);
     setGraphicsEffect(effect);
 
