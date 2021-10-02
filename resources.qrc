@@ -18,10 +18,15 @@
         <file>res/icons/view.png</file>
         <file>res/icons/upload_light.png</file>
         <file>res/styles/settings.css</file>
-        <file>res/icons/downarrow.png</file>
-        <file>res/icons/uparrow.png</file>
+        <file>res/icons/arrow_down.png</file>
+        <file>res/icons/arrow_up.png</file>
         <file>res/styles/common.css</file>
         <file>res/styles/imglist.css</file>
         <file>res/styles/widgets.css</file>
+        <file>res/icons/triangle_down.png</file>
+        <file>res/icons/triangle_up.png</file>
+        <file>res/icons/checkbox.png</file>
+        <file>res/icons/checkbox_o.png</file>
+        <file>res/icons/checkbox_o_hover.png</file>
     </qresource>
 </RCC>

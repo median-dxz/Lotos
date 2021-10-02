@@ -95,7 +95,7 @@ void IconWidget::setInfo() {
     progress->setRange(0, 100);
     progress->setProperty("class_type", "iconwidget.sub.progress");
     progress->setProperty(StyleType.name, StyleType.progressbar.normal);
-    progress->setFixedHeight(9);
+    progress->setFixedHeight(5);
     progress->setFormat("");
 
     nameLine->setAlignment(Qt::AlignHCenter);

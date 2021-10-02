@@ -29,21 +29,34 @@ void MainWindow::test() {
 
     connect(ui->tb1, &QPushButton::clicked, this, [=] {
         if (globalSettings.imghost[KeyMap.imghost.isAuthorized] == true) {
-            HttpClient *client = nullptr;
-            client = smms->getUploadHistory(1);
+            HttpClient *client = smms->getUploadHistory(1);
             connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
-                qDebug() << res->getText();
                 SMMS::Response data;
                 SMMS::praseResponse(res->getJson(), data);
                 for (const auto &obj : qAsConst(data.data)) {
                     SMMS::ImageInfomation info;
                     SMMS::praseImageInfomation(obj.toObject(), info);
-                    qDebug() << timestamp2str(info.timestamp, "yyyy/MM/dd hh:mm:ss");
-                    qDebug() << formatExternalLink(info.filename, info.url, ExternalLinkType::Markdown);
+                    info.token_with = true;
+
+                    ui->imagesList->addData(info.toQVariantMap());
                 }
                 delete res;
             });
         }
+        HttpClient *client = smms->getTemporaryUploadHistory();
+        connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
+            SMMS::Response data;
+            qDebug() << res->getText();
+            SMMS::praseResponse(res->getJson(), data);
+            for (const auto &obj : qAsConst(data.data)) {
+                SMMS::ImageInfomation info;
+                SMMS::praseImageInfomation(obj.toObject(), info);
+                info.token_with = false;
+
+                ui->imagesList->addData(info.toQVariantMap());
+            }
+            delete res;
+        });
     });
 
     connect(ui->tb2, &QPushButton::clicked, this, [=] {
@@ -144,7 +157,7 @@ void MainWindow::componentsManager() {
     connect(ui->titleBar, &TitleBar::onMiniBtnClicked, this, &MainWindow::showMinimized);
     connect(ui->titleBar, &TitleBar::onCloseBtnClicked, this, &MainWindow::onMainProcessClosed);
 
-    // set imghost upload page
+    // set upload page
     connect(ui->selectFilesButton, &QPushButton::clicked, this, &MainWindow::onButtonSelectFilesClicked);
     connect(ui->uploadButton, &QPushButton::clicked, this, &MainWindow::onButtonUploadClicked);
     connect(ui->deleteAllButton, &QPushButton::clicked, ui->uploadBox, &PicturesContainer::delAllIconWidgets);
@@ -154,11 +167,23 @@ void MainWindow::componentsManager() {
     connect(ui->uploadBox, &PicturesContainer::iconWidgetsChanged, this, &MainWindow::onUploadStatusChanged);
     connect(ui->uploadBox, &PicturesContainer::uploadImage, this, &MainWindow::uploadImage);
 
-    // set imghost dashbroad page
+    // set gallery page
+
+    // set dashbroad page
     ui->pageSwitchWidget->installEventFilter(this);
     ui->hostUserDiskLimit->hide();
     connect(ui->hostLoginButton, &QPushButton::clicked, this, &MainWindow::onHostLoginClicked);
     connect(ui->hostResetButton, &QPushButton::clicked, this, &MainWindow::onButtonHostResetClicked);
+
+    // set settings page
+    connect(ui->preferIPRadio, &QRadioButton::clicked, this,
+            [=] { globalSettings.user[KeyMap.user.uploadWithToken] = false; });
+    connect(ui->preferTokenRadio, &QRadioButton::clicked, this,
+            [=] { globalSettings.user[KeyMap.user.uploadWithToken] = true; });
+    connect(ui->SaveNameEdit, &QLineEdit::textChanged, this,
+            [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveFileName] = str; });
+    connect(ui->SaveFormatCombo, &QComboBox::currentTextChanged, this,
+            [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveImageType] = str; });
 
     // set pagebutton toggle signal&icon
     QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();
@@ -179,15 +204,6 @@ void MainWindow::componentsManager() {
     ui->pageButton_1->setChecked(true);
     ui->stackedWidget->setCurrentIndex(UploadPage);
     loadPage(UploadPage);
-
-    connect(ui->preferIPRadio, &QRadioButton::clicked, this,
-            [=] { globalSettings.user[KeyMap.user.uploadWithToken] = false; });
-    connect(ui->preferTokenRadio, &QRadioButton::clicked, this,
-            [=] { globalSettings.user[KeyMap.user.uploadWithToken] = true; });
-    connect(ui->SaveNameEdit, &QLineEdit::textChanged, this,
-            [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveFileName] = str; });
-    connect(ui->SaveFormatCombo, &QComboBox::currentTextChanged, this,
-            [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveImageType] = str; });
 
     ui->uploadBoxContents->installEventFilter(this);
     installEventFilter(this);
@@ -424,6 +440,8 @@ void MainWindow::loadPage(int index) {
         case UploadPage:
             emit uploadStatusChanged();
             break;
+        case GalleryPage:
+            break;
         case HostDashBoardPage:
             ui->hostUsername->clear();
             ui->hostPassword->clear();
@@ -470,11 +488,11 @@ MessageBox *MainWindow::openMessagegBox() {
     return msgBox;
 }
 
-void MainWindow::closeMessageBox(int msecs) {
+void MainWindow::closeMessageBox(int pause) {
     QGraphicsOpacityEffect *maskEffect = static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect());
     QSequentialAnimationGroup *g = new QSequentialAnimationGroup(this);
+    g->addPause(pause);
     g->addAnimation(fade(maskEffect, maskFrame, 100, false));
-    g->addPause(msecs);
     g->start(QAbstractAnimation::DeleteWhenStopped);
 
     connect(g, &QAbstractAnimation::finished, maskFrame, [=] {

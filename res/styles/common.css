@@ -70,13 +70,23 @@
 }
 
 .QProgressBar {
-  border-radius: 4px;
   border: none;
   background-color: #ebeef5;
 }
 
 .QProgressBar::chunk {
   background-color: #409eff;
-  border-radius: 4px;
   border: none;
+}
+
+.QCheckBox::indicator:unchecked {
+  image: url(:/res/icons/checkbox_o.png);
+}
+
+.QCheckBox::indicator:unchecked:hover {
+  image: url(:/res/icons/checkbox_o_hover.png);
+}
+
+.QCheckBox::indicator:checked {
+  image: url(:/res/icons/checkbox.png);
 }

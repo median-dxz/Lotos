@@ -6,3 +6,59 @@ IconWidget .QLabel {
   color: #606266;
   font-size: 12px;
 }
+
+IconWidget .QProgressBar {
+  border-radius: 2px;
+}
+
+IconWidget .QProgressBar::chunk {
+  border-radius: 2px;
+}
+
+PictureTableHeader .QLabel{
+  color: #303133;
+  font: bold 14px;
+  text-align: left;
+}
+
+PictureTableHeader .QPushButton[class_type="head"] {
+  border: none;
+  background: none;
+  color: #303133;
+  font: bold;
+}
+
+PictureTableLine QPushButton[class_type="link"] {
+  border: none;
+  background: none;
+  color: #00a4ff;
+}
+
+PictureTableLine QPushButton:hover[class_type="link"] {
+  color: #006eff;
+  text-decoration: underline;
+}
+
+PictureTableLine QPushButton:pressed[class_type="link"] {
+  color: #00a4ff;
+  text-decoration: underline;
+}
+
+PictureTableLine .QLabel {
+  color: #606266;
+}
+
+PictureTable *{
+  text-align: left;
+  font-size: 14px;
+}
+
+PictureTable .QCheckBox {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+PictureTable .QCheckBox::indicator {
+  width: 16px;
+  height: 16px;
+}

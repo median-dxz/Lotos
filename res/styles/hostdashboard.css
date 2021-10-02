@@ -3,12 +3,12 @@
   color: #303133;
 }
 
-#hostDashBoardPage QLabel {
-  color: #303133;
+#hostDashBoardPage .QLabel {
+  color: #606266;
   font-size: 14px;
 }
 
-#hostDashBoardPage QPushButton {
+#hostDashBoardPage .QPushButton {
   text-align: center;
   margin: 0;
   font-weight: 500;
@@ -16,7 +16,7 @@
   font: 14px "Microsoft JhengHei";
 }
 
-#hostDashBoardPage QLineEdit {
+#hostDashBoardPage .QLineEdit {
   font-size: 14px;
   height: 20px;
   margin-bottom: 6px;
@@ -34,17 +34,13 @@
   border-radius: 4px;
 }
 
-#hostDashBoardPage QProgressBar {
+#hostDashBoardPage .QProgressBar {
   height: 10px;
-  border-radius: 5%;
-  border: none;
-  background-color: #ebeef5;
   text-align: center;
   font-size: 9px;
+  border-radius: 5px;
 }
 
-#hostDashBoardPage QProgressBar::chunk {
-  background-color: #409eff;
-  border-radius: 5%;
-  border: none;
+#hostDashBoardPage .QProgressBar::chunk {
+  border-radius: 5px;
 }

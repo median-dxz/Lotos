@@ -11,8 +11,8 @@
 
 #include "iconwidget.h"
 #include "linkcopybox.h"
-#include "loginbox.h"
 #include "messagebox.h"
+#include "networkresponsebox.h"
 #include "notification.h"
 #include "pictureviewwidget.h"
 #include "titlebar.h"

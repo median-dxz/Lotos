@@ -46,11 +46,12 @@ HEADERS += \
     src/settingshelper.h \
     src/ui/iconwidget.h \
     src/ui/linkcopybox.h \
-    src/ui/loginbox.h \
     src/ui/messagebox.h \
+    src/ui/networkresponsebox.h \
     src/ui/notification.h \
     src/ui/pagebutton.h \
     src/ui/picturescontainer.h \
+    src/ui/picturetable.h \
     src/ui/pictureviewwidget.h \
     src/ui/titlebar.h \
     src/utils/httpclient.h \
@@ -64,14 +65,14 @@ SOURCES += \
     src/settingshelper.cpp \
     src/ui/iconwidget.cpp \
     src/ui/linkcopybox.cpp \
-    src/ui/loginbox.cpp \
     src/ui/messagebox.cpp \
+    src/ui/networkresponsebox.cpp \
     src/ui/notification.cpp \
     src/ui/pagebutton.cpp \
     src/ui/picturescontainer.cpp \
+    src/ui/picturetable.cpp \
     src/ui/pictureviewwidget.cpp \
     src/ui/titlebar.cpp \
     src/utils/httpclient.cpp \
     src/utils/imagehost.cpp \
     src/utils/lotoshelper.cpp
-
