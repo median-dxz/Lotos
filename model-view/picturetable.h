@@ -13,6 +13,22 @@ class PictureTableLine;
 #define DefaultHeaderHeight 24
 #define DefaultLineHeight 42
 
+struct ImageInfo {
+    int width;
+    int height;
+    bool uploadWithToken;
+    QString filename;
+    QString storename;
+    qint64 size;
+    QString path;
+    QString hash;
+    QString url;
+    QString delete_link;
+    QString page_link;
+    qint64 timestamp;
+    QByteArray thumb;
+};
+
 const struct {
     QString width = "width";
     QString height = "height";
@@ -38,12 +54,9 @@ class PictureTable : public QFrame {
    public:
     explicit PictureTable(QWidget *parent = nullptr);
 
-    int getLineHeight() const { return lineHeight; };
+    int getLineHeight() const { return lineHeight; }
     void setLineHeight(int h) { lineHeight = h; };
     void devListSort(bool &cmp , int sel , QList <PictureTableLine *> list);
-
-
-
 
    public slots:
     void addData(QVariantMap d);
@@ -56,6 +69,7 @@ class PictureTable : public QFrame {
     QList<QVariantMap > datas;
     QList <int> list;
     bool flag_fn = 1 ,flag_link=1 ,flag_size= 1;
+    void filter(std::function<bool (ImageInfo &)>);
 
 
     int lineHeight = DefaultLineHeight;
@@ -78,6 +92,7 @@ protected:
     int lineHeight = DefaultHeaderHeight;
 
 public slots:
+
 };
 
 class PictureTableLine : public QWidget {
@@ -86,8 +101,9 @@ class PictureTableLine : public QWidget {
     PictureTableLine(QWidget *parent, QVariantMap &data);
     Qt::CheckState getCheckStatus();
     void setCheckState(Qt::CheckState);
-    void resetLine(QString  , QString , QString  , QString  ,QString );
-    QList <QString> content;
+    void resetLine(ImageInfo data);
+    ImageInfo d;
+
 
    private:
     QVariantMap &data;
@@ -97,7 +113,6 @@ class PictureTableLine : public QWidget {
     QPushButton *opt_del, *op_view , *op_del ,*op_load;
     QColor lineBackgroundColor = QColor("#fff");
     QPixmap p;
-    QLabel *arrow;
 
 
 signals: void onStateChanged();
