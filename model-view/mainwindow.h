@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-class  PictureTableLine;
+class PictureTableLine;
 #include <QApplication>
 #include <QBoxLayout>
 #include <QCheckBox>
@@ -18,9 +18,8 @@ class  PictureTableLine;
 #include <QPushButton>
 #include <QStringListModel>
 #include <QTableView>
+#include <cmath>
 #include "picturetable.h"
-
-
 
 class MainWindow : public QWidget {
     Q_OBJECT

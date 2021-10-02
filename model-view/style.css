@@ -1,6 +1,34 @@
-#nt {
-  border: 1px solid black;
+QPushButton[class_type="link"] {
+    border:none;
+    background:none;
+    font: 14px;
+    text-align: left;
+    color: #00a4ff;
+}
 
+QPushButton:hover[class_type="link"] {
+    color: #006eff;
+    text-decoration: underline;
+}
+
+QPushButton:pressed[class_type="link"] {
+    color: #00a4ff;
+    text-decoration:underline;
+}
+
+PictureTableLine .QLabel{
+    font: 14px;
+    text-align: left;
+    color: #606266;
+}
+
+PictureTableHeader .QLabel,
+PictureTableHeader .QPushButton[class_type="head"] {
+    border:none;
+    background:none;
+    color: #303133;
+    font: bold  14px;
+    text-align: left;
 }
 
 QCheckBox{
@@ -25,47 +53,3 @@ QCheckBox::indicator:unchecked:hover {
 QCheckBox::indicator:checked {
     image: url(:/checkbox.png);
 }
-
-QPushButton[class_type="link"] {
-    border:none;
-    background:none;
-    color: #00a4ff;
-}
-
-QPushButton:hover[class_type="link"] {
-    border:none;
-    background:none;
-    color: blue;
-    /*text-decoration:underline;*/
-}
-
-QPushButton:pressed[class_type="link"] {
-    border:none;
-    background:none;
-    color: gray;
-}
-
-
-QPushButton[class_type="head"] {
-    border:none;
-    background:none;
-}
-
-
-
-QComboBox{
-    border:none;
-    background:none;
-    height: 0;
-}
-
-QComboBox QAbstractItemView {
-    border: 2px solid darkgray;
-    selection-background-color: lightgray;
-}
-
-QComboBox QAbstractItemView::item{
-   border: none;
-   background: blue;
-}
-

@@ -4,7 +4,7 @@
         <file>checkbox.png</file>
         <file>checkbox_o_hover.png</file>
         <file>checkbox_o.png</file>
-        <file>上箭头.png</file>
-        <file>下箭头.png</file>
+        <file>uparrow.png</file>
+        <file>downarrow.png</file>
     </qresource>
 </RCC>

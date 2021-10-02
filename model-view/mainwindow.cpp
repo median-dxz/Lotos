@@ -20,13 +20,13 @@ struct ImageInfomation {
 };
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
-    QFile f("a.png");
+    QFile f(":/uparrow.png");
     f.open(QFile::ReadOnly);
+    QByteArray ico = f.readAll();
+    QPixmap tm;
+    tm.loadFromData(ico);
+    qDebug() << tm.isNull();
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-
-    QFile qssFile(":/style.css");
-    qssFile.open(QFile::ReadOnly);
-    qApp->setStyleSheet(qssFile.readAll());
 
     resize(500, 500);
 
@@ -46,9 +46,9 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     d.size = 666;
     d.storename = "storen";
     d.url = "url//";
-    d.timestamp = 100;
-    d.thumb = f.readAll();
-    d.uploadWithToken =1;
+    d.timestamp = 10333330;
+    d.thumb = ico;
+    d.uploadWithToken = 1;
 
     ImageInfomation d1;
     d1.width = 100;
@@ -61,18 +61,20 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     d1.size = 555;
     d1.storename = "storen";
     d1.url = "url//";
-    d1.timestamp = 100;
-    d1.thumb = f.readAll();
-    d1.uploadWithToken =0;
-
+    d1.timestamp = 102131240;
+    d1.thumb = ico;
+    d1.uploadWithToken = 0;
 
     qApp->setFont(QFont("Microsoft YaHei", 12));
     nt->addData(d.toQVariantMap());
     nt->addData(d.toQVariantMap());
     nt->addData(d1.toQVariantMap());
 
-
     setLayout(mainLayout);
+
+    QFile qssFile(":/style.css");
+    qssFile.open(QFile::ReadOnly);
+    qApp->setStyleSheet(qssFile.readAll());
 }
 
 MainWindow::~MainWindow() {}
@@ -96,7 +98,7 @@ QVariantMap ImageInfomation::toQVariantMap() const {
     data["size"] = size;
     data["url"] = url;
     data["uploadtime"] = timestamp;
-    data["uploadWithToken"]=uploadWithToken;
+    data["uploadWithToken"] = uploadWithToken;
     data["thumb"] = thumb;
     return data;
 }

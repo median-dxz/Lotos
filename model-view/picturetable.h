@@ -3,15 +3,12 @@
 
 class MainWindow;
 #include <mainwindow.h>
+#include <QList>
 #include <QObject>
 #include <QWidget>
-#include <QList>
 
 class PictureTableHeader;
 class PictureTableLine;
-
-#define DefaultHeaderHeight 24
-#define DefaultLineHeight 42
 
 struct ImageInfo {
     int width;
@@ -40,12 +37,16 @@ const struct {
     QString url = "url";
     QString delete_link = "delete_link";
     QString page_link = "page_link";
-    QString uploadtime = "uploadtime";
+    QString timestamp = "timestamp";
     QString uploadWithToken = "uploadWithToken";
     QString thumb = "thumb";
 } DataKey;
 
-static const int rowWidth[6]={300,100,250,250,250,50};
+static const QStringList iconsPath = {":/checkbox.png", ":/checkbox_o.png", ":/checkbox_o_hover.png", ":/downarrow.png",
+                                      ":/uparrow.png"};
+static constexpr int DefaultHeaderHeight = 24;
+static constexpr int DefaultLineHeight = 42;
+static constexpr int rowWidth[6] = {250, 75, 125, 100, 100, 200};
 
 class PictureTable : public QFrame {
     Q_OBJECT
@@ -56,21 +57,19 @@ class PictureTable : public QFrame {
 
     int getLineHeight() const { return lineHeight; }
     void setLineHeight(int h) { lineHeight = h; };
-    void devListSort(bool &cmp , int sel , QList <PictureTableLine *> list);
+    void devListSort(bool &cmp, int sel, QList<PictureTableLine *> list);
 
    public slots:
     void addData(QVariantMap d);
-    void deleteLine1(PictureTableLine *);
-
+    void onDeleteLine(PictureTableLine *);
 
    private:
     PictureTableHeader *header;
     QList<PictureTableLine *> Lines;
-    QList<QVariantMap > datas;
-    QList <int> list;
-    bool flag_fn = 1 ,flag_link=1 ,flag_size= 1;
-    void filter(std::function<bool (ImageInfo &)>);
-
+    QList<QVariantMap> datas;
+    QList<int> list;
+    bool flag_fn = 1, flag_link = 1, flag_size = 1;
+    void filter(std::function<bool(ImageInfo &)>);
 
     int lineHeight = DefaultLineHeight;
 };
@@ -82,17 +81,16 @@ class PictureTableHeader : public QWidget {
     int getHeaderHeight() const { return lineHeight; }
     void setHeaderHeight(int h) { lineHeight = h; }
     QCheckBox *all;
-    QPushButton *head_name,*head_link ,*head_size;
+    QPushButton *head_name, *head_link, *head_size;
     QLabel *fnSort, *sizeSort, *linkSort;
 
-protected:
-   void paintEvent(QPaintEvent *) override;
+   protected:
+    void paintEvent(QPaintEvent *) override;
 
    private:
     int lineHeight = DefaultHeaderHeight;
 
-public slots:
-
+   public slots:
 };
 
 class PictureTableLine : public QWidget {
@@ -104,28 +102,25 @@ class PictureTableLine : public QWidget {
     void resetLine(ImageInfo data);
     ImageInfo d;
 
-
    private:
     QVariantMap &data;
     QCheckBox *cb;
-    QLabel *lab_filename,*lab_link, *lab_width, *lab_size , *lab_rec;
-    QComboBox *bx;
-    QPushButton *opt_del, *op_view , *op_del ,*op_load;
+    QLabel *lab_filename, *lab_link, *lab_thumb, *lab_size, *lab_rec;
+    QPushButton *op_link, *op_view, *op_del, *op_load;
     QColor lineBackgroundColor = QColor("#fff");
     QPixmap p;
 
-
-signals: void onStateChanged();
-         void deleteLine(PictureTableLine *);
+   signals:
+    void onStateChanged();
+    void deleteLine(PictureTableLine *);
+    void preview(PictureTableLine *);
+    void download(PictureTableLine *);
+    void copyLink(PictureTableLine *);
 
    protected:
     void paintEvent(QPaintEvent *) override;
-    void enterEvent(QEvent *)override;
-    void leaveEvent(QEvent *)override;
-
-public slots:
-    void x(int );
-
+    void enterEvent(QEvent *) override;
+    void leaveEvent(QEvent *) override;
 };
 
 #endif  // PICTURETABLE_H
