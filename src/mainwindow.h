@@ -38,6 +38,7 @@ class MainWindow : public QMainWindow {
     void onMainProcessClosed();
     void onButtonSelectFilesClicked();
     void onButtonUploadClicked();
+    void onButtonSyncGalleryClicked();
 
     void uploadImage(IconWidget *obj);
 

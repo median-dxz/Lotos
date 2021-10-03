@@ -25,7 +25,6 @@ PictureTableHeader .QPushButton[class_type="head"] {
   border: none;
   background: none;
   color: #303133;
-  text-align: left;
   font: 16px;
 }
 

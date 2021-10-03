@@ -30,37 +30,7 @@ void MainWindow::test() {
     qDebug() << QSslSocket::sslLibraryBuildVersionString();
     qDebug() << QSslSocket::supportsSsl();
 
-    connect(ui->tb1, &QPushButton::clicked, this, [=] {
-        if (globalSettings.imghost[KeyMap.imghost.isAuthorized] == true) {
-            HttpClient *client = smms->getUploadHistory(1);
-            connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
-                SMMS::Response data;
-                SMMS::praseResponse(res->getJson(), data);
-                for (const auto &obj : qAsConst(data.data)) {
-                    SMMS::ImageInfomation info;
-                    SMMS::praseImageInfomation(obj.toObject(), info);
-                    info.token_with = true;
-
-                    ui->imagesList->addData(info.toQVariantMap());
-                }
-                delete res;
-            });
-        }
-        HttpClient *client = smms->getTemporaryUploadHistory();
-        connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
-            SMMS::Response data;
-            qDebug() << res->getText();
-            SMMS::praseResponse(res->getJson(), data);
-            for (const auto &obj : qAsConst(data.data)) {
-                SMMS::ImageInfomation info;
-                SMMS::praseImageInfomation(obj.toObject(), info);
-                info.token_with = false;
-
-                ui->imagesList->addData(info.toQVariantMap());
-            }
-            delete res;
-        });
-    });
+    connect(ui->tb1, &QPushButton::clicked, this, [=] {});
 
     connect(ui->tb2, &QPushButton::clicked, this, [=] {
         //        Promise<int> *promise = new Promise<int>(this);
@@ -75,6 +45,14 @@ void MainWindow::test() {
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::init() {
+    proxy = HttpClient::getNetworkProxyInstanse();
+    smms = &SMMS::Instance();
+    globalSettings.load(PATH_CONFIG);
+    notify = &NotificationManager::Instance();
+    notify->setNotifyParent(ui->viewport);
 }
 
 void MainWindow::appearanceManager() {
@@ -159,14 +137,6 @@ void MainWindow::appearanceManager() {
     }
 }
 
-void MainWindow::init() {
-    proxy = HttpClient::getNetworkProxyInstanse();
-    smms = &SMMS::Instance();
-    globalSettings.load(PATH_CONFIG);
-    notify = &NotificationManager::Instance();
-    notify->setNotifyParent(ui->viewport);
-}
-
 void MainWindow::componentsManager() {
     connect(ui->titleBar, &TitleBar::onMiniBtnClicked, this, &MainWindow::showMinimized);
     connect(ui->titleBar, &TitleBar::onCloseBtnClicked, this, &MainWindow::onMainProcessClosed);
@@ -182,6 +152,7 @@ void MainWindow::componentsManager() {
     connect(ui->uploadBox, &PicturesContainer::uploadImage, this, &MainWindow::uploadImage);
 
     // set gallery page
+    connect(ui->syncGalleryButton, &QPushButton::clicked, this, &MainWindow::onButtonSyncGalleryClicked);
 
     // set dashbroad page
     ui->pageSwitchWidget->installEventFilter(this);
@@ -406,6 +377,38 @@ void MainWindow::onButtonUploadClicked() {
     if (!pending) {
         notify->newNotify(NOTIFYS::INFO, NOTIFYS::imageWidgetNoPending());
     }
+}
+
+void MainWindow::onButtonSyncGalleryClicked() {
+    if (globalSettings.imghost[KeyMap.imghost.isAuthorized] == true) {
+        HttpClient *client = smms->getUploadHistory(1);
+        connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
+            SMMS::Response data;
+            SMMS::praseResponse(res->getJson(), data);
+            for (const auto &obj : qAsConst(data.data)) {
+                SMMS::ImageInfomation info;
+                SMMS::praseImageInfomation(obj.toObject(), info);
+                info.token_with = true;
+
+                ui->imagesList->addData(info.toQVariantMap());
+            }
+            delete res;
+        });
+    }
+    HttpClient *client = smms->getTemporaryUploadHistory();
+    connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
+        SMMS::Response data;
+        qDebug() << res->getText();
+        SMMS::praseResponse(res->getJson(), data);
+        for (const auto &obj : qAsConst(data.data)) {
+            SMMS::ImageInfomation info;
+            SMMS::praseImageInfomation(obj.toObject(), info);
+            info.token_with = false;
+
+            ui->imagesList->addData(info.toQVariantMap());
+        }
+        delete res;
+    });
 }
 
 void MainWindow::uploadImage(IconWidget *obj) {

@@ -54,14 +54,17 @@ PictureTable::PictureTable(QWidget *parent) : QFrame(parent) {
     connect(header->head_name, &QPushButton::clicked, this, [=]() {
         sortList(flag_fn, 1);
         flag_link = flag_size = 1;
+        flag_fn = 0;
     });
     connect(header->head_size, &QPushButton::clicked, this, [=]() {
         sortList(flag_size, 2);
         flag_link = flag_fn = 1;
+        flag_size = 0;
     });
     connect(header->head_link, &QPushButton::clicked, this, [=]() {
         sortList(flag_link, 3);
         flag_fn = flag_size = 1;
+        flag_link = 0;
     });
 }
 
@@ -297,7 +300,6 @@ void PictureTable::sortList(bool cmp, int col) {
                 header->linkSort->setPixmap(QPixmap(iconsPath[0]));
                 break;
         }
-        cmp = 0;
     } else {
         switch (col) {
             case 1:
@@ -319,7 +321,6 @@ void PictureTable::sortList(bool cmp, int col) {
                 header->linkSort->setPixmap(QPixmap(iconsPath[1]));
                 break;
         }
-        cmp = 1;
     }
 
     for (int i = 0; i < lines.length(); i++) {
