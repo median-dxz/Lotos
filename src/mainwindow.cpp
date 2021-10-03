@@ -72,9 +72,11 @@ void MainWindow::appearanceManager() {
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
 
+#if (QT_VERSION > QT_VERSION_CHECK(5, 9, 8))
     QGraphicsDropShadowEffect *box_shadow = new QGraphicsDropShadowEffect(this);
     shadowGenerator(box_shadow, 0.18, 0, 1, 12);
     ui->viewport->setGraphicsEffect(box_shadow);
+#endif
 
     QGraphicsDropShadowEffect *sider_bar_shadow = new QGraphicsDropShadowEffect(this);
     shadowGenerator(sider_bar_shadow, 0.18, 2, 0, 12);
@@ -85,15 +87,18 @@ void MainWindow::appearanceManager() {
     mainIcon->setScaledContents(true);
     mainIcon->setFixedSize(QSize(96, 96));
     mainIcon->setPixmap(QPixmap(":/res/lotos_icon.png"));
+    mainTitle->setFixedSize(QSize(96, 48));
+    mainTitle->setPixmap(QPixmap(":/res/lotos_title.png").scaledToWidth(96, Qt::SmoothTransformation));
+
+#if (QT_VERSION > QT_VERSION_CHECK(5, 9, 8))
     QGraphicsDropShadowEffect *icon_shadow = new QGraphicsDropShadowEffect(this);
     shadowGenerator(icon_shadow, 0.28, 0, 0, 20);
     mainIcon->setGraphicsEffect(icon_shadow);
 
-    mainTitle->setFixedSize(QSize(96, 48));
-    mainTitle->setPixmap(QPixmap(":/res/lotos_title.png").scaledToWidth(96, Qt::SmoothTransformation));
     QGraphicsDropShadowEffect *title_shadow = new QGraphicsDropShadowEffect(this);
     shadowGenerator(title_shadow, 0.28, 0, 0, 20);
     mainTitle->setGraphicsEffect(title_shadow);
+#endif
 
     QVBoxLayout *sider_layout = dynamic_cast<QVBoxLayout *>(ui->pageSwitchWidget->layout());
     sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
