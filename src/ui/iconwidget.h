@@ -19,7 +19,7 @@ class IconWidget : public QWidget {
     explicit IconWidget(QWidget *parent = nullptr);
 
     inline void setImage(const QByteArray &img);
-    inline QImage image() const;
+    inline const QImage &image() const;
 
     inline void setImageData(const QByteArray &ba);
     inline QByteArray &imageData();
@@ -81,7 +81,7 @@ inline void IconWidget::setImage(const QByteArray &img) {
     update();
 }
 
-inline QImage IconWidget::image() const {
+inline const QImage &IconWidget::image() const {
     return pix;
 }
 

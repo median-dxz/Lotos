@@ -40,13 +40,15 @@ class MainWindow : public QMainWindow {
     void onButtonUploadClicked();
     void onButtonSyncGalleryClicked();
 
+    void onEditSearchTextChanged(const QString &text);
+
     void uploadImage(IconWidget *obj);
 
     void loadPage(int index);
     void onUploadStatusChanged();
 
-    MessageBox *openMessagegBox();
-    void closeMessageBox(int msecs = 0);
+    void openMessagegBox(MessageBox *);
+    void closeMessageBox(MessageBox *, int msecs = 0);
 
    signals:
     void widgetPageChanged(int);
@@ -81,7 +83,6 @@ class MainWindow : public QMainWindow {
     QPoint movingPoint;
 
     QFrame *maskFrame;
-    MessageBox *msgBox;
 
     const QString PATH_CONFIG = "config.json";
     const QList<QString> iconPaths = QList<QString>() << (":/res/icons/page_1.png") << (":/res/icons/page_1_ig.png")

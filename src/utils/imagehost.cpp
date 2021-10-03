@@ -43,6 +43,8 @@ void SMMS::praseImageInfomation(const QJsonObject &data, SMMS::ImageInfomation &
     }
     if (!data["created_at"].isNull()) {
         res.timestamp = data["created_at"].toDouble();
+    } else {
+        res.timestamp = 0;
     }
 }
 

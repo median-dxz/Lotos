@@ -15,6 +15,32 @@ QString formatExternalLink(QString filename, QString url, ExternalLinkType type 
 
 bool loadQStyleSheet(const QString &fileName);
 
+class ParallelCount : public QObject {
+    Q_OBJECT
+   public:
+    explicit ParallelCount(QObject *parent) : QObject(parent) {}
+    bool empty() {
+        if (!c) {
+            emit clear();
+            deleteLater();
+        }
+        return !c;
+    };
+    void add() { c += 1; };
+    bool pop() {
+        c -= 1;
+        return empty();
+    };
+    void store(const QVariant &data) { d.append(data); };
+    QVariantList get() { return d; };
+   signals:
+    void clear();
+
+   private:
+    int c = 0;
+    QVariantList d;
+};
+
 class StyleClass {
    public:
     static class _Type {

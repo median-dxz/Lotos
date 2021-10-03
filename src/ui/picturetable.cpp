@@ -4,13 +4,17 @@
 #include <QDebug>
 
 #include "base.h"
+#include "notification.h"
+#include "pictureviewwidget.h"
+#include "utils/httpclient.h"
 #include "utils/lotoshelper.h"
+#include "utils/promise.h"
 
 using namespace LotosHelper;
 
 namespace PictureTableConstant {
 
-const struct {
+struct {
     QString width = "width";
     QString height = "height";
     QString filename = "filename";
@@ -35,71 +39,113 @@ using namespace PictureTableConstant;
 
 PictureTable::PictureTable(QWidget *parent) : QFrame(parent) {
     lineHeight = PictureTableConstant::DefaultLineHeight;
+    notify = &NotificationManager::Instance();
 
     header = new PictureTableHeader(this);
     header->setFixedHeight(lineHeight);
+
     setLayout(new QVBoxLayout(this));
     layout()->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     layout()->setMargin(0);
     layout()->setSpacing(0);
     layout()->addWidget(header);
-    connect(header->all, &QCheckBox::stateChanged, this, [=]() {
-        for (int i = 0; i < lines.size(); i++)
-            if (header->all->checkState() == Qt::Checked)
-                lines[i]->setCheckState(Qt::Checked);
-            else
-                lines[i]->setCheckState(Qt::Unchecked);
-    });
 
     connect(header->head_name, &QPushButton::clicked, this, [=]() {
         sortList(flag_fn, 1);
         flag_link = flag_size = 1;
-        flag_fn = 0;
+        flag_fn = !flag_fn;
     });
     connect(header->head_size, &QPushButton::clicked, this, [=]() {
         sortList(flag_size, 2);
         flag_link = flag_fn = 1;
-        flag_size = 0;
+        flag_size = !flag_size;
     });
     connect(header->head_link, &QPushButton::clicked, this, [=]() {
         sortList(flag_link, 3);
         flag_fn = flag_size = 1;
-        flag_link = 0;
+        flag_link = !flag_link;
+    });
+    connect(header->all, &QCheckBox::clicked, this, [=](bool checked) {
+        if (checked && lines.size() > 0) {
+            for (int i = 0; i < lines.size(); i++) {
+                lines.at(i)->cb->setChecked(true);
+            }
+        } else {
+            header->all->setChecked(false);
+            for (int i = 0; i < lines.size(); i++) {
+                lines.at(i)->cb->setChecked(false);
+            }
+        }
     });
 }
 
-void PictureTable::filter(std::function<bool(const SMMS::ImageInfomation &)>) {
+void PictureTable::filter(std::function<bool(const QVariantMap &)> f) {
+    if (f == 0) {
+        f = [=](const QVariantMap &) { return true; };
+    }
     for (int i = 0; i < lines.length(); i++) {
-        qDebug() << i;
+        if (f(datas[lines.at((i))])) {
+            lines.at(i)->show();
+        } else {
+            lines.at(i)->hide();
+        }
     }
 }
 
-QList<int> PictureTable::getCheckedItems() const {
-    QList<int> items;
+void PictureTable::delSelectedItems() {
+    QList<PictureTableLine *> items;
     for (int i = 0; i < lines.size(); i++) {
-        if (lines.at(i)->getCheckStatus() == Qt::CheckState::Checked) {
-            items << i;
+        if (lines.at(i)->cb->checkState() == Qt::Checked) {
+            items.append(lines.at(i));
         }
     }
-    return items;
+    for (PictureTableLine *i : qAsConst(items)) {
+        onDeleteLine(i);
+    }
 }
 
 void PictureTable::onDeleteLine(PictureTableLine *obj) {
-    QUrl delete_link(obj->d["delete"].toString());
+    QUrl delete_link(obj->data.delete_link);
 
     datas.remove(obj);
     lines.removeOne(obj);
     layout()->removeWidget(obj);
     obj->deleteLater();
+    if (lines.isEmpty()) {
+        header->all->setChecked(false);
+    }
 
     qDebug() << delete_link;
     HttpClient *client = new HttpClient(this);
     client->get(delete_link);
     connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
-        if (r->isSucceeded) {
+        if (!r->isSucceeded) {
+            notify->newNotify(NOTIFYS::ERROR, NOTIFYS::networkError(r->statusCode.toString(), tr("删除失败")));
+        } else {
+            qDebug() << r->getText();
         }
         delete r;
     });
+}
+
+void PictureTable::refresh(QList<QVariantMap> d) {
+    flag_fn = flag_link = flag_size = 1;
+    header->all->setChecked(false);
+    for (int i = 0; i < d.size(); i++) {
+        if (i >= lines.size()) {
+            addData(d.at(i));
+        } else {
+            datas[lines.at(i)] = d.at(i);
+            lines.at(i)->cb->setChecked(false);
+            lines.at(i)->resetLine(d.at(i));
+        }
+    }
+
+    if (d.size() < lines.size()) {
+        while (datas.key(d.back()) != lines.back()) {
+            onDeleteLine(lines.back());
+        }
+    }
 }
 
 void PictureTable::addData(QVariantMap d) {
@@ -107,9 +153,15 @@ void PictureTable::addData(QVariantMap d) {
     line->setFixedHeight(lineHeight);
     layout()->addWidget(line);
     datas.insert(line, d);
-    lines.append(line);
 
-    // connect(line, &PictureTableLine::checkedStateChanged, this, [=]() {});
+    lines.append(line);
+    header->all->setChecked(false);
+    connect(line, &PictureTableLine::checkedStateChanged, this, [=](int s) {
+        if (Qt::CheckState(s) == Qt::Unchecked) {
+            header->all->setChecked(false);
+        }
+    });
+    connect(line, &PictureTableLine::preview, this, &PictureTable::previewImage);
     connect(line, &PictureTableLine::deleteLine, this, &PictureTable::onDeleteLine);
 }
 
@@ -133,7 +185,7 @@ PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {
 
     QLabel *head_pix = new QLabel(this);
     head_pix->setFixedWidth(rowWidth[1]);
-    head_pix->setText("预览");
+    //    head_pix->setText("预览");
     head_pix->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
     head_link = new QPushButton(this);
@@ -173,7 +225,7 @@ PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {
     layout()->addWidget(head_op);
 }
 
-PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget(parent), d(data) {
+PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget(parent) {
     setLayout(new QHBoxLayout(this));
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed));
     layout()->setMargin(0);
@@ -233,7 +285,7 @@ PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget
     connect(op_view, &QPushButton::clicked, this, [=]() { emit preview(this); });
     connect(op_load, &QPushButton::clicked, this, [=]() { emit download(this); });
     connect(op_link, &QPushButton::clicked, this, [=]() { emit copyLink(this); });
-    resetLine(d);
+    resetLine(data);
 }
 
 void PictureTableHeader::paintEvent(QPaintEvent *) {
@@ -270,32 +322,31 @@ void PictureTableLine::setCheckState(Qt::CheckState state) {
 }
 
 void PictureTable::sortList(bool cmp, int col) {
-    QList<Qt::CheckState> check;
     header->fnSort->setPixmap(QPixmap());
     header->sizeSort->setPixmap(QPixmap());
     header->linkSort->setPixmap(QPixmap());
 
-    for (int i = 0; i < lines.length(); i++) {
-        check.append(lines[i]->getCheckStatus());
+    for (int i = 1; i <= lines.length(); i++) {
+        layout()->takeAt(i);
     }
 
     if (cmp) {
         switch (col) {
             case 1:
-                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d[sk.filename] < info2->d[sk.filename];
+                std::sort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->data.filename < info2->data.filename;
                 });
                 header->fnSort->setPixmap(QPixmap(iconsPath[0]));
                 break;
             case 2:
-                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d[sk.size] < info2->d[sk.size];
+                std::sort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->data.size < info2->data.size;
                 });
                 header->sizeSort->setPixmap(QPixmap(iconsPath[0]));
                 break;
             case 3:
-                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d[sk.time_stamp] < info2->d[sk.time_stamp];
+                std::sort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->data.timestamp < info2->data.timestamp;
                 });
                 header->linkSort->setPixmap(QPixmap(iconsPath[0]));
                 break;
@@ -303,20 +354,20 @@ void PictureTable::sortList(bool cmp, int col) {
     } else {
         switch (col) {
             case 1:
-                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d[sk.filename] < info2->d[sk.filename];
+                std::sort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->data.filename > info2->data.filename;
                 });
                 header->fnSort->setPixmap(QPixmap(iconsPath[1]));
                 break;
             case 2:
-                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d[sk.size] > info2->d[sk.size];
+                std::sort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->data.size > info2->data.size;
                 });
                 header->sizeSort->setPixmap(QPixmap(iconsPath[1]));
                 break;
             case 3:
-                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d[sk.time_stamp] > info2->d[sk.time_stamp];
+                std::sort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->data.timestamp > info2->data.timestamp;
                 });
                 header->linkSort->setPixmap(QPixmap(iconsPath[1]));
                 break;
@@ -324,24 +375,20 @@ void PictureTable::sortList(bool cmp, int col) {
     }
 
     for (int i = 0; i < lines.length(); i++) {
-        lines[i]->resetLine(datas[lines[i]]);
-        lines[i]->d = datas[lines[i]];
-        lines[i]->setCheckState(check[i]);
-        // qDebug()<< i << Lines.at(i)->in;//换过去
+        layout()->addWidget(lines[i]);
     }
 }
-
-void PictureTableLine::resetLine(const QVariantMap &data) {
-    d = data;
+void PictureTableLine::resetLine(const QVariantMap &d) {
+    SMMS::praseImageInfomation(QJsonObject::fromVariantMap(d), data);
     //    if(p.isNull()){
     //        p = QPixmap();
     //        p = p.scaledToHeight(height() - 8, Qt::SmoothTransformation);
     //        lab_thumb->setPixmap(p);
     //    }
-    lab_filename->setText(data[sk.filename].toString());
-    lab_time->setText(timestamp2str(data[sk.time_stamp].toUInt(), "yyyy/MM/dd hh:mm:ss"));
-    lab_size->setText(formatFileSize(data[sk.size].toUInt()));
-    lab_base->setText(data[sk.with_token].toBool() ? tr("基于Token") : tr("基于IP"));
+    lab_filename->setText(data.filename);
+    lab_time->setText((data.timestamp) ? timestamp2str(data.timestamp, "yyyy/MM/dd hh:mm:ss") : tr("无上传时间信息"));
+    lab_size->setText(formatFileSize(data.size));
+    lab_base->setText(data.token_with ? tr("基于Token") : tr("基于IP"));
 }
 
 int PictureTableLine::getIndex() const {
@@ -350,4 +397,68 @@ int PictureTableLine::getIndex() const {
 
 void PictureTableLine::setIndex(int value) {
     index = value;
+}
+
+void PictureTable::previewImage(PictureTableLine *obj) {
+    using namespace std::placeholders;
+
+    PictureViewWidget::showManager f = std::bind(&PictureTable::setPreviewImage, this, obj, _1, _2, _3);
+    PictureViewWidget::Instance().showInfo(f);
+}
+
+int PictureTable::setPreviewImage(PictureTableLine *obj, PictureViewWidget *self, QLabel *imgBox, QLabel *info) {
+    QString infoText =
+        tr("<h3>文件名</h3>\n%1\n"
+           "<h3>文件路径</h3>\n%2\n"
+           "<h3>文件大小</h3>\n%3\n"
+           "<h3>图片尺寸</h3>\n%4 × %5");
+
+    Promise<QPixmap> *scalePix = new Promise<QPixmap>(this);
+    scalePix->onFinished([=](Promise<QPixmap>::result p) {
+        info->setText(infoText.arg(obj->data.filename)
+                          .arg(obj->data.url)
+                          .arg(formatFileSize(obj->pixmapData.size()))
+                          .arg(obj->data.width)
+                          .arg(obj->data.height));
+
+        info->adjustSize();
+        imgBox->setPixmap(p);
+        self->show();
+    });
+
+    Promise<QPixmap>::async scaleProgress = [=](Promise<QPixmap>::Resolver resolve, Promise<QPixmap>::Rejector) {
+        QPixmap p;
+        QFontMetrics metrics = QFontMetrics(info->font());
+        QRect rect = metrics.boundingRect(infoText);
+        QMetaObject::invokeMethod(info, "setText", Q_ARG(QString, tr("加载图片中...")));
+        p.loadFromData(obj->pixmapData);
+
+        if (p.height() > self->height() - 20 - rect.height() - 40)
+            p = p.scaledToHeight(self->height() - 20 - rect.height() - 40, Qt::SmoothTransformation);
+        if (p.width() > self->width())
+            p = p.scaledToWidth(self->width(), Qt::SmoothTransformation);
+        resolve(p);
+    };
+
+    if (obj->pixmapData.isNull()) {
+        self->show();
+        HttpClient *client = new HttpClient(this);
+        client->setUrl(obj->data.url);
+        client->downloadFile();
+        connect(client, &HttpClient::downloadProgress, this, [=](long long a, long long b) {
+            QStringList loadText = QStringList() << tr("正在下载 ") << obj->data.filename << ": "
+                                                 << formatFileSize(a) + "/" + formatFileSize(b);
+
+            info->setText(loadText.join(""));
+        });
+        connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
+            obj->pixmapData = r->data;
+            scalePix->setPromise(scaleProgress);
+            delete r;
+        });
+    } else {
+        scalePix->setPromise(scaleProgress);
+    }
+
+    return lines.indexOf(obj);
 }

@@ -26,14 +26,7 @@ PictureViewWidget::PictureViewWidget(QWidget *parent) : QWidget(parent) {
 
     this->installEventFilter(this);
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::SubWindow);
-}
 
-PictureViewWidget &PictureViewWidget::Instance() {
-    static PictureViewWidget instance;
-    return instance;
-}
-
-void PictureViewWidget::showInfo(const QByteArray &ba, QFileInfo i) {
     move(0, 0);
     setFixedSize(qApp->primaryScreen()->availableSize());
 
@@ -41,38 +34,24 @@ void PictureViewWidget::showInfo(const QByteArray &ba, QFileInfo i) {
     layout()->setAlignment(imgBox, Qt::AlignHCenter | Qt::AlignVCenter);
     layout()->setAlignment(info, Qt::AlignHCenter | Qt::AlignBottom);
 
-    info->setText(QString(tr("加载图片中...")));
-    imgBox->setPixmap(QPixmap());
-
-    Promise<QPixmap> *scalePix = new Promise<QPixmap>(this);
-    scalePix->onFinished([=](Promise<QPixmap>::result p) {
-        info->setMargin(20);
-        info->setText(QString(tr("<h3>文件名</h3>\n%1\n"
-                                 "<h3>文件路径</h3>\n%2\n"
-                                 "<h3>文件大小</h3>\n%3\n"
-                                 "<h3>图片尺寸</h3>\n%4 × %5"))
-                          .arg(i.fileName())
-                          .arg(i.filePath())
-                          .arg(formatFileSize(i.size()))
-                          .arg(p.width())
-                          .arg(p.height()));
-        info->setTextInteractionFlags(Qt::TextSelectableByMouse);
-        info->adjustSize();
-        imgBox->setPixmap(p);
-    });
-    scalePix->setPromise([=](Promise<QPixmap>::Resolver resolve, Promise<QPixmap>::Rejector) {
-        QPixmap p = QPixmap();
-        p.loadFromData(ba);
-        if (p.height() > height() - 20 - info->height())
-            p = p.scaledToHeight(height() - 20 - info->height(), Qt::SmoothTransformation);
-        if (p.width() > width())
-            p = p.scaledToWidth(width(), Qt::SmoothTransformation);
-        resolve(p);
-    });
+    info->setMargin(20);
+    info->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
     shadowGenerator(effect, 0.6, 0, 0, 14);
     info->setGraphicsEffect(effect);
+}
+
+PictureViewWidget &PictureViewWidget::Instance() {
+    static PictureViewWidget instance;
+    return instance;
+}
+
+void PictureViewWidget::showInfo(showManager display) {
+    info->setText("");
+    imgBox->setPixmap(QPixmap());
+
+    index = display(this, imgBox, info);
 }
 
 void PictureViewWidget::showEvent(QShowEvent *) {}
@@ -91,6 +70,12 @@ void PictureViewWidget::mousePressEvent(QMouseEvent *event) {
     } else if (info->geometry().contains(event->pos())) {
         qDebug() << "info";
     } else {
+        hide();
+    }
+}
+
+void PictureViewWidget::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Escape) {
         hide();
     }
 }

@@ -7,6 +7,7 @@
 #include "utils/httpclient.h"
 
 class NotificationManager;
+class PictureViewWidget;
 class QGridLayout;
 
 class PicturesContainer : public QScrollArea {
@@ -39,12 +40,16 @@ class PicturesContainer : public QScrollArea {
     void dropEvent(QDropEvent *event) override;
 
    private:
+    int setPreviewImage(IconWidget *obj, PictureViewWidget *self, QLabel *imgBox, QLabel *info);
+
     QList<IconWidget *> m_widgets;
     QMap<IconWidget *, QString> m_hashs;
     QMap<IconWidget *, QPointer<HttpClient>> m_clients;
     QGridLayout *gridLayout;
 
     NotificationManager *notify;
+    PictureViewWidget *view;
+
     inline int uploadBoxCols() const { return (widget()->width() - 18) / iconWidgetSize.width(); }
 
     static constexpr int UPLOAD_FILES_LIMIT = 20;

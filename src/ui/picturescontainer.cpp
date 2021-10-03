@@ -5,13 +5,17 @@
 #include "notification.h"
 #include "pictureviewwidget.h"
 #include "utils/imagehost.h"
+#include "utils/lotoshelper.h"
 #include "utils/promise.h"
+
+using namespace LotosHelper;
 
 constexpr QSize PicturesContainer::iconWidgetSize;
 
 PicturesContainer::PicturesContainer(QWidget *parent) : QScrollArea(parent) {
     setAcceptDrops(true);
     notify = &NotificationManager::Instance();
+    view = &PictureViewWidget::Instance();
     connect(this, &PicturesContainer::acceptDragFiles, this, &PicturesContainer::addIconWidgets);
 }
 
@@ -91,9 +95,49 @@ void PicturesContainer::addIconWidgets(QStringList fileNames) {
 }
 
 void PicturesContainer::previewImage(IconWidget *obj) {
-    PictureViewWidget &view = PictureViewWidget::Instance();
-    view.showInfo(obj->imageData(), obj->imageInfo());
-    view.show();
+    using namespace std::placeholders;
+
+    PictureViewWidget::showManager f = std::bind(&PicturesContainer::setPreviewImage, this, obj, _1, _2, _3);
+    view->showInfo(f);
+}
+
+int PicturesContainer::setPreviewImage(IconWidget *obj, PictureViewWidget *self, QLabel *imgBox, QLabel *info) {
+    QString infoText =
+        tr("<h3>文件名</h3>\n%1\n"
+           "<h3>文件路径</h3>\n%2\n"
+           "<h3>文件大小</h3>\n%3\n"
+           "<h3>图片尺寸</h3>\n%4 × %5");
+
+    Promise<QPixmap> *scalePix = new Promise<QPixmap>(this);
+    scalePix->onFinished([=](Promise<QPixmap>::result p) {
+        const QFileInfo &i = obj->imageInfo();
+        info->setText(QString(tr("<h3>文件名</h3>\n%1\n"
+                                 "<h3>文件路径</h3>\n%2\n"
+                                 "<h3>文件大小</h3>\n%3\n"
+                                 "<h3>图片尺寸</h3>\n%4 × %5"))
+                          .arg(i.fileName())
+                          .arg(i.filePath())
+                          .arg(formatFileSize(i.size()))
+                          .arg(obj->image().width())
+                          .arg(obj->image().height()));
+
+        info->adjustSize();
+        imgBox->setPixmap(p);
+        self->show();
+    });
+    scalePix->setPromise([=](Promise<QPixmap>::Resolver resolve, Promise<QPixmap>::Rejector) {
+        //        QMetaObject::invokeMethod(info, "setText", Q_ARG(QString, tr("加载图片中...")));
+        QPixmap p = QPixmap::fromImage(obj->image());
+        QFontMetrics metrics = QFontMetrics(info->font());
+        QRect rect = metrics.boundingRect(infoText);
+
+        if (p.height() > self->height() - 20 - rect.height() - 40)
+            p = p.scaledToHeight(self->height() - 20 - rect.height() - 40, Qt::SmoothTransformation);
+        if (p.width() > self->width())
+            p = p.scaledToWidth(self->width(), Qt::SmoothTransformation);
+        resolve(p);
+    });
+    return m_widgets.indexOf(obj);
 }
 
 void PicturesContainer::addIconWidget(QString filename) {

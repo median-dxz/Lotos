@@ -15,6 +15,10 @@ IconWidget .QProgressBar::chunk {
   border-radius: 2px;
 }
 
+.QLabel[class_type="messagebox.label"] {
+  color: #303133;
+}
+
 PictureTableHeader .QLabel{
   color: #303133;
   font: 16px;
@@ -25,21 +29,21 @@ PictureTableHeader .QPushButton[class_type="head"] {
   border: none;
   background: none;
   color: #303133;
-  font: 16px;
+  font-size: 16px;
 }
 
-PictureTableLine QPushButton[class_type="link"] {
+PictureTableLine .QPushButton[class_type="link"] {
   border: none;
   background: none;
   color: #00a4ff;
 }
 
-PictureTableLine QPushButton:hover[class_type="link"] {
+PictureTableLine .QPushButton:hover[class_type="link"] {
   color: #006eff;
   text-decoration: underline;
 }
 
-PictureTableLine QPushButton:pressed[class_type="link"] {
+PictureTableLine .QPushButton:pressed[class_type="link"] {
   color: #00a4ff;
   text-decoration: underline;
 }

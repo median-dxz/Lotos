@@ -107,8 +107,21 @@ void MessageBox::paintInf(QPainter *painter, int frame) {
 void MessageBox::paintWai(QPainter *painter, int frame) {
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
     painter->rotate(-frame);
-    gradientArc(painter, d / 2, 0, 90, 16, QColor(39, 120, 196));
-    gradientArc(painter, d / 2, 180, 90, 16, QColor(39, 120, 196));
+
+    QColor fgC = QColor(0x40, 0x9e, 0xff);
+    QColor bgC = QColor(0xec, 0xf5, 0xff);
+
+    int t = animation->currentTime();
+    qreal v = animation->valueForTime(t);
+    int prev = t + 360 * 7 * 4 * (-(v - 0.5) * (v - 0.5) + 0.25);
+    int len = animation->frameForTime(prev) - frame;
+    if (prev >= 360 * 7) {
+        len = (270 - (frame - 90));
+    }
+
+    gradientArc(painter, d / 2, 0, 360, 6, bgC);
+
+    gradientArc(painter, d / 2, -90 + frame, len, 6, fgC);
 }
 
 void MessageBox::paintErr(QPainter *painter, int frame) {
@@ -250,9 +263,11 @@ void MessageBox::setIcontype(const IconType &icontype) {
     m_icontype = icontype;
     if (icontype == WAIT) {
         animation->setLoopCount(0);
+        animation->setDuration(360 * 7);
         animation->setEasingCurve(QEasingCurve(QEasingCurve::Linear));
     } else {
         animation->setLoopCount(1);
+        animation->setDuration(600);
         animation->setEasingCurve(QEasingCurve(QEasingCurve::OutQuad));
     }
     animation->setCurrentTime(0);

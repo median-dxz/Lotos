@@ -269,7 +269,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
+                <width>18</width>
                 <height>298</height>
                </rect>
               </property>
@@ -316,7 +316,7 @@
             <number>40</number>
            </property>
            <item row="2" column="0">
-            <widget class="QWidget" name="widget_2" native="true">
+            <widget class="QWidget" name="galleryFooter" native="true">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
@@ -384,7 +384,7 @@
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QWidget" name="widget" native="true">
+            <widget class="QWidget" name="galleryHeader" native="true">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
@@ -406,6 +406,13 @@
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="deleteSelectedButton">
+                <property name="text">
+                 <string>删除选中</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_7">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -417,6 +424,16 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="searchEdit">
+                <property name="placeholderText">
+                 <string>搜索文件名...</string>
+                </property>
+                <property name="clearButtonEnabled">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>

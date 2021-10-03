@@ -33,13 +33,11 @@ void MainWindow::test() {
     connect(ui->tb1, &QPushButton::clicked, this, [=] {});
 
     connect(ui->tb2, &QPushButton::clicked, this, [=] {
-        //        Promise<int> *promise = new Promise<int>(this);
-        //        promise->setPromise([=](Promise<int>::Resolver resolve, Promise<int>::Rejector) {
-        //            QThread::msleep(800);
-        //            QMetaObject::invokeMethod(this, "addIconWidget", Qt::QueuedConnection,
-        //                                      Q_ARG(QString, ":/res/lotos_icon.png"));
-        //            resolve(100);
-        //        });
+        NetworkResponseBox *msgBox = new NetworkResponseBox(this);
+        openMessagegBox(msgBox);
+        msgBox->setTip(tr("请稍等啊!!ksdfhno;ksdhnfilukegdiud"));
+        msgBox->setIcontype(MessageBox::IconType::WAIT);
+        closeMessageBox(msgBox, 5000);
     });
 }
 
@@ -72,9 +70,11 @@ void MainWindow::appearanceManager() {
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
 
+#if (QT_VERSION > QT_VERSION_CHECK(5, 9, 8))
     QGraphicsDropShadowEffect *box_shadow = new QGraphicsDropShadowEffect(this);
     shadowGenerator(box_shadow, 0.18, 0, 1, 12);
     ui->viewport->setGraphicsEffect(box_shadow);
+#endif
 
     QGraphicsDropShadowEffect *sider_bar_shadow = new QGraphicsDropShadowEffect(this);
     shadowGenerator(sider_bar_shadow, 0.18, 2, 0, 12);
@@ -85,15 +85,18 @@ void MainWindow::appearanceManager() {
     mainIcon->setScaledContents(true);
     mainIcon->setFixedSize(QSize(96, 96));
     mainIcon->setPixmap(QPixmap(":/res/lotos_icon.png"));
+    mainTitle->setFixedSize(QSize(96, 48));
+    mainTitle->setPixmap(QPixmap(":/res/lotos_title.png").scaledToWidth(96, Qt::SmoothTransformation));
+
+#if (QT_VERSION > QT_VERSION_CHECK(5, 9, 8))
     QGraphicsDropShadowEffect *icon_shadow = new QGraphicsDropShadowEffect(this);
     shadowGenerator(icon_shadow, 0.28, 0, 0, 20);
     mainIcon->setGraphicsEffect(icon_shadow);
 
-    mainTitle->setFixedSize(QSize(96, 48));
-    mainTitle->setPixmap(QPixmap(":/res/lotos_title.png").scaledToWidth(96, Qt::SmoothTransformation));
     QGraphicsDropShadowEffect *title_shadow = new QGraphicsDropShadowEffect(this);
     shadowGenerator(title_shadow, 0.28, 0, 0, 20);
     mainTitle->setGraphicsEffect(title_shadow);
+#endif
 
     QVBoxLayout *sider_layout = dynamic_cast<QVBoxLayout *>(ui->pageSwitchWidget->layout());
     sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
@@ -125,6 +128,7 @@ void MainWindow::appearanceManager() {
     ui->deleteAllButton->setProperty(StyleType.name, StyleType.button.danger);
 
     ui->syncGalleryButton->setProperty(StyleType.name, StyleType.button.normal);
+    ui->deleteSelectedButton->setProperty(StyleType.name, StyleType.button.normal);
 
     ui->hostResetButton->setProperty(StyleType.name, StyleType.button.normal);
     ui->hostLoginButton->setProperty(StyleType.name, StyleType.button.normal);
@@ -153,6 +157,8 @@ void MainWindow::componentsManager() {
 
     // set gallery page
     connect(ui->syncGalleryButton, &QPushButton::clicked, this, &MainWindow::onButtonSyncGalleryClicked);
+    connect(ui->deleteSelectedButton, &QPushButton::clicked, ui->imagesList, &PictureTable::delSelectedItems);
+    connect(ui->searchEdit, &QLineEdit::textChanged, this, &MainWindow::onEditSearchTextChanged);
 
     // set dashbroad page
     ui->pageSwitchWidget->installEventFilter(this);
@@ -278,8 +284,10 @@ void MainWindow::onMainProcessClosed() {
 
 void MainWindow::onHostLoginClicked() {
     if (!globalSettings.imghost[KeyMap.imghost.isAuthorized].toBool()) {
-        msgBox = openMessagegBox();
+        NetworkResponseBox *msgBox = new NetworkResponseBox(this);
+        openMessagegBox(msgBox);
         msgBox->setIcontype(MessageBox::WAIT);
+        msgBox->setTip(tr("正在登录中..."));
 
         HttpClient *client = smms->getAPIToken(ui->hostUsername->text(), ui->hostPassword->text());
 
@@ -288,12 +296,15 @@ void MainWindow::onHostLoginClicked() {
             SMMS::praseResponse(res->getJson(), data);
 
             if (res->statusCode.toUInt() != 200) {
+                msgBox->setTip(tr("网络错误!"));
                 msgBox->setIcontype(MessageBox::ERROR);
                 ui->userInfoLabel->setText(tr("网络错误!"));
             } else if (data.success == false) {
+                msgBox->setTip(tr("登录失败"));
                 msgBox->setIcontype(MessageBox::ERROR);
                 ui->userInfoLabel->setText(tr("<h4>登录失败 </h4>") + data.message);
             } else {
+                msgBox->setTip(tr("登录成功"));
                 msgBox->setIcontype(MessageBox::SUCCESS);
                 QString token = data.data.at(0).toObject()["token"].toString();
                 globalSettings.imghost.insert(KeyMap.imghost.token, token);
@@ -302,7 +313,7 @@ void MainWindow::onHostLoginClicked() {
                 onHostLoginClicked();
             }
 
-            closeMessageBox(1000);
+            closeMessageBox(msgBox, 1000);
             delete res;
         });
     } else {
@@ -380,8 +391,16 @@ void MainWindow::onButtonUploadClicked() {
 }
 
 void MainWindow::onButtonSyncGalleryClicked() {
+    ParallelCount *req = new ParallelCount(this);
+
+    NetworkResponseBox *msg = new NetworkResponseBox(this);
+    openMessagegBox(msg);
+    msg->setIcontype(MessageBox::WAIT);
+    msg->setTip("正在同步中...");
+
     if (globalSettings.imghost[KeyMap.imghost.isAuthorized] == true) {
         HttpClient *client = smms->getUploadHistory(1);
+        req->add();
         connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
             SMMS::Response data;
             SMMS::praseResponse(res->getJson(), data);
@@ -390,25 +409,46 @@ void MainWindow::onButtonSyncGalleryClicked() {
                 SMMS::praseImageInfomation(obj.toObject(), info);
                 info.token_with = true;
 
-                ui->imagesList->addData(info.toQVariantMap());
+                req->store(info.toQVariantMap());
             }
+
+            req->pop();
             delete res;
         });
     }
-    HttpClient *client = smms->getTemporaryUploadHistory();
-    connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
-        SMMS::Response data;
-        qDebug() << res->getText();
-        SMMS::praseResponse(res->getJson(), data);
-        for (const auto &obj : qAsConst(data.data)) {
-            SMMS::ImageInfomation info;
-            SMMS::praseImageInfomation(obj.toObject(), info);
-            info.token_with = false;
+    //    HttpClient *client = smms->getTemporaryUploadHistory();
+    //    req->add();
+    //    connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
+    //        SMMS::Response data;
+    //        qDebug() << res->getText();
+    //        SMMS::praseResponse(res->getJson(), data);
+    //        for (const auto &obj : qAsConst(data.data)) {
+    //            SMMS::ImageInfomation info;
+    //            SMMS::praseImageInfomation(obj.toObject(), info);
+    //            info.token_with = false;
 
-            ui->imagesList->addData(info.toQVariantMap());
+    //            req->store(info.toQVariantMap());
+    //        }
+    //        req->pop();
+    //        delete res;
+    //    });
+    connect(req, &ParallelCount::clear, this, [=] {
+        closeMessageBox(msg);
+        QList<QVariantMap> r;
+        for (const auto &i : req->get()) {
+            r.append(i.toMap());
         }
-        delete res;
+        ui->imagesList->refresh(r);
     });
+}
+
+void MainWindow::onEditSearchTextChanged(const QString &text) {
+    if (text == "") {
+        ui->imagesList->filter(0);
+    } else {
+        ui->imagesList->filter(
+            [=](const QVariantMap &data) -> bool { return data["filename"].toString().contains(text); });
+    }
 }
 
 void MainWindow::uploadImage(IconWidget *obj) {
@@ -491,8 +531,7 @@ void MainWindow::onUploadStatusChanged() {
             .arg(globalSettings.user[KeyMap.user.uploadWithToken].toBool() ? "优先使用Token" : "基于IP"));
 }
 
-MessageBox *MainWindow::openMessagegBox() {
-    MessageBox *msgBox = new MessageBox(this);
+void MainWindow::openMessagegBox(MessageBox *msgBox) {
     maskFrame->layout()->addWidget(msgBox);
     maskFrame->stackUnder(msgBox);
     maskFrame->show();
@@ -502,10 +541,9 @@ MessageBox *MainWindow::openMessagegBox() {
     fade(maskEffect, maskFrame)->start(QAbstractAnimation::DeleteWhenStopped);
 
     msgBox->show();
-    return msgBox;
 }
 
-void MainWindow::closeMessageBox(int pause) {
+void MainWindow::closeMessageBox(MessageBox *msgBox, int pause) {
     QGraphicsOpacityEffect *maskEffect = static_cast<QGraphicsOpacityEffect *>(maskFrame->graphicsEffect());
     QSequentialAnimationGroup *g = new QSequentialAnimationGroup(this);
     g->addPause(pause);
