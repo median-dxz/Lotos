@@ -7,11 +7,15 @@
   background-color: #ffffff;
 }
 
+#uploadTitle {
+  font-size: 36px;
+  color: #606266;
+}
+
 #uploadPage .QPushButton {
   height: 20px;
   width: 102px;
   padding: 12px 24px;
-
 }
 
 #uploadPage .QPushButton#selectFilesButton {
@@ -31,5 +35,5 @@
 }
 
 #uploadStatusLabel {
-  color: #909399;
+  color: #606266;
 }

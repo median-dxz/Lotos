@@ -3,6 +3,12 @@
   border: 1px solid #dcdfe6;
 }
 
+#viewport #title{
+    font-family: "Roboto Mono";
+    font-size: 14px;
+    color: #606266;
+}
+
 #pageSwitchWidget {
   background-color: #ffffff;
 }

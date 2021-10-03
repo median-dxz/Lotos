@@ -45,8 +45,7 @@ void IconWidget::addImageFromFile(const QString &fileName, const QByteArray &fil
 void IconWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
 
-    painter.setRenderHints(QPainter::HighQualityAntialiasing | QPainter::SmoothPixmapTransform |
-                           QPainter::TextAntialiasing);
+    painter.setRenderHints(QPainter::HighQualityAntialiasing | QPainter::SmoothPixmapTransform);
     painter.setPen(QColor("#fff"));
     painter.fillRect(0, 0, width() - painter.pen().width(), height() - painter.pen().width(), QBrush(QColor("#fff")));
 
@@ -99,7 +98,7 @@ void IconWidget::setInfo() {
     progress->setFormat("");
 
     nameLine->setAlignment(Qt::AlignHCenter);
-    nameLine->setText(getElidedText(nameLine->font(), info.fileName(), nameLine->width()));
+    nameLine->setText(getElidedText(nameLine->font(), info.fileName(), width()));
     nameLine->setToolTip(info.fileName());
 
     sizeLine->setAlignment(Qt::AlignHCenter);
@@ -150,7 +149,7 @@ void IconWidget::setUploadBtn() {
 }
 
 void IconWidget::onStatusChanged(IconWidget::UPLOAD_STATUS newStatus) {
-    QString statusStr = QString("<h4>%1:</h4> %2");
+    QString statusStr = QString("<strong>%1:</strong><div>%2</div>");
     switch (newStatus) {
         case FAILED:
             statusStr = statusStr.arg(tr("状态"), tr("上传失败"));

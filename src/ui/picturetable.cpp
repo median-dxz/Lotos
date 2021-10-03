@@ -10,9 +10,24 @@ using namespace LotosHelper;
 
 namespace PictureTableConstant {
 
+const struct {
+    QString width = "width";
+    QString height = "height";
+    QString filename = "filename";
+    QString storename = "storename";
+    QString size = "size";
+    QString path = "path";
+    QString hash = "hash";
+    QString url = "url";
+    QString delete_link = "delete";
+    QString page_link = "page";
+    QString time_stamp = "created_at";
+    QString with_token = "token_with";
+} sk;
+
 QStringList iconsPath = {":/res/icons/triangle_down.png", ":/res/icons/triangle_up.png"};
 constexpr int DefaultLineHeight = 42;
-constexpr int rowWidth[6] = {250, 80, 150, 75, 110, 200};
+constexpr int rowWidth[6] = {240, 70, 170, 75, 110, 200};
 
 };  // namespace PictureTableConstant
 
@@ -37,15 +52,15 @@ PictureTable::PictureTable(QWidget *parent) : QFrame(parent) {
     });
 
     connect(header->head_name, &QPushButton::clicked, this, [=]() {
-        sortList(flag_fn, 1, lines);
+        sortList(flag_fn, 1);
         flag_link = flag_size = 1;
     });
     connect(header->head_size, &QPushButton::clicked, this, [=]() {
-        sortList(flag_size, 2, lines);
+        sortList(flag_size, 2);
         flag_link = flag_fn = 1;
     });
     connect(header->head_link, &QPushButton::clicked, this, [=]() {
-        sortList(flag_link, 3, lines);
+        sortList(flag_link, 3);
         flag_fn = flag_size = 1;
     });
 }
@@ -56,16 +71,27 @@ void PictureTable::filter(std::function<bool(const SMMS::ImageInfomation &)>) {
     }
 }
 
-void PictureTable::onDeleteLine(PictureTableLine *obj) {
-    QUrl link_del(obj->d.delete_link);
+QList<int> PictureTable::getCheckedItems() const {
+    QList<int> items;
+    for (int i = 0; i < lines.size(); i++) {
+        if (lines.at(i)->getCheckStatus() == Qt::CheckState::Checked) {
+            items << i;
+        }
+    }
+    return items;
+}
 
+void PictureTable::onDeleteLine(PictureTableLine *obj) {
+    QUrl delete_link(obj->d["delete"].toString());
+
+    datas.remove(obj);
     lines.removeOne(obj);
     layout()->removeWidget(obj);
     obj->deleteLater();
 
-    qDebug() << link_del;
+    qDebug() << delete_link;
     HttpClient *client = new HttpClient(this);
-    client->get(link_del);
+    client->get(delete_link);
     connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
         if (r->isSucceeded) {
         }
@@ -77,16 +103,10 @@ void PictureTable::addData(QVariantMap d) {
     PictureTableLine *line = new PictureTableLine(this, d);
     line->setFixedHeight(lineHeight);
     layout()->addWidget(line);
-    datas.append(d);
+    datas.insert(line, d);
     lines.append(line);
 
-    connect(line, &PictureTableLine::onStateChanged, this, [=]() {
-        list.clear();
-        for (int i = 0; i < lines.size(); i++) {
-            list.append(lines[i]->getCheckStatus());
-            qDebug() << list[i];
-        }
-    });
+    // connect(line, &PictureTableLine::checkedStateChanged, this, [=]() {});
     connect(line, &PictureTableLine::deleteLine, this, &PictureTable::onDeleteLine);
 }
 
@@ -150,8 +170,7 @@ PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {
     layout()->addWidget(head_op);
 }
 
-PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget(parent), data(data) {
-    SMMS::praseImageInfomation(QJsonObject::fromVariantMap(data), d);
+PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget(parent), d(data) {
     setLayout(new QHBoxLayout(this));
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed));
     layout()->setMargin(0);
@@ -159,7 +178,7 @@ PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget
     layout()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     cb = new QCheckBox(this);
     cb->setFixedWidth(40);
-    connect(cb, &QCheckBox::stateChanged, this, &PictureTableLine::onStateChanged);
+    connect(cb, &QCheckBox::stateChanged, this, &PictureTableLine::checkedStateChanged);
     lab_filename = new QLabel(this);
     lab_filename->setFixedWidth(rowWidth[0]);
 
@@ -216,7 +235,7 @@ PictureTableLine::PictureTableLine(QWidget *parent, QVariantMap &data) : QWidget
 
 void PictureTableHeader::paintEvent(QPaintEvent *) {
     QPainter painter(this);
-    painter.setRenderHints(QPainter::HighQualityAntialiasing | QPainter::TextAntialiasing);
+    painter.setRenderHints(QPainter::HighQualityAntialiasing);
     painter.fillRect(0, 0, width(), height(), QColor("#fff"));
     painter.setPen(QColor("#ebeef5"));
     painter.drawLine(0, 0, width(), 0);
@@ -224,7 +243,7 @@ void PictureTableHeader::paintEvent(QPaintEvent *) {
 
 void PictureTableLine::paintEvent(QPaintEvent *) {
     QPainter painter(this);
-    painter.setRenderHints(QPainter::HighQualityAntialiasing | QPainter::TextAntialiasing);
+    painter.setRenderHints(QPainter::HighQualityAntialiasing);
     painter.fillRect(0, 0, width(), height(), lineBackgroundColor);
     painter.setPen(QColor("#ebeef5"));
     painter.drawLine(0, 0, width(), 0);
@@ -247,29 +266,33 @@ void PictureTableLine::setCheckState(Qt::CheckState state) {
     cb->setCheckState(state);
 }
 
-void PictureTable::sortList(bool &cmp, int col, QList<PictureTableLine *> list) {
+void PictureTable::sortList(bool cmp, int col) {
     QList<Qt::CheckState> check;
-    QList<SMMS::ImageInfomation> infomation;
     header->fnSort->setPixmap(QPixmap());
     header->sizeSort->setPixmap(QPixmap());
     header->linkSort->setPixmap(QPixmap());
+
+    for (int i = 0; i < lines.length(); i++) {
+        check.append(lines[i]->getCheckStatus());
+    }
+
     if (cmp) {
         switch (col) {
             case 1:
-                qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d.filename < info2->d.filename;
+                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->d[sk.filename] < info2->d[sk.filename];
                 });
                 header->fnSort->setPixmap(QPixmap(iconsPath[0]));
                 break;
             case 2:
-                qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d.size < info2->d.size;
+                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->d[sk.size] < info2->d[sk.size];
                 });
                 header->sizeSort->setPixmap(QPixmap(iconsPath[0]));
                 break;
             case 3:
-                qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d.timestamp < info2->d.timestamp;
+                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->d[sk.time_stamp] < info2->d[sk.time_stamp];
                 });
                 header->linkSort->setPixmap(QPixmap(iconsPath[0]));
                 break;
@@ -278,20 +301,20 @@ void PictureTable::sortList(bool &cmp, int col, QList<PictureTableLine *> list) 
     } else {
         switch (col) {
             case 1:
-                qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d.filename > info2->d.filename;
+                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->d[sk.filename] < info2->d[sk.filename];
                 });
                 header->fnSort->setPixmap(QPixmap(iconsPath[1]));
                 break;
             case 2:
-                qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d.size > info2->d.size;
+                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->d[sk.size] > info2->d[sk.size];
                 });
                 header->sizeSort->setPixmap(QPixmap(iconsPath[1]));
                 break;
             case 3:
-                qSort(list.begin(), list.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
-                    return info1->d.timestamp > info2->d.timestamp;
+                qSort(lines.begin(), lines.end(), [](const PictureTableLine *info1, const PictureTableLine *info2) {
+                    return info1->d[sk.time_stamp] > info2->d[sk.time_stamp];
                 });
                 header->linkSort->setPixmap(QPixmap(iconsPath[1]));
                 break;
@@ -299,32 +322,31 @@ void PictureTable::sortList(bool &cmp, int col, QList<PictureTableLine *> list) 
         cmp = 1;
     }
 
-    for (int i = 0; i < list.length(); i++) {
-        infomation.append(list[i]->d);
-        check.append(list[i]->getCheckStatus());
-        // qDebug()<< i << list.at(i)->content[0];
-        // Lines[i] =list[i];//这个不行是因为换了整体
-        // qDebug()<< i << Lines.at(i)->content[0];//还没换过去
-    }
-
-    for (int i = 0; i < list.length(); i++) {
-        lines[i]->resetLine(infomation[i]);
-        lines[i]->d = infomation[i];
+    for (int i = 0; i < lines.length(); i++) {
+        lines[i]->resetLine(datas[lines[i]]);
+        lines[i]->d = datas[lines[i]];
         lines[i]->setCheckState(check[i]);
         // qDebug()<< i << Lines.at(i)->in;//换过去
     }
 }
 
-void PictureTableLine::resetLine(const SMMS::ImageInfomation &data) {
+void PictureTableLine::resetLine(const QVariantMap &data) {
     d = data;
     //    if(p.isNull()){
     //        p = QPixmap();
     //        p = p.scaledToHeight(height() - 8, Qt::SmoothTransformation);
     //        lab_thumb->setPixmap(p);
     //    }
+    lab_filename->setText(data[sk.filename].toString());
+    lab_time->setText(timestamp2str(data[sk.time_stamp].toUInt(), "yyyy/MM/dd hh:mm:ss"));
+    lab_size->setText(formatFileSize(data[sk.size].toUInt()));
+    lab_base->setText(data[sk.with_token].toBool() ? tr("基于Token") : tr("基于IP"));
+}
 
-    lab_filename->setText(data.filename);
-    lab_time->setText(timestamp2str(data.timestamp, "yyyy/MM/dd hh:mm:ss"));
-    lab_size->setText(formatFileSize(data.size));
-    lab_base->setText(data.token_with ? tr("基于Token") : tr("基于IP"));
+int PictureTableLine::getIndex() const {
+    return index;
+}
+
+void PictureTableLine::setIndex(int value) {
+    index = value;
 }

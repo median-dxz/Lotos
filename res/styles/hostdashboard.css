@@ -3,17 +3,19 @@
   color: #303133;
 }
 
-#hostDashBoardPage .QLabel {
+#hostDashBoardPage #usrInfoGroup .QLabel {
   color: #606266;
   font-size: 14px;
+}
+
+#hostDashBoardPage #usrInfoGroup  .QLabel {
+  color: #303133;
 }
 
 #hostDashBoardPage .QPushButton {
   text-align: center;
   margin: 0;
-  font-weight: 500;
   padding: 6px 20px;
-  font: 14px "Microsoft JhengHei";
 }
 
 #hostDashBoardPage .QLineEdit {

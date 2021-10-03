@@ -27,8 +27,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent) {
     miniBtn->installEventFilter(this);
     closeBtn->installEventFilter(this);
 
-    title->setFont(QFont("Microsoft YaHei UI", 12));
-    //    title->setFont(QFont("Agency FB", 16));
+    title->setObjectName("title");
     title->setAlignment(Qt::AlignCenter);
 
     connect(miniBtn, &QPushButton::clicked, this, &TitleBar::onMiniBtnClicked);

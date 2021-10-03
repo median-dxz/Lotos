@@ -4,6 +4,7 @@
 #include <QClipboard>
 #include <QDialogButtonBox>
 #include <QFileDialog>
+#include <QFontDatabase>
 #include <QtConcurrent>
 
 #include "base.h"
@@ -15,6 +16,8 @@ using namespace LotosAnimation;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+
+    qApp->setDesktopFileName(tr("Lotos"));
 
     init();
     componentsManager();
@@ -75,13 +78,21 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::appearanceManager() {
+    QDir fontsDir(":/res/fonts");
+    fontsDir.setNameFilters(QStringList() << "*.ttf");
+    for (const QString &fontname : fontsDir.entryList()) {
+        QFontDatabase::addApplicationFont(fontsDir.path() + "/" + fontname);
+    }
+
+    QFont f("Roboto Mono,Microsoft YaHei UI", 12);
+    f.setStyleStrategy(QFont::PreferAntialias);
+    qApp->setFont(f);
+
     setWindowTitle(tr("Lotos"));
     setWindowIcon(QIcon(":/res/lotos_icon.png"));
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
-
-    qApp->setFont(QFont("Microsoft YaHei UI"));
 
     QGraphicsDropShadowEffect *box_shadow = new QGraphicsDropShadowEffect(this);
     shadowGenerator(box_shadow, 0.18, 0, 1, 12);
@@ -100,8 +111,11 @@ void MainWindow::appearanceManager() {
     shadowGenerator(icon_shadow, 0.28, 0, 0, 20);
     mainIcon->setGraphicsEffect(icon_shadow);
 
-    mainTitle->setText(tr("Lotos"));
-    mainTitle->setFont(QFont("Agency FB", 32));
+    mainTitle->setFixedSize(QSize(96, 48));
+    mainTitle->setPixmap(QPixmap(":/res/lotos_title.png").scaledToWidth(96, Qt::SmoothTransformation));
+    QGraphicsDropShadowEffect *title_shadow = new QGraphicsDropShadowEffect(this);
+    shadowGenerator(title_shadow, 0.28, 0, 0, 20);
+    mainTitle->setGraphicsEffect(title_shadow);
 
     QVBoxLayout *sider_layout = dynamic_cast<QVBoxLayout *>(ui->pageSwitchWidget->layout());
     sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
@@ -132,14 +146,14 @@ void MainWindow::appearanceManager() {
     ui->uploadButton->setProperty(StyleType.name, StyleType.button.primary);
     ui->deleteAllButton->setProperty(StyleType.name, StyleType.button.danger);
 
+    ui->syncGalleryButton->setProperty(StyleType.name, StyleType.button.normal);
+
     ui->hostResetButton->setProperty(StyleType.name, StyleType.button.normal);
     ui->hostLoginButton->setProperty(StyleType.name, StyleType.button.normal);
 
     QDir stylesDir(":/res/styles/");
-    QStringList stylesFilter;
-    stylesFilter << "*.css"
-                 << "*.qss";
-    stylesDir.setNameFilters(stylesFilter);
+    stylesDir.setNameFilters(QStringList() << "*.css"
+                                           << "*.qss");
     for (const QString &stylesheet : stylesDir.entryList()) {
         loadQStyleSheet(stylesDir.path() + "/" + stylesheet);
     }
@@ -216,15 +230,15 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (obj == ui->uploadBoxContents && event->type() == QEvent::Paint) {
         if (!ui->uploadBox->count()) {
             QPainter painter(static_cast<QWidget *>(obj));
-            QFont font = QFont("Microsoft YaHei", 36);
+            QFont font("Roboto Mono", 36, 0);
 
-            QString tipstr = tr("Paste & Drag & Select") + tr(" Files Here...");
+            QString tipstr = tr("Paste & Drag & Select Files Here...");
 
             painter.setFont(font);
             painter.setPen(QColor("#C0C4CC"));
             QRectF rect = ui->uploadBoxContents->rect();
-            rect.setRight(rect.width() / 4 * 3);
-            rect.setLeft(rect.width() / 4);
+            rect.setRight(rect.width() / 8 * 7);
+            rect.setLeft(rect.width() / 8);
             painter.drawText(rect, Qt::TextWordWrap | Qt::AlignCenter, tipstr);
         }
 

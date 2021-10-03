@@ -4,6 +4,7 @@
 
 #include "base.h"
 #include "utils/lotoshelper.h"
+#include "utils/promise.h"
 
 using namespace LotosHelper;
 using namespace LotosAnimation;
@@ -40,26 +41,34 @@ void PictureViewWidget::showInfo(const QByteArray &ba, QFileInfo i) {
     layout()->setAlignment(imgBox, Qt::AlignHCenter | Qt::AlignVCenter);
     layout()->setAlignment(info, Qt::AlignHCenter | Qt::AlignBottom);
 
-    QPixmap p = QPixmap();
-    p.loadFromData(ba);
+    info->setText(QString(tr("加载图片中...")));
+    imgBox->setPixmap(QPixmap());
 
-    info->setMargin(20);
-    info->setText(QString(tr("<h3>文件名</h3>\n%1\n"
-                             "<h3>文件路径</h3>\n%2\n"
-                             "<h3>文件大小</h3>\n%3\n"
-                             "<h3>图片尺寸</h3>\n%4 × %5"))
-                      .arg(i.fileName())
-                      .arg(i.filePath())
-                      .arg(formatFileSize(i.size()))
-                      .arg(p.width())
-                      .arg(p.height()));
-    info->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    info->adjustSize();
-    if (p.height() > height() - 20 - info->height())
-        p = p.scaledToHeight(height() - 20 - info->height(), Qt::SmoothTransformation);
-    if (p.width() > width())
-        p = p.scaledToWidth(width(), Qt::SmoothTransformation);
-    imgBox->setPixmap(p);
+    Promise<QPixmap> *scalePix = new Promise<QPixmap>(this);
+    scalePix->onFinished([=](Promise<QPixmap>::result p) {
+        info->setMargin(20);
+        info->setText(QString(tr("<h3>文件名</h3>\n%1\n"
+                                 "<h3>文件路径</h3>\n%2\n"
+                                 "<h3>文件大小</h3>\n%3\n"
+                                 "<h3>图片尺寸</h3>\n%4 × %5"))
+                          .arg(i.fileName())
+                          .arg(i.filePath())
+                          .arg(formatFileSize(i.size()))
+                          .arg(p.width())
+                          .arg(p.height()));
+        info->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        info->adjustSize();
+        imgBox->setPixmap(p);
+    });
+    scalePix->setPromise([=](Promise<QPixmap>::Resolver resolve, Promise<QPixmap>::Rejector) {
+        QPixmap p = QPixmap();
+        p.loadFromData(ba);
+        if (p.height() > height() - 20 - info->height())
+            p = p.scaledToHeight(height() - 20 - info->height(), Qt::SmoothTransformation);
+        if (p.width() > width())
+            p = p.scaledToWidth(width(), Qt::SmoothTransformation);
+        resolve(p);
+    });
 
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
     shadowGenerator(effect, 0.6, 0, 0, 14);

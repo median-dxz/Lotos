@@ -4,7 +4,7 @@ PictureViewWidget QLabel {
 
 IconWidget .QLabel {
   color: #606266;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 IconWidget .QProgressBar {
@@ -17,7 +17,7 @@ IconWidget .QProgressBar::chunk {
 
 PictureTableHeader .QLabel{
   color: #303133;
-  font: bold 14px;
+  font: 16px;
   text-align: left;
 }
 
@@ -25,7 +25,8 @@ PictureTableHeader .QPushButton[class_type="head"] {
   border: none;
   background: none;
   color: #303133;
-  font: bold;
+  text-align: left;
+  font: 16px;
 }
 
 PictureTableLine QPushButton[class_type="link"] {

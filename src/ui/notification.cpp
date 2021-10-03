@@ -18,7 +18,7 @@ Notification::Notification(QWidget *p, QString tl, QString mes, QString bc, QStr
     title = new QLabel(this);
     message = new QLabel(this);
 
-    QFont font("Microsoft YaHei");
+    QFont font;
     font.setStyleStrategy(QFont::PreferAntialias);
 
     font.setPixelSize(16);

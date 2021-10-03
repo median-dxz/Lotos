@@ -28,5 +28,15 @@
         <file>res/icons/checkbox.png</file>
         <file>res/icons/checkbox_o.png</file>
         <file>res/icons/checkbox_o_hover.png</file>
+        <file>res/fonts/LICENSE.txt</file>
+        <file>res/fonts/RobotoMono-Bold.ttf</file>
+        <file>res/fonts/RobotoMono-BoldItalic.ttf</file>
+        <file>res/fonts/RobotoMono-Italic.ttf</file>
+        <file>res/fonts/RobotoMono-Light.ttf</file>
+        <file>res/fonts/RobotoMono-LightItalic.ttf</file>
+        <file>res/fonts/RobotoMono-Regular.ttf</file>
+        <file>res/fonts/RobotoMono-Thin.ttf</file>
+        <file>res/fonts/RobotoMono-ThinItalic.ttf</file>
+        <file>res/lotos_title.png</file>
     </qresource>
 </RCC>

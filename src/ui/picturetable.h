@@ -21,8 +21,9 @@ class PictureTable : public QFrame {
 
     int getLineHeight() const { return lineHeight; }
     void setLineHeight(int h) { lineHeight = h; };
-    void sortList(bool &cmp, int key, QList<PictureTableLine *> list);
+    void sortList(bool cmp, int col);
     void filter(std::function<bool(const SMMS::ImageInfomation &)>);
+    QList<int> getCheckedItems() const;
 
    public slots:
     void addData(QVariantMap d);
@@ -30,9 +31,8 @@ class PictureTable : public QFrame {
 
    private:
     PictureTableHeader *header;
-    QList<PictureTableLine *> lines;
-    QList<QVariantMap> datas;
-    QList<int> list;
+    QVector<PictureTableLine *> lines;
+    QMap<PictureTableLine *, QVariantMap> datas;
     bool flag_fn = 1, flag_link = 1, flag_size = 1;
     int lineHeight;
 };
@@ -58,19 +58,22 @@ class PictureTableLine : public QWidget {
     PictureTableLine(QWidget *parent, QVariantMap &data);
     Qt::CheckState getCheckStatus();
     void setCheckState(Qt::CheckState);
-    void resetLine(const SMMS::ImageInfomation &data);
-    SMMS::ImageInfomation d;
+    void resetLine(const QVariantMap &data);
+
+    int getIndex() const;
+    void setIndex(int value);
 
    private:
-    QVariantMap &data;
+    QVariantMap &d;
+    int index;
     QCheckBox *cb;
     QLabel *lab_filename, *lab_time, *lab_thumb, *lab_size, *lab_base;
     QPushButton *op_link, *op_view, *op_del, *op_load;
     QColor lineBackgroundColor = QColor("#fff");
-    QPixmap p;
+    QByteArray pixmapData = 0;
 
    signals:
-    void onStateChanged();
+    void checkedStateChanged();
     void deleteLine(PictureTableLine *);
     void preview(PictureTableLine *);
     void download(PictureTableLine *);
@@ -80,6 +83,8 @@ class PictureTableLine : public QWidget {
     void paintEvent(QPaintEvent *) override;
     void enterEvent(QEvent *) override;
     void leaveEvent(QEvent *) override;
+
+    friend class PictureTable;
 };
 
 #endif  // PICTURETABLE_H
