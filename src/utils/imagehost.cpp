@@ -16,14 +16,14 @@ void SMMS::setToken(QString token) {
 }
 
 void SMMS::praseResponse(const QJsonDocument &data, Response &res) {
-    res.RequestId = data["RequestId"].toString();
-    res.code = data["code"].toString();
-    res.message = data["message"].toString();
-    res.success = data["success"].toBool();
-    if (data["data"].isArray()) {
-        res.data = data["data"].toArray();
-    } else if (data["data"].isObject()) {
-        res.data.append(data["data"].toObject());
+    res.RequestId = data.object()["RequestId"].toString();
+    res.code = data.object()["code"].toString();
+    res.message = data.object()["message"].toString();
+    res.success = data.object()["success"].toBool();
+    if (data.object()["data"].isArray()) {
+        res.data = data.object()["data"].toArray();
+    } else if (data.object()["data"].isObject()) {
+        res.data.append(data.object()["data"].toObject());
     }
 }
 
