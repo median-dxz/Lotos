@@ -2,6 +2,7 @@
 
 #include <QStyle>
 #include "base.h"
+#include "utils/lotoshelper.h"
 
 PageButton::PageButton(QWidget *parent) : QPushButton(parent) {
     iconLabel = new QLabel(this);
@@ -108,6 +109,5 @@ void PageButton::setChecked(bool c) {
     } else {
         setProperty("class_type", "pagebutton.unchecked");
     }
-    style()->unpolish(this);
-    style()->polish(this);
+    reloadStyleSheets(this);
 }

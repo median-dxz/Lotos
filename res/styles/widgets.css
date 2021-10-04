@@ -1,3 +1,8 @@
+QFrame[class_type="messagebox"] {
+  background: #fff;
+  border-radius: 8px;
+}
+
 PictureViewWidget QLabel {
   color: #ffffff;
 }
@@ -15,8 +20,22 @@ IconWidget .QProgressBar::chunk {
   border-radius: 2px;
 }
 
-.QLabel[class_type="messagebox.label"] {
+NetworkResponseBox .QLabel{
   color: #303133;
+}
+
+NetworkResponseBox .QProgressBar{
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+NetworkResponseBox .QProgressBar::chunk{
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+LinkCopyBox .QPushButton{
+  padding: 0.325em 1.1em;
 }
 
 PictureTableHeader .QLabel{

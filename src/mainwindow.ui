@@ -269,7 +269,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>18</width>
+                <width>98</width>
                 <height>298</height>
                </rect>
               </property>
@@ -514,7 +514,7 @@
                  </sizepolicy>
                 </property>
                 <property name="value">
-                 <number>24</number>
+                 <number>0</number>
                 </property>
                 <property name="textVisible">
                  <bool>true</bool>
@@ -1091,24 +1091,24 @@
   <customwidget>
    <class>PageButton</class>
    <extends>QPushButton</extends>
-   <header>pagebutton.h</header>
+   <header location="global">pagebutton.h</header>
   </customwidget>
   <customwidget>
    <class>TitleBar</class>
    <extends>QWidget</extends>
-   <header>titlebar.h</header>
+   <header location="global">titlebar.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PicturesContainer</class>
    <extends>QScrollArea</extends>
-   <header>picturescontainer.h</header>
+   <header location="global">picturescontainer.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PictureTable</class>
    <extends>QWidget</extends>
-   <header>picturetable.h</header>
+   <header location="global">picturetable.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -4,6 +4,8 @@
 #include <QDebug>
 
 #include "base.h"
+#include "mainwindow.h"
+#include "messagebox.h"
 #include "notification.h"
 #include "pictureviewwidget.h"
 #include "utils/httpclient.h"
@@ -92,6 +94,10 @@ void PictureTable::filter(std::function<bool(const QVariantMap &)> f) {
     }
 }
 
+const QVariantMap PictureTable::getLineData(PictureTable::Item item) const {
+    return datas[item];
+}
+
 void PictureTable::delSelectedItems() {
     QList<PictureTableLine *> items;
     for (int i = 0; i < lines.size(); i++) {
@@ -115,7 +121,6 @@ void PictureTable::onDeleteLine(PictureTableLine *obj) {
         header->all->setChecked(false);
     }
 
-    qDebug() << delete_link;
     HttpClient *client = new HttpClient(this);
     client->get(delete_link);
     connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
@@ -163,6 +168,8 @@ void PictureTable::addData(QVariantMap d) {
     });
     connect(line, &PictureTableLine::preview, this, &PictureTable::previewImage);
     connect(line, &PictureTableLine::deleteLine, this, &PictureTable::onDeleteLine);
+    connect(line, &PictureTableLine::download, this, &PictureTable::downloadStarted);
+    connect(line, &PictureTableLine::copyLink, this, &PictureTable::copyLinkStarted);
 }
 
 PictureTableHeader::PictureTableHeader(QWidget *parent) : QWidget(parent) {

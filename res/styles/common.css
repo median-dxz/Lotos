@@ -1,8 +1,3 @@
-QFrame[class_type="messagebox"] {
-  background: #fff;
-  border-radius: 8px;
-}
-
 .QPushButton[style_type="button.danger"] {
   color: #fff;
   background-color: #f56c6c;
@@ -70,12 +65,22 @@ QFrame[class_type="messagebox"] {
 }
 
 .QProgressBar {
-  border: none;
   background-color: #ebeef5;
+  border: none;
 }
 
-.QProgressBar::chunk {
+.QProgressBar[style_type="progressbar.normal"]::chunk{
   background-color: #409eff;
+  border: none;
+}
+
+.QProgressBar[style_type="progressbar.failed"]::chunk{
+  background-color: #f56c6c;
+  border: none;
+}
+
+.QProgressBar[style_type="progressbar.succeed"]::chunk{
+  background-color: #67c23a;
   border: none;
 }
 

@@ -1,5 +1,6 @@
 #include "iconwidget.h"
 
+#include <QStyle>
 #include <QtConcurrent>
 #include "base.h"
 #include "utils/lotoshelper.h"
@@ -21,10 +22,7 @@ IconWidget::IconWidget(QWidget *parent) : QWidget(parent) {
 }
 
 void IconWidget::addImageFromFile(const QString &fileName, const QByteArray &fileData) {
-    auto func = std::bind(&IconWidget::setImage, this, fileData);
-
-    QFuture<void> future;
-    future = (QtConcurrent::run(func));
+    QtConcurrent::run(std::bind(&IconWidget::setImage, this, fileData));
 
     setImageInfo(QFileInfo(fileName));
 
@@ -154,6 +152,8 @@ void IconWidget::onStatusChanged(IconWidget::UPLOAD_STATUS newStatus) {
         case FAILED:
             statusStr = statusStr.arg(tr("状态"), tr("上传失败"));
             uploadBtn->setDisabled(false);
+            progress->setProperty(StyleType.name, StyleType.progressbar.failed);
+            reloadStyleSheets(progress);
             break;
         case PENDING:
             statusStr = statusStr.arg(tr("状态"), tr("等待上传"));
@@ -162,6 +162,8 @@ void IconWidget::onStatusChanged(IconWidget::UPLOAD_STATUS newStatus) {
         case UPLOADED:
             statusStr = statusStr.arg(tr("状态"), tr("已上传"));
             uploadBtn->setDisabled(true);
+            progress->setProperty(StyleType.name, StyleType.progressbar.succeed);
+            reloadStyleSheets(progress);
             break;
         case UPLOADING:
             statusStr = statusStr.arg(tr("状态"), tr("上传中"));

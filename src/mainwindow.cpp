@@ -23,20 +23,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     componentsManager();
     appearanceManager();
 
+    ui->galleryFooter->setVisible(false);
+#ifdef QT_DEBUG
     test();
+#endif
 }
 
 void MainWindow::test() {
+    ui->galleryFooter->setVisible(true);
     qDebug() << QSslSocket::sslLibraryBuildVersionString();
     qDebug() << QSslSocket::supportsSsl();
 
-    connect(ui->tb1, &QPushButton::clicked, this, [=] {});
+    connect(ui->tb1, &QPushButton::clicked, this, [=] {
+        LinkCopyBox *msgBox = new LinkCopyBox(this);
+        openMessagegBox(msgBox);
+        closeMessageBox(msgBox, 5000);
+    });
 
     connect(ui->tb2, &QPushButton::clicked, this, [=] {
         NetworkResponseBox *msgBox = new NetworkResponseBox(this);
         openMessagegBox(msgBox);
         msgBox->setTip(tr("请稍等啊!!ksdfhno;ksdhnfilukegdiud"));
         msgBox->setIcontype(MessageBox::IconType::WAIT);
+        msgBox->setProgress(50);
         closeMessageBox(msgBox, 5000);
     });
 }
@@ -132,6 +141,7 @@ void MainWindow::appearanceManager() {
 
     ui->hostResetButton->setProperty(StyleType.name, StyleType.button.normal);
     ui->hostLoginButton->setProperty(StyleType.name, StyleType.button.normal);
+    ui->hostUserDiskLimit->setProperty(StyleType.name, StyleType.progressbar.normal);
 
     QDir stylesDir(":/res/styles/");
     stylesDir.setNameFilters(QStringList() << "*.css"
@@ -159,6 +169,8 @@ void MainWindow::componentsManager() {
     connect(ui->syncGalleryButton, &QPushButton::clicked, this, &MainWindow::onButtonSyncGalleryClicked);
     connect(ui->deleteSelectedButton, &QPushButton::clicked, ui->imagesList, &PictureTable::delSelectedItems);
     connect(ui->searchEdit, &QLineEdit::textChanged, this, &MainWindow::onEditSearchTextChanged);
+    connect(ui->imagesList, &PictureTable::downloadStarted, this, &MainWindow::downloadImage);
+    connect(ui->imagesList, &PictureTable::copyLinkStarted, this, &MainWindow::copyLinks);
 
     // set dashbroad page
     ui->pageSwitchWidget->installEventFilter(this);
@@ -488,6 +500,50 @@ void MainWindow::uploadImage(IconWidget *obj) {
     });
 
     connect(client, &HttpClient::uplpodProgress, obj, &IconWidget::updateUploadProgress);
+}
+
+void MainWindow::downloadImage(PictureTableLine *obj) {
+    NetworkResponseBox *msg = new NetworkResponseBox(this);
+    const QVariantMap &data = ui->imagesList->getLineData(obj);
+
+    openMessagegBox(msg);
+    msg->setTip(tr("准备下载: ") + data["filename"].toString());
+    if (obj->hasCachedData()) {
+        msg->setProgress(100);
+        msg->setTip(tr("下载完成!"));
+        msg->setIcontype(MessageBox::SUCCESS);
+        closeMessageBox(msg, 1000);
+    } else {
+        HttpClient *client = new HttpClient(data["url"].toString(), this);
+        msg->setIcontype(MessageBox::WAIT);
+        client->downloadFile();
+        connect(client, &HttpClient::downloadProgress, this, [=](qint64 a, qint64 b) {
+            QStringList tips;
+            tips << tr("正在下载: ") << data["filename"].toString() << "\n"
+                 << formatFileSize(a) << "/" << formatFileSize(b);
+            msg->setTip(tips.join(""));
+            msg->setProgress(a / qreal(b) * 1000);
+        });
+        connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
+            //            QSaveFile()
+        });
+    }
+}
+
+void MainWindow::copyLinks(PictureTableLine *obj) {
+    LinkCopyBox *msg = new LinkCopyBox(this);
+    const QVariantMap &data = ui->imagesList->getLineData(obj);
+    const QString filename = data["filename"].toString();
+    const QString url = data["url"].toString();
+
+    openMessagegBox(msg);
+    msg->setLink(0, formatExternalLink(filename, url, ExternalLinkType::BBCode));
+    msg->setLink(1, formatExternalLink(filename, url, ExternalLinkType::Markdown));
+    msg->setLink(2, formatExternalLink(filename, url, ExternalLinkType::HTML));
+    msg->setLink(3, formatExternalLink(filename, url, ExternalLinkType::URL));
+    msg->setLink(4, data["page"].toString());
+    msg->setLink(5, data["delete"].toString());
+    connect(msg->dialogButtonBox(), &QDialogButtonBox::accepted, this, [=] { closeMessageBox(msg); });
 }
 
 void MainWindow::loadPage(int index) {

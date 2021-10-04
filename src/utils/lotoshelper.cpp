@@ -39,18 +39,18 @@ QString LotosHelper::formatFileSize(qint64 size) {
 
 QString LotosHelper::formatExternalLink(QString filename, QString url, ExternalLinkType type) {
     const QString &BBCode = "[URL=%1][IMG]%1[/IMG][/URL]";
-    const QString &Html = "<a href=\"%url%\" target=\"_blank\"><img src=\"%url%\" alt=\"%filename%\"></a>";
+    const QString &Html = "<a href=\"%1\" target=\"_blank\"><img src=\"%1\" alt=\"%2\"></a>";
     const QString &Markdown = "![%2](%1)";
     const QString &Url = "%1";
     switch (type) {
         case ExternalLinkType::BBCode:
-            return BBCode.arg(url, filename);
+            return BBCode.arg(url);
         case ExternalLinkType::HTML:
             return Html.arg(url, filename);
         case ExternalLinkType::Markdown:
             return Markdown.arg(url, filename);
         case ExternalLinkType::URL:
-            return Url.arg(url, filename);
+            return Url.arg(url);
     }
     return "";
 }

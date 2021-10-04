@@ -20,27 +20,32 @@ class PictureTable : public QFrame {
     Q_OBJECT
 
    public:
+    using Item = PictureTableLine *;
     explicit PictureTable(QWidget *parent = nullptr);
 
     int getLineHeight() const { return lineHeight; }
     void setLineHeight(int h) { lineHeight = h; };
     void sortList(bool cmp, int col);
     void filter(std::function<bool(const QVariantMap &)>);
+    const QVariantMap getLineData(Item) const;
 
    public slots:
-    void addData(QVariantMap d);
-    void onDeleteLine(PictureTableLine *);
-    void refresh(QList<QVariantMap> d);
-    int setPreviewImage(PictureTableLine *obj, PictureViewWidget *self, QLabel *imgBox, QLabel *info);
+    void addData(QVariantMap);
+    void onDeleteLine(Item);
+    void refresh(QList<QVariantMap>);
+    void previewImage(Item);
 
     void delSelectedItems();
+   signals:
+    void downloadStarted(Item);
+    void copyLinkStarted(Item);
 
    private:
-    void previewImage(PictureTableLine *obj);
+    int setPreviewImage(Item obj, PictureViewWidget *self, QLabel *imgBox, QLabel *info);
 
     PictureTableHeader *header;
-    QVector<PictureTableLine *> lines;
-    QMap<PictureTableLine *, QVariantMap> datas;
+    QVector<Item> lines;
+    QMap<Item, QVariantMap> datas;
     NotificationManager *notify;
 
     bool flag_fn = 1, flag_link = 1, flag_size = 1;
@@ -74,6 +79,8 @@ class PictureTableLine : public QWidget {
 
     int getIndex() const;
     void setIndex(int value);
+
+    inline bool hasCachedData() { return !pixmapData.isNull(); }
 
    private:
     SMMS::ImageInfomation data;

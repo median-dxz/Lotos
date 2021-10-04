@@ -3,11 +3,12 @@
 
 #include <QFrame>
 
-class QPushButton;
 class QLabel;
 class QTimeLine;
-class QDialogButtonBox;
 class QGridLayout;
+class QVBoxLayout;
+class QPushButton;
+class QDialogButtonBox;
 
 class MessageBox : public QFrame {
    public:
@@ -23,10 +24,13 @@ class MessageBox : public QFrame {
     QGridLayout *mainArea() const;
     void setMainArea(QGridLayout *mainArea);
 
-   private:
+   protected:
     QLabel *m_iconArea;
     QGridLayout *m_mainArea;
     QDialogButtonBox *m_dialogButtonBox;
+    QVBoxLayout *boxLayout;
+
+   private:
     IconType m_icontype;
 
     QTimeLine *animation;

@@ -14,8 +14,7 @@
 #include "messagebox.h"
 #include "networkresponsebox.h"
 #include "notification.h"
-#include "pictureviewwidget.h"
-#include "titlebar.h"
+#include "picturetable.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -33,6 +32,7 @@ class MainWindow : public QMainWindow {
     ~MainWindow();
 
    private slots:
+
     void onHostLoginClicked();
     void onButtonHostResetClicked();
     void onMainProcessClosed();
@@ -43,6 +43,8 @@ class MainWindow : public QMainWindow {
     void onEditSearchTextChanged(const QString &text);
 
     void uploadImage(IconWidget *obj);
+    void downloadImage(PictureTableLine *);
+    void copyLinks(PictureTableLine *);
 
     void loadPage(int index);
     void onUploadStatusChanged();

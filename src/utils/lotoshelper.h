@@ -6,6 +6,11 @@
 namespace LotosHelper {
 
 #define timestamp2str(time, format) (QDateTime::fromTime_t(time).toString(format))
+#define reloadStyleSheets(p_widget)  \
+    {                                \
+        style()->unpolish(p_widget); \
+        style()->polish(p_widget);   \
+    }
 
 QString getElidedText(QFont font, QString str, int MaxWidth);
 QString formatFileSize(qint64 size);
@@ -53,6 +58,8 @@ class StyleClass {
 
         struct progressbarType {
             const QString normal = "progressbar.normal";
+            const QString failed = "progressbar.failed";
+            const QString succeed = "progressbar.succeed";
         } progressbar;
 
         const char *name{"style_type"};

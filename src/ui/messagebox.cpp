@@ -22,12 +22,14 @@ MessageBox::MessageBox(QWidget *parent) : QFrame(parent) {
     effect->setOpacity(1);
     setGraphicsEffect(effect);
 
-    setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
+    QSizePolicy policy = QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    setSizePolicy(policy);
     setMinimumWidth(400);
+    setMaximumWidth(parent->width() / 2);
 
     fade(effect, this);
 
-    QVBoxLayout *boxLayout = new QVBoxLayout;
+    boxLayout = new QVBoxLayout;
     setLayout(boxLayout);
 
     boxLayout->setAlignment(Qt::AlignHCenter);
