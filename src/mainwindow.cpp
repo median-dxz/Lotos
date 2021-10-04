@@ -5,6 +5,8 @@
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFontDatabase>
+#include <QMenu>
+#include <QSystemTrayIcon>
 #include <QVersionNumber>
 #include <QtConcurrent>
 
@@ -112,7 +114,7 @@ void MainWindow::appearanceManager() {
     sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
     sider_layout->insertWidget(1, mainTitle, 0, Qt::AlignHCenter);
 
-    ui->titleBar->setTitle(tr("Lotos v") + LOTOS_VERSION);
+    ui->titleBar->setTitle(tr("Lotos v") + LotosVersion());
 
     maskFrame = new QFrame(this);
     maskFrame->setObjectName("mask");
@@ -146,7 +148,7 @@ void MainWindow::appearanceManager() {
 
     ui->aboutButton->setProperty(StyleType.name, StyleType.button.normal);
 
-    ui->versionLabel->setText(tr("当前版本: ") + LOTOS_VERSION);
+    ui->versionLabel->setText(tr("当前版本: ") + LotosVersion());
     ui->deleteAllShortCut->setDisabled(true);
     ui->openImageShortCut->setDisabled(true);
     ui->uploadShortCut->setDisabled(true);
@@ -161,7 +163,31 @@ void MainWindow::appearanceManager() {
 
 void MainWindow::componentsManager() {
     connect(ui->titleBar, &TitleBar::onMiniBtnClicked, this, &MainWindow::showMinimized);
-    connect(ui->titleBar, &TitleBar::onCloseBtnClicked, this, &MainWindow::onMainProcessClosed);
+    connect(ui->titleBar, &TitleBar::onCloseBtnClicked, this, &MainWindow::hide);
+
+    QMenu *tray_menu = new QMenu(this);
+    QAction *action_show;
+    tray_menu->addAction(QIcon(":/res/lotos_icon.png"), tr("Lotos v") + LotosVersion());
+    action_show = tray_menu->addAction(tr("显示"), this, &MainWindow::showNormal);
+    tray_menu->addSeparator();
+    tray_menu->addAction(ui->action_about);
+    tray_menu->addAction(ui->action_exit);
+
+    QSystemTrayIcon *tray = new QSystemTrayIcon(this);
+    tray->setContextMenu(tray_menu);
+    tray->setIcon(QIcon(":/res/lotos_icon.png"));
+    tray->setToolTip(tr("Lotos v") + LotosVersion());
+    connect(tray, &QSystemTrayIcon::activated, this, [=](QSystemTrayIcon::ActivationReason reason) {
+        if (reason == QSystemTrayIcon::Trigger) {
+            action_show->trigger();
+        }
+    });
+    tray->show();
+    connect(ui->action_exit, &QAction::triggered, this, &MainWindow::onMainProcessClosed);
+    connect(ui->action_about, &QAction::triggered, this, [=] {
+        DialogAbout *dlg = new DialogAbout(this);
+        dlg->show();
+    });
 
     // set upload page
     connect(ui->selectFilesButton, &QPushButton::clicked, this, &MainWindow::onButtonSelectFilesClicked);
@@ -195,6 +221,7 @@ void MainWindow::componentsManager() {
             [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveFileName] = str; });
     connect(ui->SaveFormatCombo, &QComboBox::currentTextChanged, this,
             [=](const QString &str) { globalSettings.user[KeyMap.user.clipSaveImageType] = str; });
+    connect(ui->aboutButton, &QPushButton::clicked, ui->action_about, &QAction::trigger);
 
     // set pagebutton toggle signal&icon
     QList<PageButton *> PageButtons = ui->centralwidget->findChildren<PageButton *>();

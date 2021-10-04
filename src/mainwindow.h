@@ -16,6 +16,8 @@
 #include "notification.h"
 #include "picturetable.h"
 
+#include "dialogabout.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;

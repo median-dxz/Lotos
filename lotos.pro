@@ -1,10 +1,10 @@
-QT       += core gui network widgets concurrent
+QT       += core gui widgets network concurrent
 
 CONFIG += c++11
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 VPATH += src \
 
@@ -12,9 +12,18 @@ INCLUDEPATH += src \
                src/ui \
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    src/dialogabout.ui
 
 RC_ICONS = icon.ico
+
+VERSION = 0.1.0
+TARGET = Lotos
+win32: QMAKE_TARGET_DESCRIPTION = "a modern Image Upload clinet"
+win32: QMAKE_TARGET_PRODUCT = "Lotos"
+
+DEFINES += \
+    LOTOS_VERSION=\"\\\"$${VERSION}\\\"\"
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -24,14 +33,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     resources.qrc
 
-CONFIG += cmdline
-
-VERSION = 0.0.1
-
-DEFINES += \
-    LOTOS_VERSION=\\\"$$VERSION\\\"
+CONFIG += windows
 
 HEADERS += \
+    src/dialogabout.h \
     src/mainwindow.h \
     src/settingshelper.h \
     src/ui/iconwidget.h \
@@ -50,6 +55,7 @@ HEADERS += \
     src/utils/promise.h
 
 SOURCES += \
+    src/dialogabout.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/settingshelper.cpp \

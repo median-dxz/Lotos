@@ -269,7 +269,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>18</width>
+                <width>98</width>
                 <height>298</height>
                </rect>
               </property>
@@ -454,8 +454,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>16</width>
-                <height>16</height>
+                <width>100</width>
+                <height>30</height>
                </rect>
               </property>
              </widget>
@@ -1240,18 +1240,28 @@
     </item>
    </layout>
   </widget>
+  <action name="action_exit">
+   <property name="text">
+    <string>退出(&amp;E)</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>关于</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>TitleBar</class>
+   <extends>QWidget</extends>
+   <header>titlebar.h</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>PageButton</class>
    <extends>QPushButton</extends>
    <header location="global">pagebutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>TitleBar</class>
-   <extends>QWidget</extends>
-   <header location="global">titlebar.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>PicturesContainer</class>

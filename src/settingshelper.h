@@ -19,6 +19,10 @@ const static struct {
 
 }  // namespace LotosSettings
 
+inline const char *LotosVersion() {
+    return QLatin1String(LOTOS_VERSION).data();
+}
+
 class SettingsHelper {
    public:
     SettingsHelper();

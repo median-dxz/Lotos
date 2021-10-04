@@ -2,10 +2,11 @@
 #define LOTOSHELPER_H
 
 #include <QWidget>
+#include <QtCore>
 
 namespace LotosHelper {
 
-#define timestamp2str(time, format) (QDateTime::fromTime_t(time).toString(format))
+#define timestamp2str(time, format) (QDateTime::fromSecsSinceEpoch(time).toString(format))
 #define reloadStyleSheets(p_widget)  \
     {                                \
         style()->unpolish(p_widget); \
