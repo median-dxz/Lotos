@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1252</width>
-    <height>725</height>
+    <width>1254</width>
+    <height>686</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,10 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <property name="leftMargin">
      <number>6</number>
     </property>
@@ -30,10 +33,7 @@
     <property name="bottomMargin">
      <number>6</number>
     </property>
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <item row="0" column="0">
+    <item>
      <widget class="QFrame" name="viewport">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -78,7 +78,7 @@
           <number>0</number>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="uploadPage">
           <property name="sizePolicy">
@@ -269,7 +269,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
+                <width>18</width>
                 <height>298</height>
                </rect>
               </property>
@@ -454,8 +454,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1000</width>
-                <height>514</height>
+                <width>16</width>
+                <height>16</height>
                </rect>
               </property>
              </widget>
@@ -701,183 +701,337 @@
             <number>40</number>
            </property>
            <item>
-            <widget class="QGroupBox" name="groupBox_3">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+            <widget class="QScrollArea" name="settingsArea">
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
              </property>
-             <property name="title">
-              <string>上传模式</string>
+             <property name="widgetResizable">
+              <bool>true</bool>
              </property>
-             <layout class="QGridLayout" name="gridLayout_7">
-              <property name="spacing">
-               <number>20</number>
+             <widget class="QWidget" name="settingsContents">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1002</width>
+                <height>615</height>
+               </rect>
               </property>
-              <item row="0" column="0">
-               <widget class="QRadioButton" name="preferTokenRadio">
-                <property name="text">
-                 <string>优先使用登录用户上传</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QRadioButton" name="preferIPRadio">
-                <property name="text">
-                 <string>优先使用IP上传</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <spacer name="horizontalSpacer_5">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
+              <layout class="QVBoxLayout" name="verticalLayout_5">
+               <property name="spacing">
+                <number>20</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QGroupBox" name="groupBox_3">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="title">
+                  <string>上传模式</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_7">
+                  <property name="leftMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="spacing">
+                   <number>20</number>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QRadioButton" name="preferTokenRadio">
+                    <property name="text">
+                     <string>优先使用登录用户上传</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QRadioButton" name="preferIPRadio">
+                    <property name="text">
+                     <string>优先使用IP上传</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <spacer name="horizontalSpacer_5">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_4">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="title">
+                  <string>剪辑板上传</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_6">
+                  <property name="leftMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="spacing">
+                   <number>20</number>
+                  </property>
+                  <item row="1" column="1" colspan="2">
+                   <widget class="QLineEdit" name="SaveNameEdit">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>280</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_6">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>保存名称: </string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_5">
+                    <property name="text">
+                     <string>保存格式: </string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="SaveFormatCombo">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>140</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="currentIndex">
+                     <number>0</number>
+                    </property>
+                    <property name="sizeAdjustPolicy">
+                     <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>png</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>jpg</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>bmp</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>gif</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>webp</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QLabel" name="label_7">
+                    <property name="text">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(使用两个'代表',将非时间部分用''括起来)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="4">
+                   <spacer name="horizontalSpacer_6">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_2">
+                 <property name="title">
+                  <string>关于软件</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_2">
+                  <property name="leftMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="spacing">
+                   <number>20</number>
+                  </property>
+                  <item row="1" column="4">
+                   <widget class="QLabel" name="label_8">
+                    <property name="text">
+                     <string>打开图片:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QKeySequenceEdit" name="uploadShortCut">
+                    <property name="keySequence">
+                     <string>Shift+U</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="5">
+                   <widget class="QKeySequenceEdit" name="openImageShortCut">
+                    <property name="keySequence">
+                     <string>Shift+A</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="7">
+                   <widget class="QKeySequenceEdit" name="deleteAllShortCut">
+                    <property name="keySequence">
+                     <string>Shift+D</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="6">
+                   <widget class="QLabel" name="label_9">
+                    <property name="text">
+                     <string>全部删除:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_10">
+                    <property name="text">
+                     <string>上传页面快捷键:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="QLabel" name="versionLabel">
+                    <property name="text">
+                     <string>当前版本: </string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QPushButton" name="aboutButton">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>关于</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string>全部上传:</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>246</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
             </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_4">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="title">
-              <string>剪辑板上传</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_6">
-              <property name="spacing">
-               <number>20</number>
-              </property>
-              <item row="1" column="1" colspan="2">
-               <widget class="QLineEdit" name="SaveNameEdit">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>280</width>
-                  <height>0</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_6">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>保存名称: </string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_5">
-                <property name="text">
-                 <string>保存格式: </string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="SaveFormatCombo">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>140</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="currentIndex">
-                 <number>0</number>
-                </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>png</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>jpg</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>bmp</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>gif</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>webp</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="1" column="3">
-               <widget class="QLabel" name="label_7">
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(使用两个'代表',将非时间部分用''括起来)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="4">
-               <spacer name="horizontalSpacer_6">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </widget>

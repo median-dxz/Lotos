@@ -5,6 +5,7 @@
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFontDatabase>
+#include <QVersionNumber>
 #include <QtConcurrent>
 
 #include "base.h"
@@ -111,7 +112,7 @@ void MainWindow::appearanceManager() {
     sider_layout->insertWidget(0, mainIcon, 0, Qt::AlignHCenter);
     sider_layout->insertWidget(1, mainTitle, 0, Qt::AlignHCenter);
 
-    ui->titleBar->setTitle(tr("Lotos v") + APP_VERSION);
+    ui->titleBar->setTitle(tr("Lotos v") + LOTOS_VERSION);
 
     maskFrame = new QFrame(this);
     maskFrame->setObjectName("mask");
@@ -142,6 +143,13 @@ void MainWindow::appearanceManager() {
     ui->hostResetButton->setProperty(StyleType.name, StyleType.button.normal);
     ui->hostLoginButton->setProperty(StyleType.name, StyleType.button.normal);
     ui->hostUserDiskLimit->setProperty(StyleType.name, StyleType.progressbar.normal);
+
+    ui->aboutButton->setProperty(StyleType.name, StyleType.button.normal);
+
+    ui->versionLabel->setText(tr("当前版本: ") + LOTOS_VERSION);
+    ui->deleteAllShortCut->setDisabled(true);
+    ui->openImageShortCut->setDisabled(true);
+    ui->uploadShortCut->setDisabled(true);
 
     QDir stylesDir(":/res/styles/");
     stylesDir.setNameFilters(QStringList() << "*.css"
@@ -403,14 +411,13 @@ void MainWindow::onButtonUploadClicked() {
 }
 
 void MainWindow::onButtonSyncGalleryClicked() {
-    ParallelCount *req = new ParallelCount(this);
-
     NetworkResponseBox *msg = new NetworkResponseBox(this);
     openMessagegBox(msg);
     msg->setIcontype(MessageBox::WAIT);
     msg->setTip("正在同步中...");
 
     if (globalSettings.imghost[KeyMap.imghost.isAuthorized] == true) {
+        ParallelCount *req = new ParallelCount(this);
         HttpClient *client = smms->getUploadHistory(1);
         req->add();
         connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *res) {
@@ -427,6 +434,19 @@ void MainWindow::onButtonSyncGalleryClicked() {
             req->pop();
             delete res;
         });
+
+        connect(req, &ParallelCount::clear, this, [=] {
+            closeMessageBox(msg);
+            QList<QVariantMap> r;
+            for (const auto &i : req->get()) {
+                r.append(i.toMap());
+            }
+            ui->imagesList->refresh(r);
+        });
+    } else {
+        msg->setIcontype(MessageBox::WARN);
+        msg->setTip(tr("当前版本暂时不支持管理本地上传历史列表"));
+        closeMessageBox(msg, 1000);
     }
     //    HttpClient *client = smms->getTemporaryUploadHistory();
     //    req->add();
@@ -444,14 +464,6 @@ void MainWindow::onButtonSyncGalleryClicked() {
     //        req->pop();
     //        delete res;
     //    });
-    connect(req, &ParallelCount::clear, this, [=] {
-        closeMessageBox(msg);
-        QList<QVariantMap> r;
-        for (const auto &i : req->get()) {
-            r.append(i.toMap());
-        }
-        ui->imagesList->refresh(r);
-    });
 }
 
 void MainWindow::onEditSearchTextChanged(const QString &text) {
@@ -525,7 +537,31 @@ void MainWindow::downloadImage(PictureTableLine *obj) {
             msg->setProgress(a / qreal(b) * 1000);
         });
         connect(client, &HttpClient::responseFinished, this, [=](HttpClient::Response *r) {
-            //            QSaveFile()
+            QString saveName = QFileDialog::getSaveFileName(this, "保存图片...", data["filename"].toString());
+            QByteArray *d = new QByteArray(r->data);
+            msg->setTip(tr("正在保存文件..."));
+
+            QSaveFile *save = new QSaveFile(saveName);
+            save->setDirectWriteFallback(true);
+            if (save->open(QIODevice::WriteOnly)) {
+                save->write(*d);
+                if (save->commit()) {
+                    msg->setIcontype(MessageBox::SUCCESS);
+                    msg->setTip(tr("文件保存成功!"));
+                } else {
+                    msg->setIcontype(MessageBox::ERROR);
+                    msg->setTip(tr("文件保存失败"));
+                }
+                save->deleteLater();
+                delete d;
+
+                closeMessageBox(msg, 1000);
+            } else {
+                msg->setIcontype(MessageBox::ERROR);
+                msg->setTip(tr("文件保存失败"));
+                closeMessageBox(msg, 1000);
+            }
+            delete r;
         });
     }
 }

@@ -45,9 +45,12 @@ LinkCopyBox::LinkCopyBox(QWidget *parent) : MessageBox(parent) {
 bool LinkCopyBox::eventFilter(QObject *obj, QEvent *e) {
     if (e->type() == QEvent::MouseButtonDblClick) {
         if (static_cast<QMouseEvent *>(e)->button() == Qt::MouseButton::LeftButton) {
+            static_cast<QLineEdit *>(obj)->selectAll();
             static_cast<QLineEdit *>(obj)->copy();
+            return true;
         }
     }
+    return MessageBox::eventFilter(obj, e);
 }
 
 void LinkCopyBox::setLink(int index, QString link) {

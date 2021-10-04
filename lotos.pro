@@ -11,9 +11,6 @@ VPATH += src \
 INCLUDEPATH += src \
                src/ui \
 
-PRECOMPILED_HEADER += \
-    base.h
-
 FORMS += \
     mainwindow.ui
 
@@ -27,19 +24,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     resources.qrc
 
-CONFIG += BUILD_X86 cmdline precompile_header
-
-CONFIG(BUILD_X64, BUILD_X86|BUILD_X64) {
-    message("X64 Build")
-} else {
-    message("X86 Build")
-}
-
+CONFIG += cmdline
 
 VERSION = 0.0.1
 
 DEFINES += \
-    APP_VERSION=\\\"0.0.1\\\"
+    LOTOS_VERSION=\\\"$$VERSION\\\"
 
 HEADERS += \
     src/mainwindow.h \
