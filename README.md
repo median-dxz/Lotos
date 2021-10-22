@@ -10,7 +10,7 @@ QT课设项目，是一款windows平台下对（第一阶段，smms）图床进�
 
 启发项目[PicGo](https://github.com/PicGo/PicGo-Core)。
 
-
+ **IMPORTANT: 由于时间关系暂时停止维护,下一阶段开始支持多图床与本地管理**
 
 当前构建：Preview 0.1.0(dev)
 
